@@ -790,34 +790,37 @@
         "scope": {
           "type": "object",
           "additionalProperties": false,
-          "description": "Which people are included. Combined with AND across properties.",
+          "description": "Which people are included. One rule per view: a focus (root + up/down/width), tags, or a hand-picked people list.",
           "properties": {
             "root": {
-              "$ref": "#/$defs/PersonId"
+              "$ref": "#/$defs/PersonId",
+              "description": "Focus views: the person the view is centred on."
             },
-            "direction": {
-              "enum": [
-                "ancestors",
-                "descendants",
-                "both",
-                "connected"
-              ],
-              "description": "'connected' = everyone reachable from root by any relationship."
-            },
-            "generations": {
+            "up": {
               "type": "integer",
-              "minimum": 1
+              "minimum": 0,
+              "description": "Generations of ancestors shown from root. Absent = all."
             },
-            "includeSpouses": {
-              "type": "boolean",
-              "default": true
+            "down": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Generations of descendants shown from root. Absent = all."
+            },
+            "width": {
+              "enum": [
+                "direct",
+                "siblings",
+                "all"
+              ],
+              "default": "direct",
+              "description": "direct = ancestors, descendants and their partners; siblings = also the other children of every ancestor shown; all = also those siblings' descendants (cousins…), no deeper than down."
             },
             "people": {
               "type": "array",
               "items": {
                 "$ref": "#/$defs/PersonId"
               },
-              "description": "Explicit people list, alternative or addition to root."
+              "description": "Hand-picked people."
             },
             "tags": {
               "type": "array",

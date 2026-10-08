@@ -24,8 +24,7 @@
 			if (!Array.isArray(d.people) || !Array.isArray(d.families) || !Array.isArray(d.events)) throw new Error('it needs people, families and events lists.');
 			app.data = migrate(d);
 			app.select(null);
-			app.branch = 'all';
-			app.fitTree();
+			app.showEveryone();
 			onClose();
 		} catch (e) {
 			err = "Couldn't load that: " + (e as Error).message;
@@ -38,8 +37,7 @@
 		}
 		app.data = kind === 'reset' ? sampleData() : emptyDataset();
 		app.select(null);
-		app.branch = 'all';
-		app.fitTree();
+		app.showEveryone();
 		onClose();
 	}
 </script>

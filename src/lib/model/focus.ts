@@ -12,9 +12,9 @@ import { childIds, famAsChild, famsAsPartner, partnerIds, person } from './queri
 export type FocusWidth = 'direct' | 'siblings' | 'all';
 
 export interface FocusOptions {
-	/** Generations of ancestors to show. 0 = none. */
+	/** Generations of ancestors to show. 0 = none, Infinity = all. */
 	up: number;
-	/** Generations of descendants to show. 0 = none. */
+	/** Generations of descendants to show. 0 = none, Infinity = all. */
 	down: number;
 	width: FocusWidth;
 }
@@ -27,6 +27,8 @@ export type FocusEdge =
 export interface FocusResult {
 	ids: Set<string>;
 	edges: FocusEdge[];
+	/** How many generations up and down the direct line actually reaches (useful when up/down are Infinity). */
+	reach: { up: number; down: number };
 }
 
 export const DEFAULT_FOCUS: FocusOptions = { up: 2, down: 1, width: 'siblings' };
@@ -34,7 +36,7 @@ export const DEFAULT_FOCUS: FocusOptions = { up: 2, down: 1, width: 'siblings' }
 export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResult {
 	const ids = new Set<string>(),
 		gen = new Map<string, number>();
-	if (!person(d, rootId)) return { ids, edges: [] };
+	if (!person(d, rootId)) return { ids, edges: [], reach: { up: 0, down: 0 } };
 	const add = (id: string, g: number) => {
 		if (!person(d, id) || ids.has(id)) return false;
 		ids.add(id);
@@ -46,7 +48,7 @@ export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResu
 	// Ancestors, generation by generation.
 	const ancestors = [rootId];
 	let frontier = [rootId];
-	for (let g = 1; g <= o.up; g++) {
+	for (let g = 1; g <= o.up && frontier.length; g++) {
 		const next: string[] = [];
 		for (const id of frontier) {
 			const f = famAsChild(d, id);
@@ -107,7 +109,8 @@ export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResu
 		const hidden = childIds(f).filter((c) => !ids.has(c) && person(d, c)).length;
 		if (hidden) edges.push({ dir: 'down', familyId: f.id, hidden });
 	}
-	return { ids, edges };
+	const gens = [...directLine].map((id) => gen.get(id)!);
+	return { ids, edges, reach: { up: -Math.min(0, ...gens), down: Math.max(0, ...gens) } };
 }
 
 const WIDTH_ORDER: FocusWidth[] = ['direct', 'siblings', 'all'];

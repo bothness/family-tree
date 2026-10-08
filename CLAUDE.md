@@ -47,8 +47,8 @@ Run `npm test` and `npm run check` before finishing any change.
 - Phase A (editing and data model) is done.
 - **Phase B (navigation) is in progress** on branch `phase-b-navigation`:
   - done: zoom, pan and fit (V1); search and centre (V3); focus mode with separate up/down depths and a direct / + siblings / all relatives width switch (V3, V4). Focus is kept in the page address (`#focus=…&up=…&down=…&w=…`) and filters every tab.
-  - next: branches as named saved views, made from filters or hand-picked (V5/V6). These replace the branch chips, and `View.scope` gains up, down and width.
-  - then: collapse to one person, and reset to a blank view (V2).
+  - done: saved views (V5/V6), shown as chips under the header (`ViewBar.svelte`, `model/views.ts`). One rule per view: a focus (`scope.root` + `up`/`down`/`width`, absent depth = all generations), a tag, or a hand-picked `people` list. Opening a focus view fills the focus bar; changes show "Update view". The open view is in the page address too (`#view=…`).
+  - next: collapse to one person, and reset to a blank view (V2).
 - Then Phase C: our own tree layout, replacing `src/lib/layout/tree.ts`. The current layout is an interim port: it's left-aligned, has one connector level per generation and no line hops. Layout rules:
   - centred
   - father consistently on one side
@@ -56,4 +56,3 @@ Run `npm test` and `npm run check` before finishing any change.
   - separate connector levels for half-sibling groups
   - hops where lines cross
 - Then Phase D: place lookup (Nominatim or Wikidata) and photos.
-- The branch chips (auto-detected unconnected groups) are interim and will be replaced by saved views in Phase B.

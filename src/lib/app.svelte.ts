@@ -5,16 +5,16 @@ import type { RelativeKind } from './model/mutations.ts';
 import type { Camera } from './layout/viewport.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
 import { components, displayName, person, primaryName } from './model/queries.ts';
+import { addView, focusScope, sameFocus, setViewScope, viewFocus, viewKind, viewMembers, type FocusRule } from './model/views.ts';
 import { migrate } from './model/migrate.ts';
 import sample from './data/example-data.json';
 
 export type Tab = 'tree' | 'timeline' | 'todo';
-export interface Focus extends FocusOptions {
-	id: string;
-}
+export type Focus = FocusRule;
 
 export const sampleData = (): Dataset => migrate(structuredClone(sample));
 
+/** Label for an unconnected group on the canvas: its most common birth surname. */
 function branchLabel(d: Dataset, comp: string[]): string {
 	const counts: Record<string, number> = {};
 	for (const id of comp) {
@@ -26,12 +26,11 @@ function branchLabel(d: Dataset, comp: string[]): string {
 	const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
 	return top ? top[0] : displayName(person(d, comp[0]));
 }
+const labelled = (d: Dataset, comps: string[][]) => comps.map((ids) => ({ label: branchLabel(d, ids), ids }));
 
 class AppState {
 	data = $state<Dataset>(sampleData());
 	tab = $state<Tab>('tree');
-	/** Interim: auto-detected unconnected groups. Replaced by saved views in Phase B. */
-	branch = $state<string>('all');
 	selected = $state<string | null>(null);
 	/** Which "add relative" form is open in the person panel. */
 	addKind = $state<RelativeKind | null>(null);
@@ -47,38 +46,66 @@ class AppState {
 	activeFocus = $derived(this.focus && person(this.data, this.focus.id) ? this.focus : null);
 	focusView = $derived(this.activeFocus ? focusSet(this.data, this.activeFocus.id, this.activeFocus) : null);
 
-	branches = $derived(components(this.data).map((ids) => ({ label: branchLabel(this.data, ids), ids })));
-	visibleBranches = $derived(
-		this.focusView
-			? [{ label: '', ids: [...this.focusView.ids] }]
-			: this.branch === 'all' || !this.branches.some((b) => b.label === this.branch)
-				? this.branches
-				: this.branches.filter((b) => b.label === this.branch)
-	);
+	/** The saved view (V5/V6) that's open, if any. A focus view also sets `focus`, which can then be adjusted. */
+	viewId = $state<string | null>(null);
+	activeView = $derived(this.data.views.find((v) => v.id === this.viewId) ?? null);
+	/** An open focus view whose focus has since been changed (offer "Update view"). */
+	viewChanged = $derived(!!this.activeView && viewKind(this.activeView) === 'focus' && !sameFocus(viewFocus(this.activeView), this.activeFocus));
+
+	/** Hand-picking people for a view: the ids picked so far (everyone is shown meanwhile), or null. */
+	picked = $state<string[] | null>(null);
+	/** The hand-picked view being edited, or null when picking for a new one. */
+	pickingFor = $state<string | null>(null);
+
+	/** Everyone, as unconnected groups. */
+	branches = $derived(labelled(this.data, components(this.data)));
+	visibleBranches = $derived.by(() => {
+		if (this.picked) return this.branches;
+		if (this.focusView) return [{ label: '', ids: [...this.focusView.ids] }];
+		if (this.activeView && viewKind(this.activeView) !== 'focus') return labelled(this.data, components(this.data, viewMembers(this.data, this.activeView)));
+		return this.branches;
+	});
 	visibleIds = $derived(this.visibleBranches.flatMap((b) => b.ids));
 	#visibleSet = $derived(new Set(this.visibleIds));
 	inView = (id: string) => this.#visibleSet.has(id);
 
-	/** Fit the whole tree. Only for explicit actions (load, Fit, branch change), never ordinary edits. */
+	/** Fit the whole tree. Only for explicit actions (load, Fit, view change), never ordinary edits. */
 	fitTree() {
 		this.camera = null;
 	}
 
+	/** Show everyone: no focus, no saved view. */
+	showEveryone() {
+		this.focus = null;
+		this.viewId = null;
+		this.fitTree();
+	}
+
+	openView(id: string) {
+		const v = this.data.views.find((v) => v.id === id);
+		if (!v) return;
+		this.viewId = id;
+		this.focus = viewFocus(v);
+		this.fitTree();
+	}
+
 	/** Show this person in the middle of the tree (keeping the zoom) and select them.
-	 *  If they're hidden by focus or a branch filter, this goes back to showing everyone. */
+	 *  If the current focus or view hides them, this goes back to showing everyone. */
 	centreOn(id: string) {
 		this.tab = 'tree';
 		if (!this.inView(id)) {
 			this.focus = null;
-			this.branch = 'all';
+			this.viewId = null;
 		}
 		this.select(id);
 		this.centreTarget = id;
 	}
 
-	/** Focus on a person, keeping the current depths and width (or the defaults). */
-	focusOn(id: string) {
-		const { up, down, width } = this.activeFocus ?? DEFAULT_FOCUS;
+	/** Focus on a person, keeping the current depths and width (or the defaults), unless `opts` says otherwise. */
+	focusOn(id: string, opts: Partial<FocusOptions> = {}) {
+		const { up, down, width } = { ...(this.activeFocus ?? DEFAULT_FOCUS), ...opts };
+		// A saved view stays open only while it's still about the same person.
+		if (this.activeView && viewFocus(this.activeView)?.id !== id) this.viewId = null;
 		this.focus = { id, up, down, width };
 		this.fitTree();
 	}
@@ -89,8 +116,46 @@ class AppState {
 		this.fitTree();
 	}
 
-	clearFocus() {
-		this.focus = null;
+	/** Save the current focus as a new view and open it. */
+	saveFocusAsView(name: string) {
+		if (!this.activeFocus) return;
+		this.viewId = addView(this.data, name, focusScope(this.activeFocus)).id;
+	}
+
+	/** Store the adjusted focus back into the open view. */
+	updateView() {
+		if (this.activeView && this.activeFocus) setViewScope(this.data, this.activeView.id, focusScope(this.activeFocus));
+	}
+
+	/** Start hand-picking people, for a new view or to edit an existing hand-picked one. */
+	startPicking(viewId: string | null = null) {
+		const v = viewId ? this.data.views.find((v) => v.id === viewId) : null;
+		this.picked = v ? viewMembers(this.data, v) : this.selected ? [this.selected] : [];
+		this.pickingFor = v?.id ?? null;
+		this.select(null);
+		this.tab = 'tree';
+		this.fitTree();
+	}
+
+	togglePicked(id: string) {
+		if (!this.picked) return;
+		this.picked = this.picked.includes(id) ? this.picked.filter((x) => x !== id) : [...this.picked, id];
+	}
+
+	/** Save the picked people (as a new view called `name`, or into the view being edited) and open it. */
+	finishPicking(name: string) {
+		if (!this.picked) return;
+		const people = this.picked;
+		const id = this.pickingFor ?? addView(this.data, name, { people }).id;
+		if (this.pickingFor) setViewScope(this.data, id, { people });
+		this.picked = null;
+		this.pickingFor = null;
+		this.openView(id);
+	}
+
+	cancelPicking() {
+		this.picked = null;
+		this.pickingFor = null;
 		this.fitTree();
 	}
 

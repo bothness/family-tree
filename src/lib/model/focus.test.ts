@@ -108,7 +108,12 @@ describe('focusSet: edges', () => {
 	});
 
 	it('returns nothing for an unknown person', () => {
-		expect(focusSet(d, 'nobody', { up: 1, down: 1, width: 'all' })).toEqual({ ids: new Set(), edges: [] });
+		expect(focusSet(d, 'nobody', { up: 1, down: 1, width: 'all' })).toEqual({ ids: new Set(), edges: [], reach: { up: 0, down: 0 } });
+	});
+
+	it('reports how far the direct line actually reaches', () => {
+		expect(focusSet(d, 'me', { up: Infinity, down: Infinity, width: 'all' }).reach).toEqual({ up: 2, down: 2 });
+		expect(focusSet(d, 'me', { up: 1, down: 0, width: 'direct' }).reach).toEqual({ up: 1, down: 0 });
 	});
 });
 

@@ -201,5 +201,8 @@ export function deletePerson(d: Dataset, pid: string) {
 	});
 	d.events.forEach((e) => (e.participants = e.participants.filter((x) => x.personId !== pid)));
 	d.events = d.events.filter((e) => e.participants.length);
+	// Saved views: drop views centred on them, and take them out of hand-picked lists.
+	d.views = d.views.filter((v) => v.scope?.root !== pid);
+	for (const v of d.views) if (v.scope?.people?.includes(pid)) v.scope.people = v.scope.people.filter((x) => x !== pid);
 	prune(d);
 }

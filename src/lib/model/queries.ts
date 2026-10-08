@@ -95,9 +95,11 @@ export function halfSiblings(d: Dataset, pid: string): string[] {
 	return [...new Set(partnerIds(pf).flatMap((par) => famsAsPartner(d, par).filter((g) => g !== pf).flatMap(childIds)))];
 }
 
-/** Groups of people connected by any family link (unjoined branches). */
-export function components(d: Dataset): string[][] {
-	const adj = new Map(d.people.map((p) => [p.id, new Set<string>()]));
+/** Groups of people connected by any family link (unjoined branches), largest first.
+ *  With `only`, just those people, linked only through each other. */
+export function components(d: Dataset, only?: Iterable<string>): string[][] {
+	const keep = only ? new Set(only) : null;
+	const adj = new Map(d.people.filter((p) => !keep || keep.has(p.id)).map((p) => [p.id, new Set<string>()]));
 	for (const f of d.families) {
 		const m = [...partnerIds(f), ...childIds(f)].filter((id) => adj.has(id));
 		m.forEach((a) => m.forEach((b) => a !== b && adj.get(a)!.add(b)));
@@ -105,7 +107,7 @@ export function components(d: Dataset): string[][] {
 	const seen = new Set<string>(),
 		comps: string[][] = [];
 	for (const p of d.people) {
-		if (seen.has(p.id)) continue;
+		if (seen.has(p.id) || !adj.has(p.id)) continue;
 		const st = [p.id],
 			c: string[] = [];
 		while (st.length) {

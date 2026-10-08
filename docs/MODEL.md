@@ -11,7 +11,7 @@ Run: `npm i ajv ajv-formats && node validate.mjs example-data.json`
 | **Event** | Birth, marriage, census, residence, occupation, migration… with date, place and participants (with roles) | Timeline, map, person page |
 | **Place** | Hierarchy (parent), coordinates, historical/alternative names, Wikidata | Map, place grouping |
 | **Source** | Certificate, census, oral account… with reliability | Evidence, gaps |
-| **View** | Saved query: root + direction + depth, or tags; kind = tree / timeline / map / list / gaps | Saved family/sub-family views |
+| **View** | Saved, named filter. One rule: a focus (root + up/down generations + width), tags, or a hand-picked people list | Saved views (chips under the header); filter every tab |
 
 ## Key decisions
 - **Uncertainty is per fact.** Names, dates, places, partnerships, child links and events each carry `status`: `confirmed | likely | guess | conflicting`, plus optional `citations`.
@@ -29,6 +29,11 @@ Run: `npm i ajv ajv-formats && node validate.mjs example-data.json`
 - Family `relationship`: new `start`, `end` and `endReason` (death, divorce, separation, annulment, unknown). Marriage events are folded into `relationship.start`.
 - Half-siblings: each child belongs to exactly one family; a parent can be in several families (e.g. John + Mary, John + unknown).
 - The prototype upgrades v0.1 data automatically.
+
+## View scope (changed within v0.2, 9 Oct 2026)
+- `scope.root` + `up` / `down` (generations of ancestors / descendants; absent = all) + `width`: `direct` (ancestors, descendants and their partners), `siblings` (also the other children of every ancestor shown), `all` (also those siblings' descendants, no deeper than `down`). "Descendants of X" is `up: 0` with no `down`; "Ancestors of X" is `down: 0` with no `up`.
+- `scope.tags`: everyone with any of these tags. `scope.people`: a hand-picked list.
+- Replaces the earlier `direction`, `generations` and `includeSpouses`; `migrate()` converts them.
 
 ## Derived (computed, not stored)
 Sortable date ranges, generations, connected branches, and the gaps report (guesses, unsourced events, open families, placeholders, missing births).

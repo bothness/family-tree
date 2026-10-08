@@ -15,7 +15,34 @@ export function tidy(d: Loose): Dataset {
 		f.partners ??= [];
 		f.children ??= [];
 	}
+	for (const v of d.views) if (v.scope) upgradeScope(v.scope);
 	return d as Dataset;
+}
+
+/** Early v0.2 view scopes used direction + generations + includeSpouses; now root + up/down/width. */
+function upgradeScope(s: Loose) {
+	if (!('direction' in s || 'generations' in s || 'includeSpouses' in s)) return;
+	const g = s.generations;
+	const set = (k: 'up' | 'down', n: number | undefined) => (n === undefined ? delete s[k] : (s[k] = n));
+	switch (s.direction) {
+		case 'ancestors':
+			set('up', g);
+			s.down = 0;
+			break;
+		case 'descendants':
+			s.up = 0;
+			set('down', g);
+			break;
+		case 'connected':
+			s.width = 'all';
+			break;
+		default: // 'both'
+			set('up', g);
+			set('down', g);
+	}
+	delete s.direction;
+	delete s.generations;
+	delete s.includeSpouses;
 }
 
 /** Upgrade v0.1 data: probable→likely, living→deceased, marriage events→relationship.start. */

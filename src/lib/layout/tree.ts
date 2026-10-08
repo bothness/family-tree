@@ -151,6 +151,8 @@ export function layoutTree(d: Dataset, branches: { label: string; ids: string[] 
 				cs = childIds(f).filter((id) => L.pos[id]);
 			const gh = L.ghosts.find((g) => g.f === f);
 			if (!ps.length && !cs.length) continue;
+			// A lone child whose parents are out of view (focus, saved view) would get a stub to nowhere.
+			if (!ps.length && cs.length < 2) continue;
 			let mx: number | null = null,
 				my: number | null = null;
 			if (ps.length === 2) {

@@ -15,7 +15,10 @@
 		if (!id) return;
 		// Hidden by the current focus: open their panel (which offers "Show in full tree" / "Focus on them")
 		// rather than silently leaving the focus.
-		if (app.activeFocus && !app.inView(id)) app.select(id);
+		if (app.picked) {
+			app.togglePicked(id); // picking people for a view: search adds them
+			app.centreTarget = id;
+		} else if (app.activeFocus && !app.inView(id)) app.select(id);
 		else app.centreOn(id);
 		input?.blur();
 		// Clear so the box is ready for the next search (and the same person can be picked again).

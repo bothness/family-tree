@@ -124,11 +124,16 @@ export interface View {
 	id: string;
 	name: string;
 	kind: 'tree' | 'timeline' | 'map' | 'list' | 'gaps';
+	/** Which people the view shows. One rule per view: a focus (root + up/down/width), tags, or a hand-picked list. */
 	scope?: {
+		/** Focus views: the person the view is centred on. */
 		root?: string;
-		direction?: 'ancestors' | 'descendants' | 'both' | 'connected';
-		generations?: number;
-		includeSpouses?: boolean;
+		/** Generations of ancestors shown. Absent = all. */
+		up?: number;
+		/** Generations of descendants shown. Absent = all. */
+		down?: number;
+		/** Who besides the direct line: siblings (and aunts, uncles…) or all relatives (cousins…). Default direct. */
+		width?: 'direct' | 'siblings' | 'all';
 		people?: string[];
 		tags?: string[];
 		minStatus?: Status;

@@ -45,11 +45,27 @@
 		vh = $state(0);
 	const fitAll = () => fit({ x: 0, y: 0, w: layout.width, h: layout.height }, vw, vh);
 	const cam: Camera = $derived(app.camera ?? { x: 0, y: 0, k: 1 });
-	const set = (c: Camera) => (app.camera = c);
+	// `autoFitted`: the camera came from a fit and hasn't been moved since, so a resize (e.g. the person panel
+	// closing at the same moment) should fit again rather than leave the tree off-centre.
+	let autoFitted = false;
+	const set = (c: Camera) => {
+		autoFitted = false;
+		app.camera = c;
+	};
 
 	// Fit once when asked (camera reset to null), then hold still: edits re-run the layout but don't move the view.
 	$effect(() => {
-		if (app.camera === null && vw && vh && layout.width) untrack(() => set(fitAll()));
+		if (app.camera === null && vw && vh && layout.width)
+			untrack(() => {
+				app.camera = fitAll();
+				autoFitted = true;
+			});
+	});
+	$effect(() => {
+		void [vw, vh];
+		untrack(() => {
+			if (autoFitted && vw && vh && layout.width) app.camera = fitAll();
+		});
 	});
 
 	$effect(() => {
@@ -226,6 +242,9 @@
 		}
 	}
 
+	// While hand-picking people for a view, a click adds or removes the person instead of opening them.
+	const cardClick = (id: string) => (app.picked ? app.togglePicked(id) : app.select(id));
+
 	function key(e: KeyboardEvent, fn: () => void) {
 		if (e.key === 'Enter' || e.key === ' ') {
 			e.preventDefault();
@@ -242,6 +261,7 @@
 	<div
 		class="canvas"
 		class:panning
+		class:picking={!!app.picked}
 		bind:this={box}
 		onpointerdown={down}
 		onpointermove={move}
@@ -269,18 +289,21 @@
 					<g
 						class="node"
 						class:sel={app.selected === n.id}
+						class:picked={app.picked?.includes(n.id)}
 						class:ph={p.placeholder}
 						transform="translate({n.x},{n.y})"
 						tabindex="0"
 						role="button"
 						aria-label={displayName(p)}
-						onclick={() => app.select(n.id)}
-						onkeydown={(e) => key(e, () => app.select(n.id))}
+						aria-pressed={app.picked ? app.picked.includes(n.id) : undefined}
+						onclick={() => cardClick(n.id)}
+						onkeydown={(e) => key(e, () => cardClick(n.id))}
 					>
 						<rect class="nbox" width={NODE_W} height={NODE_H} rx="6" />
 						<text class="nm" class:pencil={guess} x="11" y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
 						<text class="dt" class:pencil={dateGuess} x="11" y="45">{dates}</text>
 						<circle class="stage {stage}" cx={NODE_W - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
+						{#if app.picked?.includes(n.id)}<text class="tick" x={NODE_W - 14} y={NODE_H - 9} text-anchor="middle">✓</text>{/if}
 					</g>
 				{/each}
 				{#each markers as m (m.key)}

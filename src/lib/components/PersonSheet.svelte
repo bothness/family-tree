@@ -9,6 +9,7 @@
 	} from '#lib/model/queries.ts';
 	import { deletePerson, setChildOf, setLife } from '#lib/model/mutations.ts';
 	import { expandToInclude, type FocusOptions } from '#lib/model/focus.ts';
+	import { DropdownMenu } from 'bits-ui';
 	import type { EndReason, Family, Name, NameType, RelType, ResearchStage, Sex, Status } from '#lib/model/types.ts';
 
 	let { pid }: { pid: string } = $props();
@@ -161,7 +162,18 @@
 		{#if p.knownAs}<div class="sub">{fullName(p)}</div>{/if}
 	</div>
 	<div class="head-actions">
-		<button class="btn small" aria-pressed={app.activeFocus?.id === pid} onclick={() => app.focusOn(pid)} title="Show only this person's family (F)">Focus</button>
+		<span class="split">
+			<button class="btn small" aria-pressed={app.activeFocus?.id === pid} onclick={() => app.focusOn(pid)} title="Show only this person's family (F)">Focus</button>
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger class="btn small" aria-label="More ways to focus">▾</DropdownMenu.Trigger>
+				<DropdownMenu.Portal>
+					<DropdownMenu.Content class="menu" sideOffset={4} align="end">
+						<DropdownMenu.Item class="menu-item" onSelect={() => app.focusOn(pid, { up: 0, down: Infinity, width: 'direct' })}>Descendants of {displayName(p)}</DropdownMenu.Item>
+						<DropdownMenu.Item class="menu-item" onSelect={() => app.focusOn(pid, { up: Infinity, down: 0, width: 'direct' })}>Ancestors of {displayName(p)}</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Portal>
+			</DropdownMenu.Root>
+		</span>
 		<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
 	</div>
 </div>
@@ -177,7 +189,7 @@
 	</div>
 {/snippet}
 {#if !app.inView(pid)}
-	{@render outOfView(pid, app.activeFocus ? `The focus on ${displayName(person(d, app.activeFocus.id))} doesn't include ${displayName(p)}.` : `${displayName(p)} isn't in the branch shown.`)}
+	{@render outOfView(pid, app.activeFocus ? `The focus on ${displayName(person(d, app.activeFocus.id))} doesn't include ${displayName(p)}.` : `${displayName(p)} isn't in the view “${app.activeView?.name ?? ''}”.`)}
 {/if}
 
 <div class="row">

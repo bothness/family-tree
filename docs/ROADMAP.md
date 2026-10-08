@@ -17,7 +17,7 @@ Also added: "Known as" name shown on the tree; biography/notes and free-text sou
 | G3 | Link to people who already exist; link a new partner to existing children | UI only: "+ Parent / Partner / Child" offers "new person" or "pick existing" |
 | G4 | Siblings share parents by default; half-siblings can be split off | Model already handles this (each child sits in one specific family). UI: "Parents: [this couple ▾]" lets you move a child to a different family, e.g. father + unknown mother |
 
-## Phase B – Navigation (V1, V3, V4 done 8 Oct 2026; V5/V6 and V2 next)
+## Phase B – Navigation (V1, V3, V4, V5/V6 done 9 Oct 2026; V2 next)
 | # | Change |
 |---|---|
 | V1 | Zoom in and out, pan, fit all. Trackpad: pinch zooms, two-finger scroll pans. Mouse: wheel zooms at the cursor, drag pans. Touch: pinch and drag. Plus +/−/0 keys and on-screen −/+/Fit buttons. The view only re-fits on load, Fit, search or focus changes, never on ordinary edits |
@@ -56,3 +56,5 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 - 8 Oct: the orange missing-children placeholder only shows when every known child is in view; children hidden by focus get an edge marker ("+2 children") instead.
 - 8 Oct: a focus with up 0 and down 0 still shows the person's partners. Whether V2 "collapse to one person" hides them too is still to decide.
 - 8 Oct: when a relative added from the person panel falls outside the focus, the notice offers "Expand view" (the smallest change to up/down/width that shows them) or "Focus on them". It falls back to "Show in full tree" only when no widening can include them (e.g. a partner's parents). The notice clears when the panel closes or the focus changes.
+- 9 Oct: saved views are chips under the header (replacing the auto-detected branch chips), with "Everyone" first and "+ New view". One rule per view: a focus (root + up/down/width; "all generations" = no limit stored), everyone with a tag, or a hand-picked list. Descendants / Ancestors of someone are focus views (from the person panel's Focus ▾ menu). Changes to an open focus view are saved only with "Update view". Combining rules comes later.
+- 9 Oct: missing-children placeholders are orange only when an expected count was recorded; otherwise a pencilled "more children?".

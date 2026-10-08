@@ -2,7 +2,7 @@
 	import { app, type Tab } from '#lib/app.svelte.ts';
 	import { localStore } from '#lib/storage/index.ts';
 	import { gaps } from '#lib/model/gaps.ts';
-	import { childIds, displayName, family, partnerIds, person } from '#lib/model/queries.ts';
+	import { childIds, family, partnerIds } from '#lib/model/queries.ts';
 	import { newPerson } from '#lib/model/mutations.ts';
 	import { DEFAULT_FOCUS, type FocusWidth } from '#lib/model/focus.ts';
 	import type { Focus } from '#lib/app.svelte.ts';
@@ -12,6 +12,7 @@
 	import PersonSheet from '#lib/components/PersonSheet.svelte';
 	import DataDialog from '#lib/components/DataDialog.svelte';
 	import SearchBox from '#lib/components/SearchBox.svelte';
+	import ViewBar from '#lib/components/ViewBar.svelte';
 
 	// Load once, then save on every change (JSON.stringify reads the whole dataset, so the effect tracks it deeply).
 	const saved = localStore.load();
@@ -20,41 +21,55 @@
 		localStore.save(JSON.parse(JSON.stringify(app.data)));
 	});
 
-	// Focus lives in the page address (#focus=…&up=…&down=…&w=…), so Back undoes a focus change, reload keeps it,
-	// and a focus view can be bookmarked.
-	const WIDTHS: [FocusWidth, string, string][] = [
-		['direct', 'Direct line', 'Ancestors and descendants only'],
-		['siblings', '+ Siblings', 'Also brothers, sisters, aunts and uncles'],
-		['all', 'All relatives', 'Also cousins, nieces and nephews']
-	];
-	function readHash(): Focus | null {
+	// The open view lives in the page address (#view=…&focus=…&up=…&down=…&w=…), so Back undoes a change,
+	// reload keeps it, and a view can be bookmarked.
+	interface Place {
+		focus: Focus | null;
+		view: string | null;
+	}
+	const WIDTH_KEYS: FocusWidth[] = ['direct', 'siblings', 'all'];
+	function readHash(): Place {
 		const h = new URLSearchParams(location.hash.slice(1));
 		const id = h.get('focus');
-		if (!id) return null;
 		const n = (k: string, dflt: number) => {
-			const v = Number(h.get(k));
-			return h.has(k) && Number.isInteger(v) && v >= 0 ? Math.min(v, 20) : dflt;
+			const raw = h.get(k);
+			if (raw === 'all') return Infinity;
+			const v = Number(raw);
+			return raw !== null && Number.isInteger(v) && v >= 0 ? Math.min(v, 50) : dflt;
 		};
 		const w = h.get('w') as FocusWidth;
-		return { id, up: n('up', DEFAULT_FOCUS.up), down: n('down', DEFAULT_FOCUS.down), width: WIDTHS.some(([k]) => k === w) ? w : DEFAULT_FOCUS.width };
+		const focus = id ? { id, up: n('up', DEFAULT_FOCUS.up), down: n('down', DEFAULT_FOCUS.down), width: WIDTH_KEYS.includes(w) ? w : DEFAULT_FOCUS.width } : null;
+		return { focus, view: h.get('view') };
 	}
-	const hashOf = (f: Focus | null) => (f ? '#' + new URLSearchParams({ focus: f.id, up: `${f.up}`, down: `${f.down}`, w: f.width }) : '');
+	function hashOf({ focus: f, view }: Place) {
+		const h = new URLSearchParams();
+		if (view) h.set('view', view);
+		if (f) {
+			h.set('focus', f.id);
+			h.set('up', isFinite(f.up) ? `${f.up}` : 'all');
+			h.set('down', isFinite(f.down) ? `${f.down}` : 'all');
+			h.set('w', f.width);
+		}
+		return h.size ? `#${h}` : '';
+	}
+	const here = (): Place => ({ focus: app.focus, view: app.viewId });
 	const currentHash = () => (location.hash === '#' ? '' : location.hash);
-	app.focus = readHash();
+	({ focus: app.focus, view: app.viewId } = readHash());
 	$effect(() => {
 		if (app.focus && !app.activeFocus) app.focus = null; // focused person was deleted
-		const h = hashOf(app.focus);
+		if (app.viewId && !app.activeView) app.viewId = null; // view was deleted
+		const h = hashOf(here());
 		if (h !== currentHash()) location.hash = h;
 	});
 	function onHashChange() {
-		const f = readHash();
-		if (hashOf(f) !== hashOf(app.focus)) {
-			app.focus = f;
+		const p = readHash();
+		if (hashOf(p) !== hashOf(here())) {
+			({ focus: app.focus, view: app.viewId } = p);
 			app.fitTree();
 		}
 	}
 
-	// Like the to-do list itself, the count only covers people in view (focus or branch).
+	// Like the to-do list itself, the count only covers people in view.
 	const todoCount = $derived(Object.entries(gaps(app.data)).reduce((n, [id, g]) => n + (app.inView(id) ? g.length : 0), 0));
 
 	// Start each person's panel at the top, not wherever the previous person's was scrolled to.
@@ -76,18 +91,16 @@
 	}
 	function addNew() {
 		const p = newPerson(app.data);
-		app.branch = 'all';
-		app.focus = null; // a new, unlinked person is outside any focus
+		// A new, unlinked person is outside any focus or view.
+		app.focus = null;
+		app.viewId = null;
 		app.select(p.id);
-	}
-	function setBranch(b: string) {
-		app.branch = b;
-		app.fitTree();
 	}
 	function onKey(e: KeyboardEvent) {
 		const typing = (e.target as HTMLElement).closest('input, textarea, select, [contenteditable]');
 		if (typing || app.showData) return;
-		if (e.key === 'Escape' && app.selected) app.select(null);
+		if (e.key === 'Escape' && app.picked) app.cancelPicking();
+		else if (e.key === 'Escape' && app.selected) app.select(null);
 		else if (e.key === 'f' && app.selected && !e.metaKey && !e.ctrlKey && !e.altKey) app.focusOn(app.selected);
 	}
 </script>
@@ -108,35 +121,7 @@
 	</div>
 </header>
 
-<div class="bar">
-	{#if app.activeFocus}
-		{@const f = app.activeFocus}
-		<div class="focusbar" role="group" aria-label="Focus">
-			<span>Focused on <button class="linkish" onclick={() => app.centreOn(f.id)}>{displayName(person(app.data, f.id))}</button></span>
-			<span class="stepper" title="Generations of ancestors shown">
-				<button aria-label="Fewer generations up" disabled={f.up === 0} onclick={() => app.adjustFocus({ up: f.up - 1 })}>−</button><span aria-label="Generations up">↑{f.up}</span><button aria-label="More generations up" onclick={() => app.adjustFocus({ up: f.up + 1 })}>+</button>
-			</span>
-			<span class="stepper" title="Generations of descendants shown">
-				<button aria-label="Fewer generations down" disabled={f.down === 0} onclick={() => app.adjustFocus({ down: f.down - 1 })}>−</button><span aria-label="Generations down">↓{f.down}</span><button aria-label="More generations down" onclick={() => app.adjustFocus({ down: f.down + 1 })}>+</button>
-			</span>
-			<span class="seg" role="group" aria-label="Who to show">
-				{#each WIDTHS as [w, label, hint] (w)}
-					<button aria-pressed={f.width === w} title={hint} onclick={() => app.adjustFocus({ width: w })}>{label}</button>
-				{/each}
-			</span>
-			<button class="chip" onclick={() => app.clearFocus()} title="Leave focus and show everyone">✕ Show everyone</button>
-		</div>
-	{:else if app.branches.length > 1}
-		<button class="chip" aria-pressed={app.branch === 'all'} onclick={() => setBranch('all')}>Everyone</button>
-		{#each app.branches as b (b.ids[0])}
-			<button class="chip" aria-pressed={app.branch === b.label} onclick={() => setBranch(b.label)}>{b.label} <span style="opacity:.7">{b.ids.length}</span></button>
-		{/each}
-	{/if}
-	<div class="legend">
-		<span><span class="ink">Ink</span> = confirmed</span><span><span class="pen">pencil</span> = guess</span>
-		<span>dashed line = likely or guessed link</span><span style="color:var(--warn)">orange = children known to be missing</span>
-	</div>
-</div>
+<ViewBar />
 
 <div class="work">
 	<main class="main" class:tree={app.tab === 'tree'}>

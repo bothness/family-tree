@@ -104,5 +104,12 @@
     { "id": "plc_cork", "name": "Cork", "type": "town", "altNames": [{ "name": "Corcaigh", "lang": "ga" }], "coordinates": { "lat": 51.8985, "lon": -8.4756 } }
   ],
   "sources": [],
-  "views": []
+  "views": [
+    {
+      "id": "view_smith_descendants",
+      "name": "Descendants of John Smith",
+      "kind": "tree",
+      "scope": { "root": "per_john_smith", "up": 0, "width": "direct" }
+    }
+  ]
 }
