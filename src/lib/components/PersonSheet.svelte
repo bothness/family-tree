@@ -8,6 +8,7 @@
 		lifeEvent, nameIsGuess, NOW, partnerIds, person, placeName, PRESUMED_DEAD_AFTER, primaryName, soloFam
 	} from '#lib/model/queries.ts';
 	import { deletePerson, setChildOf, setLife } from '#lib/model/mutations.ts';
+	import { expandToInclude, type FocusOptions } from '#lib/model/focus.ts';
 	import type { EndReason, Family, Name, NameType, RelType, ResearchStage, Sex, Status } from '#lib/model/types.ts';
 
 	let { pid }: { pid: string } = $props();
@@ -39,14 +40,31 @@
 
 	let info = $state('');
 	/** Scroll a newly shown notice into view (the panel may be scrolled down to the add form). */
-	const reveal = (el: HTMLElement) => el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+	// Waits a frame so the add form has closed and the panel has its final height.
+	const reveal = (el: HTMLElement) => void requestAnimationFrame(() => el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
 	/** The relative just added from this panel, so we can say if the current focus hides them. */
 	let added = $state<string | null>(null);
+	/** The smallest widening of the current focus that would show the person just added. */
+	const expansion = $derived(added && app.activeFocus && !app.inView(added) ? expandToInclude(d, app.activeFocus.id, app.activeFocus, added) : null);
+	const WIDTH_TEXT = { direct: 'the direct line only', siblings: 'siblings', all: 'all relatives' } as const;
+	function describeExpansion(a: FocusOptions, b: FocusOptions) {
+		const gens = (n: number, dir: string) => `show ${n} more generation${n > 1 ? 's' : ''} ${dir}`;
+		const parts: string[] = [];
+		if (b.up > a.up) parts.push(gens(b.up - a.up, 'up'));
+		if (b.down > a.down) parts.push(gens(b.down - a.down, 'down'));
+		if (b.width !== a.width) parts.push(`include ${WIDTH_TEXT[b.width]}`);
+		return parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0];
+	}
 	let confirmDel = $state(false);
 	let moreOpen = $state(false);
 	let todoText = $state('');
 	let urlText = $state('');
 	let urlLabel = $state('');
+	// The "just added" notice is about the view at the time: drop it once the focus changes (e.g. Expand view).
+	$effect(() => {
+		void app.activeFocus;
+		added = null;
+	});
 	$effect(() => {
 		void pid; // reset transient UI when switching person
 		info = '';
@@ -147,10 +165,14 @@
 		<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
 	</div>
 </div>
-{#snippet outOfView(id: string, msg: string)}
+{#snippet outOfView(id: string, msg: string, expandTo: FocusOptions | null = null)}
 	<div class="outofview" role="status" use:reveal>
 		<p><b>Not in this view.</b> {msg}</p>
-		<button class="btn small" onclick={() => app.centreOn(id)}>Show in full tree</button>
+		{#if expandTo}
+			<button class="btn small" onclick={() => app.adjustFocus(expandTo)}>Expand view</button>
+		{:else}
+			<button class="btn small" onclick={() => app.centreOn(id)}>Show in full tree</button>
+		{/if}
 		<button class="btn small" onclick={() => app.focusOn(id)}>Focus on them</button>
 	</div>
 {/snippet}
@@ -271,7 +293,11 @@
 	{/if}
 	{#if info}<div class="hint">{info}</div>{/if}
 	{#if added && person(d, added) && !app.inView(added)}
-		{@render outOfView(added, `${displayName(person(d, added))} was added, but isn't shown: they're outside the current focus.`)}
+		{@render outOfView(
+			added,
+			`${displayName(person(d, added))} was added, but is outside the current focus.` + (expansion ? ` Expanding the view will ${describeExpansion(app.activeFocus!, expansion)}.` : ''),
+			expansion
+		)}
 	{/if}
 </div>
 

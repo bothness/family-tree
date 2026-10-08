@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Dataset, Family } from './types.ts';
 import { emptyDataset } from './mutations.ts';
-import { focusSet, type FocusOptions } from './focus.ts';
+import { expandToInclude, focusSet, type FocusOptions } from './focus.ts';
 
 // Grandparents gf + gm → dad, aunt.  mgf (placeholder, alone) → mum.
 // dad + mum → me, sis.  dad + mum2 → halfbro.  aunt + uncle → cousin.  cousin + cspouse → ckid.
@@ -109,5 +109,31 @@ describe('focusSet: edges', () => {
 
 	it('returns nothing for an unknown person', () => {
 		expect(focusSet(d, 'nobody', { up: 1, down: 1, width: 'all' })).toEqual({ ids: new Set(), edges: [] });
+	});
+});
+
+describe('expandToInclude', () => {
+	const ex = (o: FocusOptions, id: string) => expandToInclude(d, 'me', o, id);
+
+	it('leaves the view alone when the person is already in it', () => {
+		expect(ex({ up: 1, down: 1, width: 'direct' }, 'dad')).toEqual({ up: 1, down: 1, width: 'direct' });
+	});
+
+	it('adds generations for ancestors and descendants', () => {
+		expect(ex({ up: 1, down: 1, width: 'direct' }, 'gf')).toEqual({ up: 2, down: 1, width: 'direct' });
+		expect(ex({ up: 0, down: 0, width: 'direct' }, 'gkid')).toEqual({ up: 0, down: 2, width: 'direct' });
+	});
+
+	it('widens for siblings, and for a sibling’s children', () => {
+		expect(ex({ up: 1, down: 1, width: 'direct' }, 'sis')).toEqual({ up: 1, down: 1, width: 'siblings' });
+		expect(ex({ up: 2, down: 0, width: 'siblings' }, 'cousin')).toEqual({ up: 2, down: 0, width: 'all' });
+	});
+
+	it('combines both when needed (a cousin from a direct-line view of parents only)', () => {
+		expect(ex({ up: 1, down: 1, width: 'direct' }, 'cousin')).toEqual({ up: 2, down: 1, width: 'all' });
+	});
+
+	it("returns null for people no focus on this person can include (a partner's other family)", () => {
+		expect(ex({ up: 1, down: 1, width: 'direct' }, 'stepkid')).toBeNull();
 	});
 });

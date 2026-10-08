@@ -55,3 +55,4 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 - 8 Oct: focus is kept in the page address, so Back undoes a focus change and a focus view can be bookmarked.
 - 8 Oct: the orange missing-children placeholder only shows when every known child is in view; children hidden by focus get an edge marker ("+2 children") instead.
 - 8 Oct: a focus with up 0 and down 0 still shows the person's partners. Whether V2 "collapse to one person" hides them too is still to decide.
+- 8 Oct: when a relative added from the person panel falls outside the focus, the notice offers "Expand view" (the smallest change to up/down/width that shows them) or "Focus on them". It falls back to "Show in full tree" only when no widening can include them (e.g. a partner's parents). The notice clears when the panel closes or the focus changes.

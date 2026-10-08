@@ -109,3 +109,26 @@ export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResu
 	}
 	return { ids, edges };
 }
+
+const WIDTH_ORDER: FocusWidth[] = ['direct', 'siblings', 'all'];
+
+/**
+ * The smallest change to a focus view that brings `id` into it: more generations up or down and/or a wider
+ * setting, counting each extra generation or width step as one. Prefers deeper over wider when tied.
+ * Returns the same options if they're already in view, or null if no widening includes them (e.g. a partner's
+ * parents, since focus never follows a partner's own family) within `maxExtra` generations each way.
+ */
+export function expandToInclude(d: Dataset, rootId: string, o: FocusOptions, id: string, maxExtra = 10): FocusOptions | null {
+	let best: { o: FocusOptions; cost: number; widen: number } | null = null;
+	const w0 = WIDTH_ORDER.indexOf(o.width);
+	for (let wi = w0; wi < WIDTH_ORDER.length; wi++)
+		for (let du = 0; du <= maxExtra; du++)
+			for (let dd = 0; dd <= maxExtra; dd++) {
+				const widen = wi - w0,
+					cost = du + dd + widen;
+				if (best && (cost > best.cost || (cost === best.cost && widen >= best.widen))) continue;
+				const c = { up: o.up + du, down: o.down + dd, width: WIDTH_ORDER[wi] };
+				if (focusSet(d, rootId, c).ids.has(id)) best = { o: c, cost, widen };
+			}
+	return best?.o ?? null;
+}
