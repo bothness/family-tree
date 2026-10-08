@@ -6,7 +6,7 @@ import schema from '../../../schema/family-tree.schema.json';
 import sample from '../data/example-data.json';
 import { migrate } from './migrate.ts';
 import { gaps } from './gaps.ts';
-import { components, isLiving, person } from './queries.ts';
+import { components, halfSiblings, isLiving, person, searchPeople } from './queries.ts';
 import { timelineRows } from '../layout/timeline.ts';
 import { layoutTree } from '../layout/tree.ts';
 import { focusSet, type FocusOptions } from './focus.ts';
@@ -49,7 +49,7 @@ describe('migrate v0.1 → v0.2', () => {
 
 describe('sample data', () => {
 	const d = fresh();
-	it('has two unconnected branches', () => expect(components(d).map((c) => c.length)).toEqual([4, 3]));
+	it('has two unconnected branches (the Smiths and Murphys, and the Bradford Walkers)', () => expect(components(d).map((c) => c.length)).toEqual([25, 4]));
 	it('treats people born over 110 years ago as not living', () => expect(isLiving(d, person(d, 'per_thomas_smith')!)).toBe(false));
 	it('reports missing children for the Smiths', () => {
 		const g = gaps(d)['per_john_smith'].map((x) => x.text).join('\n');
@@ -57,7 +57,35 @@ describe('sample data', () => {
 	});
 	it('timeline puts people in birth order', () => {
 		const { rows } = timelineRows(d, d.people.map((p) => p.id));
-		expect(rows[0].id).toBe('per_john_smith');
+		expect(rows[0].id).toBe('per_william_smith'); // c.1830
+		const order = rows.map((r) => r.id);
+		expect(order.indexOf('per_john_smith')).toBeLessThan(order.indexOf('per_thomas_smith'));
+	});
+});
+
+describe('sample data test cases', () => {
+	const d = fresh();
+	it('has half-siblings at two levels', () => {
+		expect(halfSiblings(d, 'per_john_smith')).toEqual(['per_edward_smith']);
+		expect(halfSiblings(d, 'per_jean_hall')).toEqual(['per_peter_dunn']);
+	});
+	it('has living people (Aunt Jean and her family)', () => {
+		expect(isLiving(d, person(d, 'per_jean_hall')!)).toBe(true);
+		expect(isLiving(d, person(d, 'per_sophie_price')!)).toBe(true);
+	});
+	it('finds people by deed-poll and maiden names', () => {
+		expect(searchPeople(d, 'smyth').map((h) => h.id)).toEqual(['per_patrick_smith']);
+		expect(searchPeople(d, 'mary walker').map((h) => h.id).sort()).toEqual(['per_mary_smith', 'per_mary_walker']);
+	});
+	it('spans six generations from William to Sophie', () => {
+		expect(focusSet(d, 'per_william_smith', { up: 0, down: Infinity, width: 'direct' }).reach.down).toBe(5);
+	});
+	it('reaches cousins only with all relatives and grandparents in view', () => {
+		expect(focusSet(d, 'per_thomas_smith', { up: 2, down: 0, width: 'all' }).ids.has('per_harold_smith')).toBe(true);
+		expect(focusSet(d, 'per_thomas_smith', { up: 2, down: 0, width: 'siblings' }).ids.has('per_harold_smith')).toBe(false);
+	});
+	it('has an unnamed person, which the research to-do flags', () => {
+		expect(gaps(d)['per_smith_infant'].map((g) => g.text)).toContain('No name recorded');
 	});
 });
 

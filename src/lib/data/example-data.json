@@ -30,7 +30,7 @@
       "sex": { "value": "M", "status": "confirmed" },
       "tags": ["smith"],
       "sourceNotes": "Birth certificate, March 1885 (GRO).",
-      "research": { "stage": "in-progress", "todo": ["Who did he marry? Possibly Bridget Murphy"] }
+      "research": { "stage": "in-progress", "todo": ["Confirm marriage to Bridget Murphy (c.1910, Leeds?)"] }
     },
     {
       "id": "per_ann_smith",
@@ -62,6 +62,217 @@
       "sex": { "value": "F", "status": "confirmed" },
       "tags": ["murphy"],
       "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_william_smith",
+      "names": [{ "type": "birth", "given": "William", "surname": "Smith", "status": "likely" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "Farm labourer near Wakefield, later a cooper in Leeds. Married twice.",
+      "sourceNotes": "Named as John's father on the 1883 marriage certificate.",
+      "research": { "stage": "sketch", "todo": ["Find William and Sarah's marriage (c.1855)"] }
+    },
+    {
+      "id": "per_sarah_smith",
+      "names": [
+        { "type": "married", "given": "Sarah", "surname": "Smith", "status": "likely", "preferred": true },
+        { "type": "birth", "given": "Sarah", "surname": "Wood", "status": "guess" }
+      ],
+      "sex": { "value": "F", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_eliza_smith",
+      "names": [
+        { "type": "married", "given": "Eliza", "surname": "Smith", "status": "confirmed", "preferred": true, "date": "1870" },
+        { "type": "birth", "given": "Eliza", "surname": "Brown", "status": "likely" }
+      ],
+      "sex": { "value": "F", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "William's second wife, after Sarah died.",
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_edward_smith",
+      "names": [{ "given": "Edward", "surname": "Smith", "status": "confirmed" }],
+      "knownAs": "Ted",
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "John's half-brother.",
+      "sourceNotes": "Birth certificate, May 1872 (GRO).",
+      "research": { "stage": "in-progress", "todo": ["When did Ted die? Not in the 1921 census"] }
+    },
+    {
+      "id": "per_robert_smith",
+      "names": [{ "given": "Robert", "surname": "Smith", "status": "confirmed" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "John's younger brother. Railway porter.",
+      "research": { "stage": "researched" }
+    },
+    {
+      "id": "per_ellen_smith",
+      "names": [
+        { "type": "married", "given": "Ellen", "surname": "Smith", "status": "confirmed", "preferred": true, "date": "1886-08" },
+        { "type": "birth", "given": "Ellen", "surname": "Clarke", "status": "confirmed" }
+      ],
+      "sex": { "value": "F", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "research": { "stage": "researched" }
+    },
+    {
+      "id": "per_harold_smith",
+      "names": [{ "given": "Harold", "surname": "Smith", "status": "confirmed" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "Thomas's cousin. Served in the West Yorkshire Regiment.",
+      "research": { "stage": "in-progress", "todo": ["Check service record"] }
+    },
+    {
+      "id": "per_florence_smith",
+      "names": [{ "given": "Florence", "surname": "Smith", "status": "likely" }],
+      "knownAs": "Florrie",
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["smith"],
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_smith_infant",
+      "names": [],
+      "sex": { "value": "U", "status": "guess" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "Infant who died the year they were born.",
+      "sourceNotes": "Burial register, St Matthew's, Leeds, 1887 – name illegible.",
+      "research": { "stage": "sketch", "todo": ["Look for a matching baptism"] }
+    },
+    {
+      "id": "per_lily_smith",
+      "names": [{ "given": "Lily", "surname": "Smith", "status": "likely" }],
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["smith"],
+      "notes": "Annie's daughter; father not named.",
+      "research": { "stage": "sketch", "todo": ["Who was Lily's father?"] }
+    },
+    {
+      "id": "per_margaret_smith",
+      "names": [
+        { "type": "birth", "given": "Margaret", "surname": "Smith", "status": "confirmed" },
+        { "type": "married", "given": "Margaret", "surname": "Dunn", "status": "confirmed", "date": "1932" },
+        { "type": "married", "given": "Margaret", "surname": "Hall", "status": "confirmed", "preferred": true, "date": "1940" }
+      ],
+      "knownAs": "Peggy",
+      "sex": { "value": "F", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "Divorced Albert Dunn in 1938; married George Hall in 1940.",
+      "sourceNotes": "Birth certificate 1911; marriage certificates 1932 and 1940; Aunt Jean (2026).",
+      "research": { "stage": "researched" }
+    },
+    {
+      "id": "per_patrick_smith",
+      "names": [
+        { "type": "birth", "given": "Patrick", "surname": "Smith", "status": "confirmed" },
+        { "type": "deed-poll", "given": "Patrick", "surname": "Smyth", "status": "likely", "preferred": true, "date": "1948" }
+      ],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "Changed his surname to Smyth by deed poll.",
+      "sourceNotes": "London Gazette, 1948 (to check).",
+      "research": { "stage": "in-progress", "todo": ["Find the deed poll notice in the London Gazette"] }
+    },
+    {
+      "id": "per_albert_dunn",
+      "names": [{ "given": "Albert", "surname": "Dunn", "status": "likely" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["dunn"],
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_peter_dunn",
+      "names": [{ "given": "Peter", "surname": "Dunn", "status": "confirmed" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["dunn"],
+      "notes": "Jean's half-brother.",
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_george_hall",
+      "names": [{ "given": "George", "surname": "Hall", "status": "confirmed" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["hall"],
+      "research": { "stage": "researched" }
+    },
+    {
+      "id": "per_jean_hall",
+      "names": [
+        { "type": "birth", "given": "Jean", "surname": "Hall", "status": "confirmed" },
+        { "type": "married", "given": "Jean", "surname": "Price", "status": "confirmed", "preferred": true, "date": "1970" }
+      ],
+      "knownAs": "Aunt Jean",
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["hall"],
+      "notes": "Family historian of the older generation; source of most of the family stories.",
+      "research": { "stage": "researched" }
+    },
+    {
+      "id": "per_david_price",
+      "names": [{ "given": "David", "surname": "Price", "status": "confirmed" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "tags": ["price"],
+      "research": { "stage": "researched" }
+    },
+    {
+      "id": "per_sophie_price",
+      "names": [{ "given": "Sophie", "surname": "Price", "status": "confirmed" }],
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["price"],
+      "research": { "stage": "researched" }
+    },
+    {
+      "id": "per_james_walker",
+      "names": [{ "given": "James", "surname": "Walker", "status": "likely" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["walker"],
+      "notes": "Wool comber, Bradford. Possibly Mary Smith's father – not yet linked.",
+      "sourceNotes": "1861 census, Bradford: James (29), Hannah, Mary (1), Joseph (born after).",
+      "research": { "stage": "sketch", "todo": ["Is their Mary the Mary who married John Smith in 1883?"] }
+    },
+    {
+      "id": "per_hannah_walker",
+      "names": [{ "given": "Hannah", "surname": "Walker", "status": "guess" }],
+      "sex": { "value": "F", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["walker"],
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_mary_walker",
+      "names": [{ "given": "Mary", "surname": "Walker", "status": "confirmed" }],
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["walker"],
+      "notes": "May be the same person as Mary Smith (née Walker?).",
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_joseph_walker",
+      "names": [{ "given": "Joseph", "surname": "Walker", "status": "likely" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "tags": ["walker"],
+      "research": { "stage": "sketch" }
     }
   ],
   "families": [
@@ -87,6 +298,86 @@
       "relationship": { "type": "unknown" },
       "children": [{ "personId": "per_bridget_murphy", "relation": "biological", "status": "likely" }],
       "childrenComplete": "unknown"
+    },
+    {
+      "id": "fam_william_sarah",
+      "partners": [{ "personId": "per_william_smith", "status": "likely" }, { "personId": "per_sarah_smith", "status": "likely" }],
+      "relationship": {
+        "type": "marriage", "status": "likely",
+        "start": { "edtf": "1855~", "status": "guess" },
+        "end": { "edtf": "1868", "status": "likely" },
+        "endReason": "death"
+      },
+      "children": [
+        { "personId": "per_john_smith", "relation": "biological", "status": "likely" },
+        { "personId": "per_robert_smith", "relation": "biological", "status": "confirmed" }
+      ],
+      "childrenComplete": "unknown"
+    },
+    {
+      "id": "fam_william_eliza",
+      "partners": [{ "personId": "per_william_smith", "status": "confirmed" }, { "personId": "per_eliza_smith", "status": "confirmed" }],
+      "relationship": { "type": "marriage", "status": "confirmed", "start": { "edtf": "1870-02-12", "status": "confirmed" }, "end": { "edtf": "1890", "status": "likely" }, "endReason": "death" },
+      "children": [{ "personId": "per_edward_smith", "relation": "biological", "status": "confirmed" }],
+      "childrenComplete": "yes"
+    },
+    {
+      "id": "fam_robert_ellen",
+      "partners": [{ "personId": "per_robert_smith", "status": "confirmed" }, { "personId": "per_ellen_smith", "status": "confirmed" }],
+      "relationship": { "type": "marriage", "status": "confirmed", "start": { "edtf": "1886-08", "status": "confirmed" } },
+      "children": [
+        { "personId": "per_smith_infant", "relation": "biological", "status": "likely" },
+        { "personId": "per_harold_smith", "relation": "biological", "status": "confirmed" },
+        { "personId": "per_florence_smith", "relation": "biological", "status": "likely" }
+      ],
+      "childrenComplete": "no"
+    },
+    {
+      "id": "fam_annie_solo",
+      "partners": [{ "personId": "per_ann_smith" }],
+      "children": [{ "personId": "per_lily_smith", "relation": "biological", "status": "likely" }],
+      "childrenComplete": "unknown"
+    },
+    {
+      "id": "fam_thomas_bridget",
+      "partners": [{ "personId": "per_thomas_smith", "status": "confirmed" }, { "personId": "per_bridget_murphy", "status": "guess" }],
+      "relationship": { "type": "marriage", "status": "guess", "start": { "edtf": "1910?", "status": "guess" } },
+      "children": [
+        { "personId": "per_margaret_smith", "relation": "biological", "status": "confirmed" },
+        { "personId": "per_patrick_smith", "relation": "biological", "status": "likely" }
+      ],
+      "childrenComplete": "yes"
+    },
+    {
+      "id": "fam_margaret_albert",
+      "partners": [{ "personId": "per_albert_dunn", "status": "likely" }, { "personId": "per_margaret_smith", "status": "confirmed" }],
+      "relationship": { "type": "marriage", "status": "confirmed", "start": { "edtf": "1932-06", "status": "confirmed" }, "end": { "edtf": "1938", "status": "confirmed" }, "endReason": "divorce" },
+      "children": [{ "personId": "per_peter_dunn", "relation": "biological", "status": "confirmed" }],
+      "childrenComplete": "yes"
+    },
+    {
+      "id": "fam_margaret_george",
+      "partners": [{ "personId": "per_george_hall", "status": "confirmed" }, { "personId": "per_margaret_smith", "status": "confirmed" }],
+      "relationship": { "type": "marriage", "status": "confirmed", "start": { "edtf": "1940-09-14", "status": "confirmed" }, "end": { "edtf": "1990", "status": "confirmed" }, "endReason": "death" },
+      "children": [{ "personId": "per_jean_hall", "relation": "biological", "status": "confirmed" }],
+      "childrenComplete": "yes"
+    },
+    {
+      "id": "fam_jean_david",
+      "partners": [{ "personId": "per_david_price", "status": "confirmed" }, { "personId": "per_jean_hall", "status": "confirmed" }],
+      "relationship": { "type": "marriage", "status": "confirmed", "start": { "edtf": "1970-05", "status": "confirmed" } },
+      "children": [{ "personId": "per_sophie_price", "relation": "biological", "status": "confirmed" }],
+      "childrenComplete": "yes"
+    },
+    {
+      "id": "fam_walker",
+      "partners": [{ "personId": "per_james_walker", "status": "likely" }, { "personId": "per_hannah_walker", "status": "guess" }],
+      "relationship": { "type": "marriage", "status": "likely" },
+      "children": [
+        { "personId": "per_mary_walker", "relation": "biological", "status": "confirmed" },
+        { "personId": "per_joseph_walker", "relation": "biological", "status": "likely" }
+      ],
+      "childrenComplete": "unknown"
     }
   ],
   "events": [
@@ -96,11 +387,46 @@
     { "id": "evt_death_mary", "type": "death", "date": { "edtf": "1931", "status": "likely" }, "place": { "placeId": "plc_leeds" }, "participants": [{ "personId": "per_mary_smith" }] },
     { "id": "evt_birth_thomas", "type": "birth", "date": { "edtf": "1885-03", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_thomas_smith" }] },
     { "id": "evt_birth_ann", "type": "birth", "date": { "edtf": "188X", "status": "guess" }, "participants": [{ "personId": "per_ann_smith" }] },
-    { "id": "evt_birth_bridget", "type": "birth", "date": { "edtf": "1888?", "status": "guess" }, "place": { "placeId": "plc_cork", "status": "likely" }, "participants": [{ "personId": "per_bridget_murphy" }] }
+    { "id": "evt_birth_bridget", "type": "birth", "date": { "edtf": "1888?", "status": "guess" }, "place": { "placeId": "plc_cork", "status": "likely" }, "participants": [{ "personId": "per_bridget_murphy" }] },
+    { "id": "evt_birth_william", "type": "birth", "date": { "edtf": "1830~", "status": "likely" }, "place": { "placeId": "plc_wakefield", "status": "guess" }, "participants": [{ "personId": "per_william_smith" }] },
+    { "id": "evt_death_william", "type": "death", "date": { "edtf": "1890", "status": "likely" }, "place": { "placeId": "plc_leeds" }, "participants": [{ "personId": "per_william_smith" }] },
+    { "id": "evt_birth_sarah", "type": "birth", "date": { "edtf": "1833?", "status": "guess" }, "participants": [{ "personId": "per_sarah_smith" }] },
+    { "id": "evt_death_sarah", "type": "death", "date": { "edtf": "1868", "status": "likely" }, "place": { "placeId": "plc_leeds", "status": "likely" }, "participants": [{ "personId": "per_sarah_smith" }] },
+    { "id": "evt_birth_eliza", "type": "birth", "date": { "edtf": "1840~", "status": "likely" }, "participants": [{ "personId": "per_eliza_smith" }] },
+    { "id": "evt_death_eliza", "type": "death", "date": { "edtf": "1901/1911", "status": "guess" }, "participants": [{ "personId": "per_eliza_smith" }] },
+    { "id": "evt_birth_edward", "type": "birth", "date": { "edtf": "1872-05-14", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_edward_smith" }] },
+    { "id": "evt_death_edward", "type": "death", "date": { "edtf": "../1921", "status": "guess" }, "participants": [{ "personId": "per_edward_smith" }] },
+    { "id": "evt_birth_robert", "type": "birth", "date": { "edtf": "1861", "status": "confirmed" }, "place": { "placeId": "plc_wakefield", "status": "likely" }, "participants": [{ "personId": "per_robert_smith" }] },
+    { "id": "evt_death_robert", "type": "death", "date": { "edtf": "1925-11", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_robert_smith" }] },
+    { "id": "evt_birth_ellen", "type": "birth", "date": { "edtf": "1864", "status": "likely" }, "participants": [{ "personId": "per_ellen_smith" }] },
+    { "id": "evt_death_ellen", "type": "death", "date": { "edtf": "1940", "status": "likely" }, "participants": [{ "personId": "per_ellen_smith" }] },
+    { "id": "evt_birth_smith_infant", "type": "birth", "date": { "edtf": "1887", "status": "likely" }, "place": { "placeId": "plc_leeds", "status": "likely" }, "participants": [{ "personId": "per_smith_infant" }] },
+    { "id": "evt_death_smith_infant", "type": "death", "date": { "edtf": "1887", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_smith_infant" }] },
+    { "id": "evt_birth_harold", "type": "birth", "date": { "edtf": "1888-02", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_harold_smith" }] },
+    { "id": "evt_death_harold", "type": "death", "date": { "edtf": "1952", "status": "likely" }, "participants": [{ "personId": "per_harold_smith" }] },
+    { "id": "evt_birth_florence", "type": "birth", "date": { "edtf": "189X", "status": "guess" }, "participants": [{ "personId": "per_florence_smith" }] },
+    { "id": "evt_birth_lily", "type": "birth", "date": { "edtf": "1901/1905", "status": "guess" }, "place": { "placeId": "plc_leeds", "status": "likely" }, "participants": [{ "personId": "per_lily_smith" }] },
+    { "id": "evt_birth_margaret", "type": "birth", "date": { "edtf": "1911-04-02", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_margaret_smith" }] },
+    { "id": "evt_death_margaret", "type": "death", "date": { "edtf": "1990-01", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_margaret_smith" }] },
+    { "id": "evt_birth_patrick", "type": "birth", "date": { "edtf": "1914", "status": "likely" }, "place": { "placeId": "plc_leeds", "status": "likely" }, "participants": [{ "personId": "per_patrick_smith" }] },
+    { "id": "evt_death_patrick", "type": "death", "date": { "edtf": "1979", "status": "likely" }, "participants": [{ "personId": "per_patrick_smith" }] },
+    { "id": "evt_birth_albert", "type": "birth", "date": { "edtf": "1908?", "status": "guess" }, "participants": [{ "personId": "per_albert_dunn" }] },
+    { "id": "evt_birth_peter", "type": "birth", "date": { "edtf": "1934-03", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_peter_dunn" }] },
+    { "id": "evt_death_peter", "type": "death", "date": { "edtf": "2010", "status": "confirmed" }, "participants": [{ "personId": "per_peter_dunn" }] },
+    { "id": "evt_birth_george", "type": "birth", "date": { "edtf": "1909-10-05", "status": "confirmed" }, "place": { "placeId": "plc_bradford", "status": "confirmed" }, "participants": [{ "personId": "per_george_hall" }] },
+    { "id": "evt_death_george", "type": "death", "date": { "edtf": "1990", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_george_hall" }] },
+    { "id": "evt_birth_jean", "type": "birth", "date": { "edtf": "1946-07-21", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_jean_hall" }] },
+    { "id": "evt_birth_david", "type": "birth", "date": { "edtf": "1944", "status": "confirmed" }, "participants": [{ "personId": "per_david_price" }] },
+    { "id": "evt_birth_sophie", "type": "birth", "date": { "edtf": "1975-02-03", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_sophie_price" }] },
+    { "id": "evt_birth_james_walker", "type": "birth", "date": { "edtf": "1832~", "status": "likely" }, "place": { "placeId": "plc_bradford", "status": "likely" }, "participants": [{ "personId": "per_james_walker" }] },
+    { "id": "evt_birth_hannah_walker", "type": "birth", "date": { "edtf": "1835?", "status": "guess" }, "participants": [{ "personId": "per_hannah_walker" }] },
+    { "id": "evt_birth_mary_walker", "type": "birth", "date": { "edtf": "1860", "status": "confirmed" }, "place": { "placeId": "plc_bradford", "status": "confirmed" }, "participants": [{ "personId": "per_mary_walker" }] },
+    { "id": "evt_birth_joseph_walker", "type": "birth", "date": { "edtf": "1863~", "status": "likely" }, "place": { "placeId": "plc_bradford", "status": "likely" }, "participants": [{ "personId": "per_joseph_walker" }] }
   ],
   "places": [
     { "id": "plc_leeds", "name": "Leeds", "type": "town", "coordinates": { "lat": 53.7997, "lon": -1.5492 }, "links": { "wikidata": "Q39121" } },
     { "id": "plc_bradford", "name": "Bradford", "type": "town" },
+    { "id": "plc_wakefield", "name": "Wakefield", "type": "town" },
     { "id": "plc_cork", "name": "Cork", "type": "town", "altNames": [{ "name": "Corcaigh", "lang": "ga" }], "coordinates": { "lat": 51.8985, "lon": -8.4756 } }
   ],
   "sources": [],
@@ -110,6 +436,18 @@
       "name": "Descendants of John Smith",
       "kind": "tree",
       "scope": { "root": "per_john_smith", "up": 0, "width": "direct" }
+    },
+    {
+      "id": "view_thomas_family",
+      "name": "Thomas's family",
+      "kind": "tree",
+      "scope": { "root": "per_thomas_smith", "up": 2, "down": 1, "width": "siblings" }
+    },
+    {
+      "id": "view_walkers",
+      "name": "Walkers of Bradford",
+      "kind": "tree",
+      "scope": { "tags": ["walker"] }
     }
   ]
 }
