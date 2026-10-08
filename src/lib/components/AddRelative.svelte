@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { app } from '#lib/app.svelte.ts';
-	import { cardDates, childIds, displayName, famAsChild, famsAsPartner, fullName, partnerIds, person, soloFam } from '#lib/model/queries.ts';
+	import { cardDates, childIds, displayName, famAsChild, famsAsPartner, partnerIds, person, searchPeople, soloFam } from '#lib/model/queries.ts';
 	import { linkPeople, newPerson, setLife, type RelativeKind } from '#lib/model/mutations.ts';
 	import type { Sex } from '#lib/model/types.ts';
 
@@ -28,14 +28,7 @@
 		kids = [...soloKids];
 	});
 
-	const results = $derived.by(() => {
-		const q = query.trim().toLowerCase();
-		return d.people
-			.filter((x) => x.id !== pid)
-			.filter((x) => !q || `${displayName(x)} ${fullName(x)} ${(x.names ?? []).map((n) => n.surname).join(' ')}`.toLowerCase().includes(q))
-			.sort((a, b) => displayName(a).localeCompare(displayName(b)))
-			.slice(0, 12);
-	});
+	const results = $derived(searchPeople(d, query, { exclude: pid, limit: 12 }));
 
 	function go() {
 		let oid: string;
@@ -92,7 +85,7 @@
 		<label class="fld"><span>Search</span><input type="text" bind:value={query} autocomplete="off" placeholder="Type a name" use:focus oninput={() => (pick = null)} /></label>
 		<div class="results">
 			{#each results as x (x.id)}
-				<button type="button" aria-pressed={pick === x.id} onclick={() => (pick = x.id)}>{displayName(x)}<span class="yr">{cardDates(d, x.id)}</span></button>
+				<button type="button" aria-pressed={pick === x.id} onclick={() => (pick = x.id)}>{displayName(person(d, x.id))}{#if x.alsoKnownAs}<span class="yr">({x.alsoKnownAs})</span>{/if}<span class="yr">{cardDates(d, x.id)}</span></button>
 			{:else}
 				<span class="hint">No matches</span>
 			{/each}

@@ -3,7 +3,7 @@
 	import { app } from '#lib/app.svelte.ts';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
 	import { GHOST_W, NODE_H, NODE_W, layoutTree } from '#lib/layout/tree.ts';
-	import { ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
+	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
 
@@ -54,11 +54,24 @@
 		untrack(() => {
 			const fresh = seen.size && app.camera ? layout.nodes.filter((n) => !seen.has(n.id)) : [];
 			seen = new Set(ids);
-			if (!fresh.length || !vw || !vh) return;
+			// More than a few at once means a branch switch or data load, not someone just added.
+			if (!fresh.length || fresh.length > 3 || app.centreTarget || !vw || !vh) return;
 			let c = cam;
 			for (const n of fresh) c = ensureVisible(c, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
 			if (c !== cam) set(c);
 		});
+	});
+
+	// Centre on a person (from search). Runs again if the canvas resizes straight after (the person panel opening),
+	// then clears the request a couple of frames later so later resizes don't snap back.
+	$effect(() => {
+		const id = app.centreTarget;
+		if (!id || !vw || !vh) return;
+		untrack(() => {
+			const n = layout.nodes.find((n) => n.id === id);
+			if (n) set(centreOn(app.camera ?? fitAll(), n.x + NODE_W / 2, n.y + NODE_H / 2, vw, vh));
+		});
+		requestAnimationFrame(() => requestAnimationFrame(() => app.centreTarget === id && (app.centreTarget = null)));
 	});
 
 	const zoomBy = (f: number) => set(zoomAt(cam, f, vw / 2, vh / 2));

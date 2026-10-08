@@ -9,6 +9,7 @@
 	import TodoView from '#lib/components/TodoView.svelte';
 	import PersonSheet from '#lib/components/PersonSheet.svelte';
 	import DataDialog from '#lib/components/DataDialog.svelte';
+	import SearchBox from '#lib/components/SearchBox.svelte';
 
 	// Load once, then save on every change (JSON.stringify reads the whole dataset, so the effect tracks it deeply).
 	const saved = localStore.load();
@@ -37,7 +38,7 @@
 		app.fitTree();
 	}
 	function onKey(e: KeyboardEvent) {
-		if (e.key === 'Escape' && app.selected && !app.showData) app.select(null);
+		if (e.key === 'Escape' && app.selected && !app.showData && !(e.target as HTMLElement).closest('input, textarea, select')) app.select(null);
 	}
 </script>
 
@@ -50,6 +51,7 @@
 			<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{l}{#if k === 'todo'}<span class="count">{gapCount(app.data)}</span>{/if}</button>
 		{/each}
 	</nav>
+	<SearchBox />
 	<div class="actions">
 		<button class="btn" onclick={addNew}>+ New person</button>
 		<button class="btn" onclick={() => (app.showData = true)}>Data</button>

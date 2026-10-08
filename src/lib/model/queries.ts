@@ -119,3 +119,57 @@ export function components(d: Dataset): string[][] {
 	}
 	return comps.sort((a, b) => b.length - a.length);
 }
+
+// ---- search ----
+
+export interface SearchHit {
+	id: string;
+	/** Another name that matched when the shown name didn't, e.g. a maiden name ("Mary Walker"). */
+	alsoKnownAs?: string;
+}
+
+const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+const words = (s: string) => fold(s).split(/[\s\-'’.,()]+/).filter(Boolean);
+const nameText = (n: Name) => n.display || [n.given, n.surname].filter(Boolean).join(' ');
+
+/** How well one query word matches a list of name words: whole word 3, start of a word 2, anywhere 1, none 0. */
+function wordScore(q: string, ws: string[]): number {
+	if (ws.includes(q)) return 3;
+	if (ws.some((w) => w.startsWith(q))) return 2;
+	return ws.some((w) => w.includes(q)) ? 1 : 0;
+}
+
+/**
+ * People matching a typed name, best first. Every query word must match one of the person's names
+ * (any name: birth, married, deed poll…, or "known as"); accents and case are ignored.
+ * The name shown on the tree ranks above other names. An empty query lists everyone by name.
+ */
+export function searchPeople(d: Dataset, query: string, opts: { exclude?: string; limit?: number } = {}): SearchHit[] {
+	const qs = words(query);
+	const hits: (SearchHit & { score: number; label: string })[] = [];
+	for (const p of d.people) {
+		if (p.id === opts.exclude) continue;
+		const label = displayName(p);
+		const shown = words(`${label} ${fullName(p)}`);
+		const others = (p.names ?? []).map(nameText).filter((t) => t && !fold(label).includes(fold(t)));
+		let score = 0,
+			also: string | undefined;
+		for (const q of qs) {
+			const s = wordScore(q, shown);
+			if (s) {
+				score += s + 0.5;
+				continue;
+			}
+			const o = others.map((t) => ({ t, s: wordScore(q, words(t)) })).sort((a, b) => b.s - a.s)[0];
+			if (!o?.s) {
+				score = -1;
+				break;
+			}
+			score += o.s;
+			also ??= o.t;
+		}
+		if (score >= 0) hits.push({ id: p.id, alsoKnownAs: also, score, label });
+	}
+	hits.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label));
+	return hits.slice(0, opts.limit ?? Infinity).map(({ id, alsoKnownAs }) => (alsoKnownAs ? { id, alsoKnownAs } : { id }));
+}

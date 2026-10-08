@@ -34,6 +34,8 @@ class AppState {
 	showData = $state(false);
 	/** Tree pan/zoom. null = fit everything next time the tree is drawn. Kept here so it survives tab switches. */
 	camera = $state<Camera | null>(null);
+	/** Person the tree view should move to; it clears this once done. */
+	centreTarget = $state<string | null>(null);
 
 	branches = $derived(components(this.data).map((ids) => ({ label: branchLabel(this.data, ids), ids })));
 	visibleBranches = $derived(
@@ -46,6 +48,14 @@ class AppState {
 	/** Fit the whole tree. Only for explicit actions (load, Fit, branch change), never ordinary edits. */
 	fitTree() {
 		this.camera = null;
+	}
+
+	/** Show this person in the middle of the tree (keeping the zoom) and select them. */
+	centreOn(id: string) {
+		this.tab = 'tree';
+		if (!this.visibleIds.includes(id)) this.branch = 'all';
+		this.select(id);
+		this.centreTarget = id;
 	}
 
 	select(id: string | null, addKind: RelativeKind | null = null) {

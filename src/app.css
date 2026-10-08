@@ -39,6 +39,19 @@ button{cursor:pointer}
 .btn.small{padding:3px 9px;font-size:14px}
 .btn.danger{color:var(--warn);border-color:var(--warn-soft)}
 
+/* search (Bits UI combobox; unstyled, so all looks come from here) */
+.search{flex:0 1 260px;min-width:160px}
+.search-input{width:100%;background:var(--paper);border:1px solid var(--rule);border-radius:7px;padding:5px 10px}
+.search-input:focus{border-color:var(--ink-soft);outline:none}
+.search-pop{z-index:20;min-width:var(--bits-floating-anchor-width,240px);max-width:min(420px,calc(100vw - 32px));max-height:min(360px,60vh);overflow:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:4px}
+.search-item{display:flex;align-items:baseline;gap:6px;padding:6px 9px;border-radius:6px;cursor:pointer}
+.search-item[data-highlighted]{background:var(--accent-soft)}
+.search-item .nm{font-family:var(--f-name);font-weight:600}
+.search-item .nm.pencil{font-family:var(--f-pencil);font-weight:500;font-size:18px;color:var(--pencil)}
+.search-item .aka{color:var(--ink-soft);font-size:13px}
+.search-item .yr{margin-left:auto;padding-left:10px;color:var(--ink-soft);font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.search-none{padding:6px 9px;color:var(--ink-soft);font-size:14px}
+
 .bar{display:flex;align-items:center;gap:6px;padding:8px 16px;flex-wrap:wrap;border-bottom:1px solid var(--rule)}
 .chip{border:1px solid var(--rule);background:transparent;border-radius:999px;padding:2px 11px;font-size:14px;color:var(--ink-soft)}
 .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
