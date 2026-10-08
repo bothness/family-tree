@@ -51,3 +51,7 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 - 8 Oct: focus filters all views (tree, timeline, to-do, future map).
 - 8 Oct: pan/zoom by hand (no d3-zoom). Mouse wheel zooms, trackpad scroll pans, pinch zooms; ⌘/Ctrl + scroll always zooms.
 - 8 Oct: no Material UI or styled kit, as it would override the ink/pencil design. Use Bits UI (headless, unstyled) for complex widgets such as the search dropdown, styled with our own tokens.
+- 8 Oct: search only centres. Someone hidden by the current focus gets their person panel with "Show in full tree" / "Focus on them"; the view doesn't change by itself. Focus is started from the panel's Focus button (or F).
+- 8 Oct: focus is kept in the page address, so Back undoes a focus change and a focus view can be bookmarked.
+- 8 Oct: the orange missing-children placeholder only shows when every known child is in view; children hidden by focus get an edge marker ("+2 children") instead.
+- 8 Oct: a focus with up 0 and down 0 still shows the person's partners. Whether V2 "collapse to one person" hides them too is still to decide.

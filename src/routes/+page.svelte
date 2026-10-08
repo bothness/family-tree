@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { app, type Tab } from '#lib/app.svelte.ts';
 	import { localStore } from '#lib/storage/index.ts';
-	import { gapCount } from '#lib/model/gaps.ts';
+	import { gaps } from '#lib/model/gaps.ts';
 	import { childIds, displayName, family, partnerIds, person } from '#lib/model/queries.ts';
 	import { newPerson } from '#lib/model/mutations.ts';
 	import { DEFAULT_FOCUS, type FocusWidth } from '#lib/model/focus.ts';
@@ -54,6 +54,9 @@
 		}
 	}
 
+	// Like the to-do list itself, the count only covers people in view (focus or branch).
+	const todoCount = $derived(Object.entries(gaps(app.data)).reduce((n, [id, g]) => n + (app.inView(id) ? g.length : 0), 0));
+
 	const tabs: [Tab, string][] = [['tree', 'Tree'], ['timeline', 'Timeline'], ['todo', 'Research to-do']];
 
 	function openPerson(id: string) {
@@ -88,7 +91,7 @@
 	<div class="brand">Family Tree <span>sketchbook</span></div>
 	<nav class="tabs">
 		{#each tabs as [k, l] (k)}
-			<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{l}{#if k === 'todo'}<span class="count">{gapCount(app.data)}</span>{/if}</button>
+			<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{l}{#if k === 'todo'}<span class="count">{todoCount}</span>{/if}</button>
 		{/each}
 	</nav>
 	<SearchBox />
