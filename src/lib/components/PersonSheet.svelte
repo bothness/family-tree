@@ -137,8 +137,18 @@
 		<h2 class:pencil={nameIsGuess(p)}>{displayName(p)}</h2>
 		{#if p.knownAs}<div class="sub">{fullName(p)}</div>{/if}
 	</div>
-	<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
+	<div class="head-actions">
+		<button class="btn small" aria-pressed={app.activeFocus?.id === pid} onclick={() => app.focusOn(pid)} title="Show only this person's family (F)">Focus</button>
+		<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
+	</div>
 </div>
+{#if !app.inView(pid)}
+	<div class="notinview">
+		<span>Not in this view.</span>
+		<button class="btn small" onclick={() => app.centreOn(pid)}>Show in full tree</button>
+		<button class="btn small" onclick={() => app.focusOn(pid)}>Focus on them</button>
+	</div>
+{/if}
 
 <div class="row">
 	<label class="fld"><span>Given names</span><input type="text" class:pencil={main?.status === 'guess'} value={main?.given ?? ''} onchange={(e) => setMainName('given', val(e))} /></label>

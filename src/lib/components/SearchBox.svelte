@@ -13,7 +13,10 @@
 
 	async function choose(id: string) {
 		if (!id) return;
-		app.centreOn(id);
+		// Hidden by the current focus: open their panel (which offers "Show in full tree" / "Focus on them")
+		// rather than silently leaving the focus.
+		if (app.activeFocus && !app.inView(id)) app.select(id);
+		else app.centreOn(id);
 		input?.blur();
 		// Clear so the box is ready for the next search (and the same person can be picked again).
 		// Bits fills in the chosen name after this handler, so wait a tick before clearing.
@@ -54,6 +57,7 @@
 					<Combobox.Item value={h.id} label={displayName(p)} class="search-item">
 						<span class="nm" class:pencil={p && nameIsGuess(p)}>{displayName(p)}</span>
 						{#if h.alsoKnownAs}<span class="aka">({h.alsoKnownAs})</span>{/if}
+						{#if app.activeFocus && !app.inView(h.id)}<span class="out">not in view</span>{/if}
 						<span class="yr">{cardDates(app.data, h.id)}</span>
 					</Combobox.Item>
 				{:else}

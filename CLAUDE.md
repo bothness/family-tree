@@ -18,8 +18,9 @@ Run `npm test` and `npm run check` before finishing any change.
 - Imports use Node subpath imports with explicit extensions: `#lib/model/queries.ts`, `#lib/app.svelte.ts`, `./types.ts`.
 - `src/lib/model/`: plain TypeScript with no Svelte dependencies. Every function takes the `Dataset` explicitly.
   - `types.ts`: mirrors `schema/family-tree.schema.json`. Keep both in step, and update `src/lib/data/example-data.json` and `docs/MODEL.md` when the model changes.
-  - `queries.ts`: read-only lookups. `mutations.ts`: in-place changes (these work directly on the Svelte `$state` proxy). `edtf.ts`: dates. `gaps.ts`: research to-do. `migrate.ts`: upgrades older data.
-- `src/lib/layout/`: pure layout functions for the tree and timeline, which return positions and lines. Components only render them.
+  - `queries.ts`: read-only lookups. `mutations.ts`: in-place changes (these work directly on the Svelte `$state` proxy). `edtf.ts`: dates. `gaps.ts`: research to-do. `migrate.ts`: upgrades older data. `focus.ts`: who a focus view shows, and its edges.
+- `src/lib/layout/`: pure layout functions for the tree and timeline, which return positions and lines. Components only render them. `viewport.ts` holds the pan/zoom camera maths.
+- UI widgets with complex keyboard/accessibility behaviour use Bits UI (headless, unstyled), styled only with our tokens in `app.css`. No styled UI kits.
 - `src/lib/app.svelte.ts`: the shared app state (one `AppState` instance holding `data`, `tab`, `selected`, etc.).
 - `src/lib/storage/`: the `DataStore` interface. It currently uses localStorage; GitHub or Cloudflare can be added behind it later.
 - `src/app.css`: global tokens and classes ported from the prototype. The design idea is that confirmed facts are drawn in ink (serif) and guesses in pencil (handwritten font), with light and dark themes using tokens only.
@@ -43,12 +44,10 @@ Run `npm test` and `npm run check` before finishing any change.
 
 ## Where we are
 - Phase A (editing and data model) is done.
-- **Next is Phase B (navigation):**
-  - zoom, pan and fit
-  - search and centre on a person
-  - focus mode: one person ± N generations, with siblings shown or hidden
-  - branches as named saved views, made from filters or hand-picked
-  - collapse to one person, and reset to a blank view
+- **Phase B (navigation) is in progress** on branch `phase-b-navigation`:
+  - done: zoom, pan and fit (V1); search and centre (V3); focus mode with separate up/down depths and a direct / + siblings / all relatives width switch (V3, V4). Focus is kept in the page address (`#focus=…&up=…&down=…&w=…`) and filters every tab.
+  - next: branches as named saved views, made from filters or hand-picked (V5/V6). These replace the branch chips, and `View.scope` gains up, down and width.
+  - then: collapse to one person, and reset to a blank view (V2).
 - Then Phase C: our own tree layout, replacing `src/lib/layout/tree.ts`. The current layout is an interim port: it's left-aligned, has one connector level per generation and no line hops. Layout rules:
   - centred
   - father consistently on one side

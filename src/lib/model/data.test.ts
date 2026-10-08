@@ -9,6 +9,7 @@ import { gaps } from './gaps.ts';
 import { components, isLiving, person } from './queries.ts';
 import { timelineRows } from '../layout/timeline.ts';
 import { layoutTree } from '../layout/tree.ts';
+import { focusSet, type FocusOptions } from './focus.ts';
 
 const fresh = () => migrate(structuredClone(sample));
 
@@ -72,4 +73,19 @@ describe('interim tree layout', () => {
 	});
 	it('places children below parents', () => expect(pos('per_thomas_smith').y).toBeGreaterThan(pos('per_john_smith').y));
 	it('shows a placeholder for expected missing children', () => expect(L.ghosts[0]).toMatchObject({ familyId: 'fam_smith_walker', missing: 2 }));
+});
+
+describe('tree layout in focus mode', () => {
+	const d = fresh();
+	const focusLayout = (root: string, o: FocusOptions) => layoutTree(d, [{ label: '', ids: [...focusSet(d, root, o).ids] }]);
+
+	it('keeps the "missing children" placeholder when all known children are in view', () => {
+		expect(focusLayout('per_thomas_smith', { up: 1, down: 0, width: 'siblings' }).ghosts.map((g) => g.familyId)).toEqual(['fam_smith_walker']);
+	});
+
+	it('drops it when the focus hides some of the children (an edge marker shows instead)', () => {
+		expect(focusLayout('per_thomas_smith', { up: 1, down: 0, width: 'direct' }).ghosts).toEqual([]);
+		expect(focusLayout('per_john_smith', { up: 0, down: 0, width: 'direct' }).ghosts).toEqual([]);
+		expect(focusSet(d, 'per_john_smith', { up: 0, down: 0, width: 'direct' }).edges).toContainEqual({ dir: 'down', familyId: 'fam_smith_walker', hidden: 2 });
+	});
 });

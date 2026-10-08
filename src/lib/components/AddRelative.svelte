@@ -50,7 +50,8 @@
 			return;
 		}
 		if (created && born) setLife(d, created, 'birth', born, null, unsure ? 'guess' : undefined);
-		onDone(r.info);
+		const hidden = app.activeFocus && !app.inView(oid) ? `${displayName(person(d, oid))} is outside the current focus, so isn't shown.` : '';
+		onDone([r.info, hidden].filter(Boolean).join(' '));
 	}
 
 	const focus = (el: HTMLElement) => el.focus();

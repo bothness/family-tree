@@ -76,6 +76,10 @@ function layoutComponent(d: Dataset, comp: string[], x0: number) {
 		const ps = partnerIds(f).filter((id) => inC.has(id)),
 			cs = childIds(f).filter((id) => inC.has(id));
 		if (!ps.length && !cs.length) continue;
+		// In a focus view, gaps belong under visible parents, and a family with children hidden by the focus
+		// gets an edge marker instead: "hidden here" mustn't look like "missing from the research".
+		if (!ps.length && partnerIds(f).length) continue;
+		if (cs.length < childIds(f).length) continue;
 		units.push({ ids: [], ghost: f, g: cs.length ? gen[cs[0]] : gen[ps[0]] + 1 });
 	}
 	const unitWidth = (u: Unit) => (u.ghost ? GHOST_W : u.ids.length * NODE_W + (u.ids.length - 1) * H_GAP);

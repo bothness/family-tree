@@ -17,7 +17,7 @@ Also added: "Known as" name shown on the tree; biography/notes and free-text sou
 | G3 | Link to people who already exist; link a new partner to existing children | UI only: "+ Parent / Partner / Child" offers "new person" or "pick existing" |
 | G4 | Siblings share parents by default; half-siblings can be split off | Model already handles this (each child sits in one specific family). UI: "Parents: [this couple ▾]" lets you move a child to a different family, e.g. father + unknown mother |
 
-## Phase B – Navigation
+## Phase B – Navigation (V1, V3, V4 done 8 Oct 2026; V5/V6 and V2 next)
 | # | Change |
 |---|---|
 | V1 | Zoom in and out, pan, fit all. Trackpad: pinch zooms, two-finger scroll pans. Mouse: wheel zooms at the cursor, drag pans. Touch: pinch and drag. Plus +/−/0 keys and on-screen −/+/Fit buttons. The view only re-fits on load, Fit, search or focus changes, never on ordinary edits |

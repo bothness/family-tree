@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { app } from '#lib/app.svelte.ts';
-	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
+	import { cardDates, displayName, family, lifeEvent, nameIsGuess, partnerIds, person } from '#lib/model/queries.ts';
 	import { GHOST_W, NODE_H, NODE_W, layoutTree } from '#lib/layout/tree.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
@@ -10,6 +10,34 @@
 	const layout = $derived(layoutTree(app.data, app.visibleBranches));
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost' } as const;
+
+	// Focus edge markers: "↑ parents" above someone whose parents are just out of view, "+3 children" below a family.
+	// Clicking one shows one more generation that way.
+	const STUB = 12, PILL_H = 18;
+	const markers = $derived.by(() => {
+		const at = new Map(layout.nodes.map((n) => [n.id, n]));
+		return (app.focusView?.edges ?? []).flatMap((e) => {
+			if (e.dir === 'up') {
+				const n = at.get(e.personId);
+				return n ? [{ key: `u:${e.personId}`, up: true, x: n.x + NODE_W / 2, y0: n.y, y1: n.y - STUB, text: e.hidden === 1 ? '↑ parent' : '↑ parents' }] : [];
+			}
+			const ns = partnerIds(family(app.data, e.familyId)!).flatMap((id) => at.get(id) ?? []).sort((a, b) => a.x - b.x);
+			if (!ns.length) return [];
+			const couple = ns.length === 2;
+			return [{
+				key: `d:${e.familyId}`,
+				up: false,
+				x: couple ? (ns[0].x + NODE_W + ns[1].x) / 2 : ns[0].x + NODE_W / 2,
+				y0: ns[0].y + (couple ? NODE_H / 2 : NODE_H),
+				y1: ns[0].y + NODE_H + STUB,
+				text: `+${e.hidden} ${e.hidden === 1 ? 'child' : 'children'}`
+			}];
+		});
+	});
+	function extend(up: boolean) {
+		const f = app.activeFocus;
+		if (f) app.adjustFocus(up ? { up: f.up + 1 } : { down: f.down + 1 });
+	}
 
 	// ---- camera (V1) ----
 	let box: HTMLDivElement | undefined = $state();
@@ -253,6 +281,15 @@
 						<text class="nm" class:pencil={guess} x="11" y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
 						<text class="dt" class:pencil={dateGuess} x="11" y="45">{dates}</text>
 						<circle class="stage {stage}" cx={NODE_W - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
+					</g>
+				{/each}
+				{#each markers as m (m.key)}
+					{@const w = m.text.length * 6.6 + 18}
+					{@const top = m.up ? m.y1 - PILL_H : m.y1}
+					<g class="edge" role="button" tabindex="0" aria-label="Show {m.up ? 'one more generation up' : 'one more generation down'}" onclick={() => extend(m.up)} onkeydown={(e) => key(e, () => extend(m.up))}>
+						<line x1={m.x} y1={m.y0} x2={m.x} y2={m.y1} />
+						<rect x={m.x - w / 2} y={top} width={w} height={PILL_H} rx={PILL_H / 2} />
+						<text x={m.x} y={top + 13} text-anchor="middle">{m.text}</text>
 					</g>
 				{/each}
 				{#each layout.ghosts as g (g.familyId)}
