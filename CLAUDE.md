@@ -25,6 +25,7 @@ Run `npm test` and `npm run check` before finishing any change.
 - `src/lib/storage/`: the `DataStore` interface. It currently uses localStorage; GitHub or Cloudflare can be added behind it later.
 - `src/app.css`: global tokens and classes ported from the prototype. The design idea is that confirmed facts are drawn in ink (serif) and guesses in pencil (handwritten font), with light and dark themes using tokens only.
 - Test logic in `model/` and `layout/` with Vitest, using small hand-built datasets (see `mutations.test.ts`).
+- `$state` proxy pitfall: pushing an object into the dataset stores a proxied copy, so never keep editing the original afterwards. Take the stored element back (`d.families.at(-1)!`), as `newFamily`/`newPerson`/`setLife` do. Plain-object tests can't catch this. Tests that need real proxies are `*.svelte.test.ts` files starting with `// @vitest-environment happy-dom` (see `mutations.svelte.test.ts`).
 
 ## Data model essentials
 - Schema version is `0.2`. `migrate()` upgrades v0.1, so prototype exports can be loaded through the Data dialog.
