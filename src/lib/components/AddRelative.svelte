@@ -4,7 +4,7 @@
 	import { linkPeople, newPerson, setLife, type RelativeKind } from '#lib/model/mutations.ts';
 	import type { Sex } from '#lib/model/types.ts';
 
-	let { pid, kind, onDone, onCancel }: { pid: string; kind: RelativeKind; onDone: (info?: string) => void; onCancel: () => void } = $props();
+	let { pid, kind, onDone, onCancel }: { pid: string; kind: RelativeKind; onDone: (info: string | undefined, addedId: string) => void; onCancel: () => void } = $props();
 
 	let mode = $state<'new' | 'existing'>('new');
 	let name = $state('');
@@ -50,8 +50,7 @@
 			return;
 		}
 		if (created && born) setLife(d, created, 'birth', born, null, unsure ? 'guess' : undefined);
-		const hidden = app.activeFocus && !app.inView(oid) ? `${displayName(person(d, oid))} is outside the current focus, so isn't shown.` : '';
-		onDone([r.info, hidden].filter(Boolean).join(' '));
+		onDone(r.info, oid);
 	}
 
 	const focus = (el: HTMLElement) => el.focus();

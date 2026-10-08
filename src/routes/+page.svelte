@@ -57,6 +57,13 @@
 	// Like the to-do list itself, the count only covers people in view (focus or branch).
 	const todoCount = $derived(Object.entries(gaps(app.data)).reduce((n, [id, g]) => n + (app.inView(id) ? g.length : 0), 0));
 
+	// Start each person's panel at the top, not wherever the previous person's was scrolled to.
+	let sheet: HTMLElement | undefined = $state();
+	$effect.pre(() => {
+		void app.selected;
+		if (sheet) sheet.scrollTop = 0;
+	});
+
 	const tabs: [Tab, string][] = [['tree', 'Tree'], ['timeline', 'Timeline'], ['todo', 'Research to-do']];
 
 	function openPerson(id: string) {
@@ -146,7 +153,7 @@
 		{/if}
 	</main>
 	{#if app.selected && app.data.people.some((p) => p.id === app.selected)}
-		<aside class="sheet">
+		<aside class="sheet" bind:this={sheet}>
 			{#key app.selected}
 				<PersonSheet pid={app.selected} />
 			{/key}

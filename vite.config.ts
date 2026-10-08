@@ -16,6 +16,9 @@ export default defineConfig({
 			adapter: adapter({ fallback: '200.html' })
 		})
 	],
+	// Tests that need real `$state` proxies (as in the app) start with `// @vitest-environment happy-dom`; in the
+	// default Node environment Svelte compiles for the server, where $state is a no-op and hides proxy bugs.
+	resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
 	test: {
 		include: ['src/**/*.test.ts']
 	}

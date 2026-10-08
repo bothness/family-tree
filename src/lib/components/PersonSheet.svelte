@@ -38,6 +38,10 @@
 	});
 
 	let info = $state('');
+	/** Scroll a newly shown notice into view (the panel may be scrolled down to the add form). */
+	const reveal = (el: HTMLElement) => el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+	/** The relative just added from this panel, so we can say if the current focus hides them. */
+	let added = $state<string | null>(null);
 	let confirmDel = $state(false);
 	let moreOpen = $state(false);
 	let todoText = $state('');
@@ -46,6 +50,7 @@
 	$effect(() => {
 		void pid; // reset transient UI when switching person
 		info = '';
+		added = null;
 		confirmDel = false;
 	});
 
@@ -142,12 +147,15 @@
 		<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
 	</div>
 </div>
-{#if !app.inView(pid)}
-	<div class="notinview">
-		<span>Not in this view.</span>
-		<button class="btn small" onclick={() => app.centreOn(pid)}>Show in full tree</button>
-		<button class="btn small" onclick={() => app.focusOn(pid)}>Focus on them</button>
+{#snippet outOfView(id: string, msg: string)}
+	<div class="outofview" role="status" use:reveal>
+		<p><b>Not in this view.</b> {msg}</p>
+		<button class="btn small" onclick={() => app.centreOn(id)}>Show in full tree</button>
+		<button class="btn small" onclick={() => app.focusOn(id)}>Focus on them</button>
 	</div>
+{/snippet}
+{#if !app.inView(pid)}
+	{@render outOfView(pid, app.activeFocus ? `The focus on ${displayName(person(d, app.activeFocus.id))} doesn't include ${displayName(p)}.` : `${displayName(p)} isn't in the branch shown.`)}
 {/if}
 
 <div class="row">
@@ -253,15 +261,18 @@
 
 	<div class="row">
 		{#each ['parent', 'partner', 'child', 'sibling'] as const as k (k)}
-			<button class="btn small" aria-pressed={app.addKind === k} onclick={() => ((app.addKind = app.addKind === k ? null : k), (info = ''))}>+ {k[0].toUpperCase() + k.slice(1)}</button>
+			<button class="btn small" aria-pressed={app.addKind === k} onclick={() => ((app.addKind = app.addKind === k ? null : k), (info = ''), (added = null))}>+ {k[0].toUpperCase() + k.slice(1)}</button>
 		{/each}
 	</div>
 	{#if app.addKind}
 		{#key `${pid}-${app.addKind}`}
-			<AddRelative {pid} kind={app.addKind} onDone={(m) => ((app.addKind = null), (info = m ?? ''))} onCancel={() => (app.addKind = null)} />
+			<AddRelative {pid} kind={app.addKind} onDone={(m, id) => ((app.addKind = null), (info = m ?? ''), (added = id))} onCancel={() => (app.addKind = null)} />
 		{/key}
 	{/if}
 	{#if info}<div class="hint">{info}</div>{/if}
+	{#if added && person(d, added) && !app.inView(added)}
+		{@render outOfView(added, `${displayName(person(d, added))} was added, but isn't shown: they're outside the current focus.`)}
+	{/if}
 </div>
 
 <details class="more" bind:open={moreOpen}>

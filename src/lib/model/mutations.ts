@@ -31,8 +31,8 @@ export function setLife(d: Dataset, pid: string, kind: 'birth' | 'death', dateSt
 		return;
 	}
 	if (!e) {
-		e = { id: uid('evt'), type: kind, participants: [{ personId: pid }] };
-		d.events.push(e);
+		d.events.push({ id: uid('evt'), type: kind, participants: [{ personId: pid }] });
+		e = d.events.at(-1)!; // the stored (proxied) copy, so later changes are tracked
 	}
 	if (edtf) {
 		e.date = { ...(e.date ?? {}), edtf };
@@ -53,13 +53,15 @@ export function newPerson(d: Dataset, name = '', opts: { unsure?: boolean; tags?
 	if (opts.sex) p.sex = { value: opts.sex };
 	if (opts.tags?.length) p.tags = [...opts.tags];
 	d.people.push(p);
-	return p;
+	return d.people.at(-1)!;
 }
 
 export function newFamily(d: Dataset, partners: string[]): Family {
 	const f: Family = { id: uid('fam'), partners: partners.map((personId) => ({ personId })), children: [], childrenComplete: 'unknown' };
 	d.families.push(f);
-	return f;
+	// Return the stored element, not `f`: under a Svelte $state proxy, pushing stores a proxied copy, and later
+	// changes made through the original object (e.g. adding a child) would be lost.
+	return d.families.at(-1)!;
 }
 
 export function detachChild(d: Dataset, cid: string) {
