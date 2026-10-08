@@ -1,0 +1,861 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/family-tree/schema/v0.2",
+  "title": "Family tree dataset",
+  "description": "Storage-agnostic family tree data. Can be held as one file, one file per entity, or rows in a database. Derived values (sortable dates, gaps, generations) are computed at load time, never stored.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "people",
+    "families",
+    "events"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "0.2"
+    },
+    "people": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Person"
+      }
+    },
+    "families": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Family"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Event"
+      }
+    },
+    "places": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Place"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Source"
+      }
+    },
+    "views": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/View"
+      }
+    }
+  },
+  "$defs": {
+    "Status": {
+      "description": "How sure we are of a fact. confirmed = backed by a reliable source; likely = strong evidence or reasoning; guess = placeholder for sketching; conflicting = sources disagree.",
+      "enum": [
+        "confirmed",
+        "likely",
+        "guess",
+        "conflicting"
+      ],
+      "default": "guess"
+    },
+    "PersonId": {
+      "type": "string",
+      "pattern": "^per_[A-Za-z0-9_-]+$"
+    },
+    "FamilyId": {
+      "type": "string",
+      "pattern": "^fam_[A-Za-z0-9_-]+$"
+    },
+    "EventId": {
+      "type": "string",
+      "pattern": "^evt_[A-Za-z0-9_-]+$"
+    },
+    "PlaceId": {
+      "type": "string",
+      "pattern": "^plc_[A-Za-z0-9_-]+$"
+    },
+    "SourceId": {
+      "type": "string",
+      "pattern": "^src_[A-Za-z0-9_-]+$"
+    },
+    "ViewId": {
+      "type": "string",
+      "pattern": "^view_[A-Za-z0-9_-]+$"
+    },
+    "WikidataId": {
+      "type": "string",
+      "pattern": "^Q[0-9]+$"
+    },
+    "Citation": {
+      "description": "A reference from a fact to a source, with where in the source it was found.",
+      "type": "object",
+      "required": [
+        "sourceId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sourceId": {
+          "$ref": "#/$defs/SourceId"
+        },
+        "detail": {
+          "type": "string",
+          "description": "Page, folio, line, entry number etc."
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "Assertion": {
+      "description": "Common fields for any uncertain fact.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "Date": {
+      "description": "A date in EDTF (Extended Date/Time Format, ISO 8601-2). Examples: '1890', '1890-04-12', '1890~' (circa), '1890?' (uncertain), '189X' (some year in the 1890s), '../1901' (on or before 1901), '1901/1911' (a span), '[1885,1887]' (one of these years).",
+      "type": "object",
+      "required": [
+        "edtf"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "edtf": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "Link": {
+      "type": "object",
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "ExternalLinks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wikidata": {
+          "$ref": "#/$defs/WikidataId"
+        },
+        "urls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Link"
+          }
+        }
+      }
+    },
+    "Research": {
+      "description": "Research state of an entity, separate from the confidence of individual facts.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "enum": [
+            "sketch",
+            "in-progress",
+            "researched"
+          ],
+          "description": "sketch = quick outline, little or no research; in-progress = partly researched; researched = as complete as currently possible."
+        },
+        "todo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Free-text research tasks."
+        }
+      }
+    },
+    "Meta": {
+      "description": "Provenance for multi-editor use. Optional while single-editor.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedBy": {
+          "type": "string"
+        }
+      }
+    },
+    "Name": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "birth",
+            "married",
+            "deed-poll",
+            "alias",
+            "anglicised",
+            "religious",
+            "other"
+          ],
+          "default": "birth"
+        },
+        "given": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "display": {
+          "type": "string",
+          "description": "Override for names that don't split into given/surname."
+        },
+        "preferred": {
+          "type": "boolean"
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "description": "EDTF date from which this name was used, e.g. the marriage or deed poll date."
+        }
+      }
+    },
+    "Person": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/PersonId"
+        },
+        "placeholder": {
+          "type": "boolean",
+          "description": "True for a stand-in such as 'unknown father', used to connect branches before identity is known."
+        },
+        "names": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Name"
+          }
+        },
+        "knownAs": {
+          "type": "string",
+          "description": "Name the person was known by (nickname or shortened name). Shown on the tree in place of the full name."
+        },
+        "sex": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "enum": [
+                "F",
+                "M",
+                "U"
+              ]
+            },
+            "status": {
+              "$ref": "#/$defs/Status"
+            }
+          }
+        },
+        "deceased": {
+          "type": "boolean",
+          "description": "True if the person has died. Absent means living or not known; the app treats anyone born over 110 years ago as probably deceased."
+        },
+        "links": {
+          "$ref": "#/$defs/ExternalLinks"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string",
+          "description": "Biography and free-text notes."
+        },
+        "sourceNotes": {
+          "type": "string",
+          "description": "Free-text record of sources (certificates, census entries, family recollections). Structured sources via citations are optional."
+        },
+        "research": {
+          "$ref": "#/$defs/Research"
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "Family": {
+      "description": "A union of up to two partners and the children of that union. A family with one or zero known partners is valid.",
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FamilyId"
+        },
+        "partners": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "personId"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "personId": {
+                "$ref": "#/$defs/PersonId"
+              },
+              "status": {
+                "$ref": "#/$defs/Status"
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Citation"
+                }
+              }
+            }
+          }
+        },
+        "relationship": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "enum": [
+                "marriage",
+                "civil-partnership",
+                "partnership",
+                "unknown"
+              ]
+            },
+            "status": {
+              "$ref": "#/$defs/Status"
+            },
+            "start": {
+              "$ref": "#/$defs/Date",
+              "description": "When the partnership began, e.g. the marriage date."
+            },
+            "end": {
+              "$ref": "#/$defs/Date",
+              "description": "When the partnership ended."
+            },
+            "endReason": {
+              "enum": [
+                "death",
+                "divorce",
+                "separation",
+                "annulment",
+                "unknown"
+              ]
+            }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "personId"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "personId": {
+                "$ref": "#/$defs/PersonId"
+              },
+              "relation": {
+                "enum": [
+                  "biological",
+                  "adopted",
+                  "step",
+                  "foster",
+                  "unknown"
+                ],
+                "default": "biological"
+              },
+              "status": {
+                "$ref": "#/$defs/Status"
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Citation"
+                }
+              }
+            }
+          }
+        },
+        "childrenComplete": {
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ],
+          "default": "unknown",
+          "description": "Whether the children list is believed complete. 'no' means there are known or suspected missing children."
+        },
+        "expectedChildren": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Evidence about how many children there should be, e.g. from the 1911 census 'children born alive' column.",
+          "properties": {
+            "min": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "citations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Citation"
+              }
+            },
+            "note": {
+              "type": "string"
+            }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "research": {
+          "$ref": "#/$defs/Research"
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "Event": {
+      "description": "Anything that happened at a time and/or place, with one or more participants. Point events (birth) and spans (residence, occupation) both drive timelines; place references drive maps.",
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "participants"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EventId"
+        },
+        "type": {
+          "type": "string",
+          "description": "Standard types listed; any other string is allowed for custom events.",
+          "anyOf": [
+            {
+              "enum": [
+                "birth",
+                "baptism",
+                "marriage",
+                "divorce",
+                "death",
+                "burial",
+                "census",
+                "residence",
+                "occupation",
+                "education",
+                "migration",
+                "military",
+                "religion",
+                "probate"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^custom:.+$"
+            }
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "Short human-readable label, e.g. 'Apprenticed as a cooper'."
+        },
+        "date": {
+          "$ref": "#/$defs/Date"
+        },
+        "place": {
+          "type": "object",
+          "required": [
+            "placeId"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "placeId": {
+              "$ref": "#/$defs/PlaceId"
+            },
+            "detail": {
+              "type": "string",
+              "description": "Street address, house name etc. below the place level."
+            },
+            "status": {
+              "$ref": "#/$defs/Status"
+            }
+          }
+        },
+        "participants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "personId"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "personId": {
+                "$ref": "#/$defs/PersonId"
+              },
+              "role": {
+                "type": "string",
+                "default": "principal",
+                "description": "e.g. principal, spouse, witness, informant, head, wife, son, daughter, servant, parent."
+              },
+              "status": {
+                "$ref": "#/$defs/Status"
+              }
+            }
+          }
+        },
+        "familyId": {
+          "$ref": "#/$defs/FamilyId",
+          "description": "For family-level events such as marriage."
+        },
+        "value": {
+          "type": "string",
+          "description": "For attribute-like events, e.g. the occupation itself."
+        },
+        "status": {
+          "$ref": "#/$defs/Status",
+          "description": "Confidence that the event happened at all."
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "Place": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/PlaceId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "description": "e.g. country, county, town, parish, street, building."
+        },
+        "parentId": {
+          "$ref": "#/$defs/PlaceId",
+          "description": "Enclosing place, giving a hierarchy (parish → town → county → country)."
+        },
+        "altNames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "period": {
+                "type": "string",
+                "description": "EDTF interval when this name applied."
+              },
+              "lang": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "coordinates": {
+          "type": "object",
+          "required": [
+            "lat",
+            "lon"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "lon": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "approx": {
+              "type": "boolean"
+            }
+          }
+        },
+        "links": {
+          "$ref": "#/$defs/ExternalLinks"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "Source": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/SourceId"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "certificate",
+            "parish-register",
+            "census",
+            "will",
+            "newspaper",
+            "military",
+            "photograph",
+            "book",
+            "website",
+            "oral",
+            "family-document",
+            "other"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "description": "EDTF date of the source itself."
+        },
+        "repository": {
+          "type": "string",
+          "description": "Where it's held, e.g. GRO, a county archive, a family member."
+        },
+        "reference": {
+          "type": "string",
+          "description": "Catalogue or index reference."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "reliability": {
+          "enum": [
+            "original",
+            "derivative",
+            "authored",
+            "hearsay"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "View": {
+      "description": "A saved, named way of looking at the data. Views store queries, never copies of data.",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ViewId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "tree",
+            "timeline",
+            "map",
+            "list",
+            "gaps"
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Which people are included. Combined with AND across properties.",
+          "properties": {
+            "root": {
+              "$ref": "#/$defs/PersonId"
+            },
+            "direction": {
+              "enum": [
+                "ancestors",
+                "descendants",
+                "both",
+                "connected"
+              ],
+              "description": "'connected' = everyone reachable from root by any relationship."
+            },
+            "generations": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "includeSpouses": {
+              "type": "boolean",
+              "default": true
+            },
+            "people": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PersonId"
+              },
+              "description": "Explicit people list, alternative or addition to root."
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "minStatus": {
+              "$ref": "#/$defs/Status",
+              "description": "Hide facts below this confidence (order: guess < likely < confirmed)."
+            }
+          }
+        },
+        "display": {
+          "type": "object",
+          "description": "Kind-specific display options, e.g. timeline range and event types, map base layer, tree orientation.",
+          "additionalProperties": true,
+          "properties": {
+            "timeRange": {
+              "type": "string",
+              "description": "EDTF interval, e.g. '1850/1950'."
+            },
+            "eventTypes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "showUncertainty": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    }
+  }
+}

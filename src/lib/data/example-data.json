@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "0.2",
+  "people": [
+    {
+      "id": "per_john_smith",
+      "names": [{ "type": "birth", "given": "John", "surname": "Smith", "status": "confirmed" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "Cooper by trade. Lived on Kirkstall Road, Leeds, in 1891.",
+      "sourceNotes": "Marriage certificate 1883 (GRO): age 25, cooper.\n1891 census, Leeds, schedule 112.",
+      "research": { "stage": "in-progress", "todo": ["Find baptism – age on marriage cert suggests c.1858"] }
+    },
+    {
+      "id": "per_mary_smith",
+      "names": [
+        { "type": "married", "given": "Mary", "surname": "Smith", "status": "likely", "preferred": true, "date": "1883-06-02" },
+        { "type": "birth", "given": "Mary", "surname": "Walker", "status": "guess" }
+      ],
+      "sex": { "value": "F", "status": "confirmed" },
+      "deceased": true,
+      "tags": ["smith"],
+      "notes": "Family say she came from Bradford.",
+      "sourceNotes": "Maiden name from Aunt Jean (2026) – not yet checked.",
+      "research": { "stage": "sketch", "todo": ["Confirm maiden name from marriage cert"] }
+    },
+    {
+      "id": "per_thomas_smith",
+      "names": [{ "given": "Thomas", "surname": "Smith", "status": "confirmed" }],
+      "sex": { "value": "M", "status": "confirmed" },
+      "tags": ["smith"],
+      "sourceNotes": "Birth certificate, March 1885 (GRO).",
+      "research": { "stage": "in-progress", "todo": ["Who did he marry? Possibly Bridget Murphy"] }
+    },
+    {
+      "id": "per_ann_smith",
+      "names": [{ "given": "Ann", "surname": "Smith", "status": "likely" }],
+      "knownAs": "Annie",
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["smith"],
+      "sourceNotes": "Listed as 'Annie', daughter, in 1891 census.",
+      "research": { "stage": "sketch" }
+    },
+    {
+      "id": "per_bridget_murphy",
+      "names": [{ "given": "Bridget", "surname": "Murphy", "status": "likely" }],
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["murphy"],
+      "links": { "urls": [{ "url": "https://www.census.nationalarchives.ie/", "label": "Irish census search" }] },
+      "research": { "stage": "sketch", "todo": ["Find 1911 census entry in Leeds"] }
+    },
+    {
+      "id": "per_murphy_father",
+      "placeholder": true,
+      "names": [{ "display": "Unknown Murphy", "status": "guess" }],
+      "sex": { "value": "M", "status": "likely" },
+      "tags": ["murphy"]
+    },
+    {
+      "id": "per_catherine_murphy",
+      "names": [{ "given": "Catherine", "surname": "Murphy", "status": "guess" }],
+      "sex": { "value": "F", "status": "confirmed" },
+      "tags": ["murphy"],
+      "research": { "stage": "sketch" }
+    }
+  ],
+  "families": [
+    {
+      "id": "fam_smith_walker",
+      "partners": [{ "personId": "per_john_smith", "status": "confirmed" }, { "personId": "per_mary_smith", "status": "confirmed" }],
+      "relationship": {
+        "type": "marriage", "status": "confirmed",
+        "start": { "edtf": "1883-06-02", "status": "confirmed" },
+        "end": { "edtf": "1919?", "status": "guess" },
+        "endReason": "death"
+      },
+      "children": [
+        { "personId": "per_thomas_smith", "relation": "biological", "status": "confirmed" },
+        { "personId": "per_ann_smith", "relation": "biological", "status": "likely" }
+      ],
+      "childrenComplete": "no",
+      "expectedChildren": { "min": 4, "note": "1911 census: 4 children born alive" }
+    },
+    {
+      "id": "fam_murphy",
+      "partners": [{ "personId": "per_murphy_father" }, { "personId": "per_catherine_murphy", "status": "guess" }],
+      "relationship": { "type": "unknown" },
+      "children": [{ "personId": "per_bridget_murphy", "relation": "biological", "status": "likely" }],
+      "childrenComplete": "unknown"
+    }
+  ],
+  "events": [
+    { "id": "evt_birth_john", "type": "birth", "date": { "edtf": "1858~", "status": "likely" }, "participants": [{ "personId": "per_john_smith" }] },
+    { "id": "evt_death_john", "type": "death", "date": { "edtf": "1919?", "status": "guess" }, "place": { "placeId": "plc_leeds", "status": "likely" }, "participants": [{ "personId": "per_john_smith" }] },
+    { "id": "evt_birth_mary", "type": "birth", "date": { "edtf": "1860~", "status": "guess" }, "place": { "placeId": "plc_bradford", "status": "guess" }, "participants": [{ "personId": "per_mary_smith" }] },
+    { "id": "evt_death_mary", "type": "death", "date": { "edtf": "1931", "status": "likely" }, "place": { "placeId": "plc_leeds" }, "participants": [{ "personId": "per_mary_smith" }] },
+    { "id": "evt_birth_thomas", "type": "birth", "date": { "edtf": "1885-03", "status": "confirmed" }, "place": { "placeId": "plc_leeds", "status": "confirmed" }, "participants": [{ "personId": "per_thomas_smith" }] },
+    { "id": "evt_birth_ann", "type": "birth", "date": { "edtf": "188X", "status": "guess" }, "participants": [{ "personId": "per_ann_smith" }] },
+    { "id": "evt_birth_bridget", "type": "birth", "date": { "edtf": "1888?", "status": "guess" }, "place": { "placeId": "plc_cork", "status": "likely" }, "participants": [{ "personId": "per_bridget_murphy" }] }
+  ],
+  "places": [
+    { "id": "plc_leeds", "name": "Leeds", "type": "town", "coordinates": { "lat": 53.7997, "lon": -1.5492 }, "links": { "wikidata": "Q39121" } },
+    { "id": "plc_bradford", "name": "Bradford", "type": "town" },
+    { "id": "plc_cork", "name": "Cork", "type": "town", "altNames": [{ "name": "Corcaigh", "lang": "ga" }], "coordinates": { "lat": 51.8985, "lon": -8.4756 } }
+  ],
+  "sources": [],
+  "views": []
+}
