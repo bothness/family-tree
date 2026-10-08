@@ -9,7 +9,7 @@
 
 	const layout = $derived(layoutTree(app.data, app.visibleBranches));
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
-	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost' } as const;
+	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe' } as const;
 
 	// Focus edge markers: "↑ parents" above someone whose parents are just out of view, "+3 children" below a family.
 	// Clicking one shows one more generation that way.
@@ -295,6 +295,7 @@
 				{#each layout.ghosts as g (g.familyId)}
 					<g
 						class="ghost"
+						class:maybe={!g.missing}
 						transform="translate({g.x},{g.y})"
 						tabindex="0"
 						role="button"

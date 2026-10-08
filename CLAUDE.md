@@ -40,7 +40,7 @@ Run `npm test` and `npm run check` before finishing any change.
 
 ## Product principles
 - Sketching must stay quick. Extra detail is optional and tucked away, and should never complicate adding basic people.
-- Gaps should always be visible: guesses in pencil, dashed lines for uncertain links, orange placeholders for missing children, and the Research to-do tab.
+- Gaps should always be visible: guesses in pencil, dashed lines for uncertain links, orange placeholders for children known to be missing (an expected count was recorded), pencil "more children?" placeholders where there might be more, and the Research to-do tab.
 - Use plain language in the UI ("Child of", "Someone already added"), not data-model terms.
 
 ## Where we are

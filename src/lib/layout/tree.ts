@@ -8,7 +8,8 @@ export const NODE_W = 156, NODE_H = 58, H_GAP = 18, V_GAP = 70, GHOST_W = 104, T
 
 export interface NodeBox { id: string; x: number; y: number }
 export interface GhostBox { familyId: string; x: number; y: number; missing: number | null }
-export type LineStyle = 'solid' | 'likely' | 'guess' | 'ghost';
+/** ghost = line to a known-missing-children placeholder; maybe = to a "more children?" one. */
+export type LineStyle = 'solid' | 'likely' | 'guess' | 'ghost' | 'maybe';
 export interface Line { d: string; style: LineStyle }
 export interface BranchLabel { text: string; x: number }
 export interface TreeLayout { nodes: NodeBox[]; ghosts: GhostBox[]; lines: Line[]; labels: BranchLabel[]; width: number; height: number }
@@ -131,6 +132,12 @@ function layoutComponent(d: Dataset, comp: string[], x0: number) {
 	return { pos, ghosts, right, bottom };
 }
 
+/** Children known to be missing (expected count minus those recorded), or null if no count was recorded. */
+function missingCount(f: Family): number | null {
+	const min = f.expectedChildren?.min;
+	return min != null && min > f.children.length ? min - f.children.length : null;
+}
+
 const styleOf = (st?: Status | ''): LineStyle => (st === 'guess' ? 'guess' : st === 'likely' ? 'likely' : 'solid');
 
 export function layoutTree(d: Dataset, branches: { label: string; ids: string[] }[]): TreeLayout {
@@ -159,7 +166,7 @@ export function layoutTree(d: Dataset, branches: { label: string; ids: string[] 
 				my = a.y + NODE_H;
 			}
 			const targets = cs.map((id) => ({ x: L.pos[id].x + NODE_W / 2, y: L.pos[id].y, style: styleOf(f.children.find((c) => c.personId === id)!.status) }));
-			if (gh) targets.push({ x: gh.x + GHOST_W / 2, y: gh.y, style: 'ghost' });
+			if (gh) targets.push({ x: gh.x + GHOST_W / 2, y: gh.y, style: missingCount(f) ? 'ghost' : 'maybe' });
 			if (!targets.length) continue;
 			const busY = targets[0].y - 22;
 			const xs = targets.map((v) => v.x).concat(mx != null ? [mx] : []);
@@ -169,9 +176,7 @@ export function layoutTree(d: Dataset, branches: { label: string; ids: string[] 
 		}
 		for (const [id, p] of Object.entries(L.pos)) out.nodes.push({ id, ...p });
 		for (const g of L.ghosts) {
-			const have = g.f.children.length,
-				min = g.f.expectedChildren?.min;
-			out.ghosts.push({ familyId: g.f.id, x: g.x, y: g.y, missing: min != null && min > have ? min - have : null });
+			out.ghosts.push({ familyId: g.f.id, x: g.x, y: g.y, missing: missingCount(g.f) });
 		}
 		x0 = L.right + 60;
 		out.height = Math.max(out.height, L.bottom + 24);

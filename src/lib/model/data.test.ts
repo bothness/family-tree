@@ -89,3 +89,18 @@ describe('tree layout in focus mode', () => {
 		expect(focusSet(d, 'per_john_smith', { up: 0, down: 0, width: 'direct' }).edges).toContainEqual({ dir: 'down', familyId: 'fam_smith_walker', hidden: 2 });
 	});
 });
+
+describe('missing-children placeholders', () => {
+	const styles = (d: ReturnType<typeof fresh>) => layoutTree(d, components(d).map((ids) => ({ label: '', ids }))).lines.map((l) => l.style);
+
+	it('are orange ("ghost") when an expected count says children are missing', () => {
+		expect(styles(fresh())).toContain('ghost');
+	});
+
+	it('are pencil ("maybe") when only marked "some missing" without a count', () => {
+		const d = fresh();
+		delete d.families.find((f) => f.id === 'fam_smith_walker')!.expectedChildren;
+		expect(styles(d)).toContain('maybe');
+		expect(styles(d)).not.toContain('ghost');
+	});
+});

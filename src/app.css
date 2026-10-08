@@ -102,6 +102,10 @@ svg text{font-family:var(--f-ui)}
 .ghost rect{fill:var(--warn-soft);stroke:var(--warn);stroke-dasharray:3 3}
 .ghost text{fill:var(--warn);font-size:13px;font-weight:500}
 .ghost{cursor:pointer}
+/* "more children?" with no recorded count: a pencilled query rather than a known gap */
+.ln.maybe{stroke:var(--pencil);stroke-dasharray:2 4}
+.ghost.maybe rect{fill:none;stroke:var(--pencil)}
+.ghost.maybe text{fill:var(--pencil);font-family:var(--f-pencil);font-size:16px;font-weight:500}
 .edge{cursor:pointer}
 .edge line{stroke:var(--ink-soft);stroke-width:1.2;stroke-dasharray:2 3}
 .edge rect{fill:var(--sheet);stroke:var(--ink-soft);stroke-dasharray:3 2}
