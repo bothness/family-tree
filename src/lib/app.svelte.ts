@@ -78,6 +78,8 @@ class AppState {
 	showEveryone() {
 		this.focus = null;
 		this.viewId = null;
+		this.picked = null;
+		this.pickingFor = null;
 		this.fitTree();
 	}
 

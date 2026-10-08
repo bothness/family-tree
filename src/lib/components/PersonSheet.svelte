@@ -9,6 +9,7 @@
 	} from '#lib/model/queries.ts';
 	import { deletePerson, setChildOf, setLife } from '#lib/model/mutations.ts';
 	import { expandToInclude, type FocusOptions } from '#lib/model/focus.ts';
+	import { setViewScope, viewKind } from '#lib/model/views.ts';
 	import { DropdownMenu } from 'bits-ui';
 	import type { EndReason, Family, Name, NameType, RelType, ResearchStage, Sex, Status } from '#lib/model/types.ts';
 
@@ -41,8 +42,9 @@
 
 	let info = $state('');
 	/** Scroll a newly shown notice into view (the panel may be scrolled down to the add form). */
-	// Waits a frame so the add form has closed and the panel has its final height.
-	const reveal = (el: HTMLElement) => void requestAnimationFrame(() => el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+	// Waits two frames so the add form has closed and the panel has its final height.
+	const reveal = (el: HTMLElement) =>
+		void requestAnimationFrame(() => requestAnimationFrame(() => el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })));
 	/** The relative just added from this panel, so we can say if the current focus hides them. */
 	let added = $state<string | null>(null);
 	/** The smallest widening of the current focus that would show the person just added. */
@@ -177,11 +179,11 @@
 		<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
 	</div>
 </div>
-{#snippet outOfView(id: string, msg: string, expandTo: FocusOptions | null = null)}
+{#snippet outOfView(id: string, msg: string, primary: { label: string; run: () => void } | null = null)}
 	<div class="outofview" role="status" use:reveal>
 		<p><b>Not in this view.</b> {msg}</p>
-		{#if expandTo}
-			<button class="btn small" onclick={() => app.adjustFocus(expandTo)}>Expand view</button>
+		{#if primary}
+			<button class="btn small" onclick={primary.run}>{primary.label}</button>
 		{:else}
 			<button class="btn small" onclick={() => app.centreOn(id)}>Show in full tree</button>
 		{/if}
@@ -305,11 +307,21 @@
 	{/if}
 	{#if info}<div class="hint">{info}</div>{/if}
 	{#if added && person(d, added) && !app.inView(added)}
-		{@render outOfView(
-			added,
-			`${displayName(person(d, added))} was added, but is outside the current focus.` + (expansion ? ` Expanding the view will ${describeExpansion(app.activeFocus!, expansion)}.` : ''),
-			expansion
-		)}
+		{@const name = displayName(person(d, added))}
+		{#if app.activeFocus}
+			{@render outOfView(
+				added,
+				`${name} was added, but is outside the current focus.` + (expansion ? ` Expanding the view will ${describeExpansion(app.activeFocus, expansion)}.` : ''),
+				expansion ? { label: 'Expand view', run: () => app.adjustFocus(expansion) } : null
+			)}
+		{:else if app.activeView}
+			{@const v = app.activeView}
+			{@render outOfView(
+				added,
+				`${name} was added, but isn't in the view “${v.name}”.`,
+				viewKind(v) === 'people' ? { label: 'Add to this view', run: () => setViewScope(d, v.id, { people: [...(v.scope?.people ?? []), added!] }) } : null
+			)}
+		{/if}
 	{/if}
 </div>
 

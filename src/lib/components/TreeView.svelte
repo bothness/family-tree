@@ -58,7 +58,10 @@
 		if (app.camera === null && vw && vh && layout.width)
 			untrack(() => {
 				app.camera = fitAll();
+				// Only a resize arriving straight after the fit (e.g. the person panel closing at the same moment)
+				// re-fits; after that the view holds still, as usual.
 				autoFitted = true;
+				requestAnimationFrame(() => requestAnimationFrame(() => (autoFitted = false)));
 			});
 	});
 	$effect(() => {
