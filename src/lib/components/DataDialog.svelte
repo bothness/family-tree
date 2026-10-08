@@ -25,6 +25,7 @@
 			app.data = migrate(d);
 			app.select(null);
 			app.branch = 'all';
+			app.fitTree();
 			onClose();
 		} catch (e) {
 			err = "Couldn't load that: " + (e as Error).message;
@@ -38,6 +39,7 @@
 		app.data = kind === 'reset' ? sampleData() : emptyDataset();
 		app.select(null);
 		app.branch = 'all';
+		app.fitTree();
 		onClose();
 	}
 </script>

@@ -1,13 +1,189 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { app } from '#lib/app.svelte.ts';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
 	import { GHOST_W, NODE_H, NODE_W, layoutTree } from '#lib/layout/tree.ts';
+	import { ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
 
 	const layout = $derived(layoutTree(app.data, app.visibleBranches));
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost' } as const;
+
+	// ---- camera (V1) ----
+	let box: HTMLDivElement | undefined = $state();
+	let vw = $state(0),
+		vh = $state(0);
+	const fitAll = () => fit({ x: 0, y: 0, w: layout.width, h: layout.height }, vw, vh);
+	const cam: Camera = $derived(app.camera ?? { x: 0, y: 0, k: 1 });
+	const set = (c: Camera) => (app.camera = c);
+
+	// Fit once when asked (camera reset to null), then hold still: edits re-run the layout but don't move the view.
+	$effect(() => {
+		if (app.camera === null && vw && vh && layout.width) untrack(() => set(fitAll()));
+	});
+
+	$effect(() => {
+		if (!box) return;
+		const ro = new ResizeObserver(([e]) => {
+			vw = e.contentRect.width;
+			vh = e.contentRect.height;
+		});
+		ro.observe(box);
+		return () => ro.disconnect();
+	});
+
+	// Keep the selected person on screen when they change or the canvas resizes (e.g. the person panel opens).
+	// Edits don't trigger this, so the view stays put while sketching.
+	$effect(() => {
+		const id = app.selected;
+		if (!id || !vw || !vh) return;
+		untrack(() => {
+			const n = layout.nodes.find((n) => n.id === id);
+			if (!n) return;
+			const next = ensureVisible(cam, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
+			if (next !== cam) set(next);
+		});
+	});
+
+	// Pan to show people who have just appeared (e.g. a child added from the person panel), without refitting.
+	let seen = new Set<string>();
+	$effect(() => {
+		const ids = layout.nodes.map((n) => n.id);
+		untrack(() => {
+			const fresh = seen.size && app.camera ? layout.nodes.filter((n) => !seen.has(n.id)) : [];
+			seen = new Set(ids);
+			if (!fresh.length || !vw || !vh) return;
+			let c = cam;
+			for (const n of fresh) c = ensureVisible(c, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
+			if (c !== cam) set(c);
+		});
+	});
+
+	const zoomBy = (f: number) => set(zoomAt(cam, f, vw / 2, vh / 2));
+
+	// Wheel needs a non-passive listener so it can stop the page scrolling.
+	$effect(() => {
+		if (!box) return;
+		const el = box;
+		let gesturing = false;
+		const onWheel = (e: WheelEvent) => {
+			e.preventDefault();
+			if (gesturing && e.ctrlKey) return; // Safari pinch already handled below; don't zoom twice
+			const a = wheelAction(e as WheelEvent & { wheelDeltaY?: number });
+			const r = el.getBoundingClientRect();
+			set('zoom' in a ? zoomAt(cam, a.zoom, e.clientX - r.left, e.clientY - r.top) : panBy(cam, ...a.pan));
+		};
+		// Safari reports trackpad pinch as non-standard gesture events rather than Ctrl + wheel.
+		let lastScale = 1;
+		const onGesture = (e: Event) => {
+			e.preventDefault();
+			const g = e as Event & { scale: number; clientX: number; clientY: number };
+			gesturing = e.type !== 'gestureend';
+			if (e.type === 'gesturestart') lastScale = 1;
+			else if (gesturing) {
+				const r = el.getBoundingClientRect();
+				set(zoomAt(cam, g.scale / lastScale, g.clientX - r.left, g.clientY - r.top));
+				lastScale = g.scale;
+			}
+		};
+		el.addEventListener('wheel', onWheel, { passive: false });
+		el.addEventListener('gesturestart', onGesture);
+		el.addEventListener('gesturechange', onGesture);
+		el.addEventListener('gestureend', onGesture);
+		return () => {
+			el.removeEventListener('gestureend', onGesture);
+			el.removeEventListener('wheel', onWheel);
+			el.removeEventListener('gesturestart', onGesture);
+			el.removeEventListener('gesturechange', onGesture);
+		};
+	});
+
+	// Pointers: one drags to pan (after a few pixels, so a click still selects), two pinch to zoom.
+	const DRAG_PX = 4;
+	const pointers = new Map<number, { x: number; y: number }>();
+	let start: { x: number; y: number } | null = null;
+	let panning = $state(false);
+	let swallowClick = false;
+
+	function local(e: PointerEvent) {
+		const r = box!.getBoundingClientRect();
+		return { x: e.clientX - r.left, y: e.clientY - r.top };
+	}
+	function down(e: PointerEvent) {
+		if (e.pointerType === 'mouse' && e.button !== 0) return;
+		pointers.set(e.pointerId, local(e));
+		if (pointers.size === 1) {
+			start = local(e);
+			swallowClick = false;
+		}
+	}
+	function move(e: PointerEvent) {
+		const prev = pointers.get(e.pointerId);
+		if (!prev) return;
+		const p = local(e);
+		if (pointers.size >= 2) {
+			const [a, b] = [...pointers.entries()].map(([id, q]) => (id === e.pointerId ? p : q));
+			const [a0, b0] = [...pointers.values()];
+			const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+				mid0 = { x: (a0.x + b0.x) / 2, y: (a0.y + b0.y) / 2 };
+			const d = Math.hypot(a.x - b.x, a.y - b.y),
+				d0 = Math.hypot(a0.x - b0.x, a0.y - b0.y);
+			set(zoomAt(panBy(cam, mid.x - mid0.x, mid.y - mid0.y), d0 ? d / d0 : 1, mid.x, mid.y));
+			startPan(e);
+		} else if (panning) {
+			set(panBy(cam, p.x - prev.x, p.y - prev.y));
+		} else if (start && Math.hypot(p.x - start.x, p.y - start.y) > DRAG_PX) {
+			startPan(e);
+			set(panBy(cam, p.x - prev.x, p.y - prev.y));
+		}
+		pointers.set(e.pointerId, p);
+	}
+	function startPan(e: PointerEvent) {
+		if (!panning) box!.setPointerCapture(e.pointerId);
+		panning = true;
+		swallowClick = true;
+	}
+	function up(e: PointerEvent) {
+		pointers.delete(e.pointerId);
+		if (!pointers.size) {
+			panning = false;
+			start = null;
+		}
+	}
+	// A drag ends with a click on whatever is under the pointer; don't let it select a person.
+	function clickCapture(e: MouseEvent) {
+		if (swallowClick) {
+			e.stopPropagation();
+			swallowClick = false;
+		}
+	}
+
+	function onKey(e: KeyboardEvent) {
+		const t = e.target as HTMLElement;
+		if (e.metaKey || e.ctrlKey || e.altKey || t.closest('input, textarea, select, [contenteditable]') || app.showData) return;
+		const inTree = t === document.body || !!box?.contains(t);
+		const step = 80;
+		const act: Record<string, () => void> = {
+			'+': () => zoomBy(1.25),
+			'=': () => zoomBy(1.25),
+			'-': () => zoomBy(0.8),
+			'0': () => app.fitTree()
+		};
+		if (inTree)
+			Object.assign(act, {
+				ArrowLeft: () => set(panBy(cam, step, 0)),
+				ArrowRight: () => set(panBy(cam, -step, 0)),
+				ArrowUp: () => set(panBy(cam, 0, step)),
+				ArrowDown: () => set(panBy(cam, 0, -step))
+			});
+		const fn = act[e.key];
+		if (fn) {
+			e.preventDefault();
+			fn();
+		}
+	}
 
 	function key(e: KeyboardEvent, fn: () => void) {
 		if (e.key === 'Enter' || e.key === ' ') {
@@ -17,52 +193,75 @@
 	}
 </script>
 
+<svelte:window onkeydown={onKey} />
+
 {#if !app.data.people.length}
 	<div class="empty">No one here yet. Use <b>+ New person</b> to start a tree.</div>
 {:else}
-	<svg width={layout.width} height={layout.height} viewBox="0 0 {layout.width} {layout.height}" role="img" aria-label="Family tree">
-		{#each layout.labels as l (l.x)}
-			<text class="brlabel" x={l.x} y="18">{l.text}</text>
-		{/each}
-		{#each layout.lines as l, i (i)}
-			<path class={lineClass[l.style]} d={l.d} />
-		{/each}
-		{#each layout.nodes as n (n.id)}
-			{@const p = person(app.data, n.id)!}
-			{@const guess = nameIsGuess(p)}
-			{@const dates = cardDates(app.data, n.id)}
-			{@const dateGuess = lifeEvent(app.data, n.id, 'birth')?.date?.status === 'guess' || dates === 'no dates yet'}
-			{@const stage = p.research?.stage ?? 'none'}
-			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-			<g
-				class="node"
-				class:sel={app.selected === n.id}
-				class:ph={p.placeholder}
-				transform="translate({n.x},{n.y})"
-				tabindex="0"
-				role="button"
-				aria-label={displayName(p)}
-				onclick={() => app.select(n.id)}
-				onkeydown={(e) => key(e, () => app.select(n.id))}
-			>
-				<rect class="nbox" width={NODE_W} height={NODE_H} rx="6" />
-				<text class="nm" class:pencil={guess} x="11" y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
-				<text class="dt" class:pencil={dateGuess} x="11" y="45">{dates}</text>
-				<circle class="stage {stage}" cx={NODE_W - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
+	<div
+		class="canvas"
+		class:panning
+		bind:this={box}
+		onpointerdown={down}
+		onpointermove={move}
+		onpointerup={up}
+		onpointercancel={up}
+		onpointerleave={(e) => !panning && up(e)}
+		onclickcapture={clickCapture}
+		role="presentation"
+	>
+		<svg width="100%" height="100%" role="img" aria-label="Family tree">
+			<g transform="translate({cam.x},{cam.y}) scale({cam.k})">
+				{#each layout.labels as l (l.x)}
+					<text class="brlabel" x={l.x} y="18">{l.text}</text>
+				{/each}
+				{#each layout.lines as l, i (i)}
+					<path class={lineClass[l.style]} d={l.d} />
+				{/each}
+				{#each layout.nodes as n (n.id)}
+					{@const p = person(app.data, n.id)!}
+					{@const guess = nameIsGuess(p)}
+					{@const dates = cardDates(app.data, n.id)}
+					{@const dateGuess = lifeEvent(app.data, n.id, 'birth')?.date?.status === 'guess' || dates === 'no dates yet'}
+					{@const stage = p.research?.stage ?? 'none'}
+					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+					<g
+						class="node"
+						class:sel={app.selected === n.id}
+						class:ph={p.placeholder}
+						transform="translate({n.x},{n.y})"
+						tabindex="0"
+						role="button"
+						aria-label={displayName(p)}
+						onclick={() => app.select(n.id)}
+						onkeydown={(e) => key(e, () => app.select(n.id))}
+					>
+						<rect class="nbox" width={NODE_W} height={NODE_H} rx="6" />
+						<text class="nm" class:pencil={guess} x="11" y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
+						<text class="dt" class:pencil={dateGuess} x="11" y="45">{dates}</text>
+						<circle class="stage {stage}" cx={NODE_W - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
+					</g>
+				{/each}
+				{#each layout.ghosts as g (g.familyId)}
+					<g
+						class="ghost"
+						transform="translate({g.x},{g.y})"
+						tabindex="0"
+						role="button"
+						onclick={() => onGhost(g.familyId)}
+						onkeydown={(e) => key(e, () => onGhost(g.familyId))}
+					>
+						<rect width={GHOST_W} height={NODE_H} rx="6" />
+						<text x={GHOST_W / 2} y={NODE_H / 2 + 4} text-anchor="middle">{g.missing ? `+${g.missing} more expected` : 'more children?'}</text>
+					</g>
+				{/each}
 			</g>
-		{/each}
-		{#each layout.ghosts as g (g.familyId)}
-			<g
-				class="ghost"
-				transform="translate({g.x},{g.y})"
-				tabindex="0"
-				role="button"
-				onclick={() => onGhost(g.familyId)}
-				onkeydown={(e) => key(e, () => onGhost(g.familyId))}
-			>
-				<rect width={GHOST_W} height={NODE_H} rx="6" />
-				<text x={GHOST_W / 2} y={NODE_H / 2 + 4} text-anchor="middle">{g.missing ? `+${g.missing} more expected` : 'more children?'}</text>
-			</g>
-		{/each}
-	</svg>
+		</svg>
+		<div class="zoombar" role="group" aria-label="Zoom">
+			<button type="button" onclick={() => zoomBy(0.8)} aria-label="Zoom out" title="Zoom out (−)">−</button>
+			<button type="button" class="pct" onclick={() => zoomBy(1 / cam.k)} title="Back to 100%">{Math.round(cam.k * 100)}%</button>
+			<button type="button" onclick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in (+)">+</button>
+			<button type="button" onclick={() => app.fitTree()} title="Show everyone (0)">Fit</button>
+		</div>
+	</div>
 {/if}

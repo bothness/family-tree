@@ -2,6 +2,7 @@
 // functions in model/mutations.ts trigger UI updates directly.
 import type { Dataset } from './model/types.ts';
 import type { RelativeKind } from './model/mutations.ts';
+import type { Camera } from './layout/viewport.ts';
 import { components, displayName, person, primaryName } from './model/queries.ts';
 import { migrate } from './model/migrate.ts';
 import sample from './data/example-data.json';
@@ -31,6 +32,8 @@ class AppState {
 	/** Which "add relative" form is open in the person panel. */
 	addKind = $state<RelativeKind | null>(null);
 	showData = $state(false);
+	/** Tree pan/zoom. null = fit everything next time the tree is drawn. Kept here so it survives tab switches. */
+	camera = $state<Camera | null>(null);
 
 	branches = $derived(components(this.data).map((ids) => ({ label: branchLabel(this.data, ids), ids })));
 	visibleBranches = $derived(
@@ -39,6 +42,11 @@ class AppState {
 			: this.branches.filter((b) => b.label === this.branch)
 	);
 	visibleIds = $derived(this.visibleBranches.flatMap((b) => b.ids));
+
+	/** Fit the whole tree. Only for explicit actions (load, Fit, branch change), never ordinary edits. */
+	fitTree() {
+		this.camera = null;
+	}
 
 	select(id: string | null, addKind: RelativeKind | null = null) {
 		this.selected = id;

@@ -47,10 +47,19 @@ button{cursor:pointer}
 .legend .ink{font-family:var(--f-name);color:var(--ink)}
 
 .work{flex:1;display:flex;min-height:0}
-.main{flex:1;min-width:0;overflow:auto}
+.main{flex:1;min-width:0;overflow:auto;position:relative}
+.main.tree{overflow:hidden}
 .pad{padding:16px}
 
-/* tree */
+/* tree: a pan/zoom canvas filling the main area */
+.canvas{position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.canvas.panning{cursor:grabbing}
+.canvas svg{display:block}
+.zoombar{position:absolute;right:12px;bottom:12px;display:flex;background:var(--sheet);border:1px solid var(--rule);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;cursor:default}
+.zoombar button{border:0;background:none;padding:5px 11px;min-width:34px;font-weight:500;color:var(--ink-soft)}
+.zoombar button + button{border-left:1px solid var(--rule)}
+.zoombar button:hover{color:var(--ink);background:var(--paper)}
+.zoombar .pct{font-size:13px;font-variant-numeric:tabular-nums;min-width:52px}
 svg text{font-family:var(--f-ui)}
 .nbox{fill:var(--sheet);stroke:var(--ink-soft);stroke-width:1}
 .node{cursor:pointer}

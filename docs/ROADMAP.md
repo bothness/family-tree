@@ -20,9 +20,9 @@ Also added: "Known as" name shown on the tree; biography/notes and free-text sou
 ## Phase B – Navigation
 | # | Change |
 |---|---|
-| V1 | Zoom in and out, pan, fit all |
-| V3 | Search for a person, then centre on them, or focus: show only them ± N generations |
-| V4 | Show or hide siblings in focus mode (hides siblings at every generation, and partners who aren't related to the focus person) |
+| V1 | Zoom in and out, pan, fit all. Trackpad: pinch zooms, two-finger scroll pans. Mouse: wheel zooms at the cursor, drag pans. Touch: pinch and drag. Plus +/−/0 keys and on-screen −/+/Fit buttons. The view only re-fits on load, Fit, search or focus changes, never on ordinary edits |
+| V3 | Search for a person (all names, including maiden names and "Known as"), then centre on them, or focus: show only them, N generations up and M down. Focus filters every view (tree, timeline, to-do, and later the map). Markers at the edge of a focus ("↑ parents", "+3 descendants") extend it one generation, so the numbers rarely need setting by hand |
+| V4 | Focus width, one three-way switch: **Direct line** (ancestors, descendants, co-parent partners) · **+ Siblings** (siblings of everyone on the direct line, half-siblings included) · **All relatives** (also their descendants, i.e. cousins, nieces and nephews, only where the shared ancestor is in view and no deeper than the "down" depth) |
 | V5 + V6 | Branches are named **saved views**, created either from a filter (e.g. descendants of John Smith, ancestors of Bridget, a tag) or by hand-picking people. No auto-naming of unconnected groups |
 | V2 | Two controls: collapse the view to one person, and reset to a blank view with nobody selected |
 
@@ -47,3 +47,7 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 - 8 Oct: branches = named saved views, from filters or hand-picked; no auto-naming.
 - 8 Oct: own tree layout, informed by other libraries.
 - 8 Oct: life events removed from UI (model keeps birth/death as events); notes, free-text sources, links and tags kept; "Known as" added.
+- 8 Oct: focus has separate "up" and "down" depths plus a width switch (direct line / + siblings / all relatives), which also covers V4. Focus is screen state for now; `View.scope` gains `up`, `down` and width when saved views (V5) are built.
+- 8 Oct: focus filters all views (tree, timeline, to-do, future map).
+- 8 Oct: pan/zoom by hand (no d3-zoom). Mouse wheel zooms, trackpad scroll pans, pinch zooms; ⌘/Ctrl + scroll always zooms.
+- 8 Oct: no Material UI or styled kit, as it would override the ink/pencil design. Use Bits UI (headless, unstyled) for complex widgets such as the search dropdown, styled with our own tokens.

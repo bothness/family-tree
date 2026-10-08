@@ -32,6 +32,10 @@
 		app.branch = 'all';
 		app.select(p.id);
 	}
+	function setBranch(b: string) {
+		app.branch = b;
+		app.fitTree();
+	}
 	function onKey(e: KeyboardEvent) {
 		if (e.key === 'Escape' && app.selected && !app.showData) app.select(null);
 	}
@@ -54,9 +58,9 @@
 
 <div class="bar">
 	{#if app.branches.length > 1}
-		<button class="chip" aria-pressed={app.branch === 'all'} onclick={() => (app.branch = 'all')}>Everyone</button>
+		<button class="chip" aria-pressed={app.branch === 'all'} onclick={() => setBranch('all')}>Everyone</button>
 		{#each app.branches as b (b.ids[0])}
-			<button class="chip" aria-pressed={app.branch === b.label} onclick={() => (app.branch = b.label)}>{b.label} <span style="opacity:.7">{b.ids.length}</span></button>
+			<button class="chip" aria-pressed={app.branch === b.label} onclick={() => setBranch(b.label)}>{b.label} <span style="opacity:.7">{b.ids.length}</span></button>
 		{/each}
 	{/if}
 	<div class="legend">
@@ -66,16 +70,18 @@
 </div>
 
 <div class="work">
-	<main class="main">
-		<div class="pad">
-			{#if app.tab === 'tree'}
-				<TreeView {onGhost} />
-			{:else if app.tab === 'timeline'}
-				<TimelineView />
-			{:else}
-				<TodoView onOpen={openPerson} />
-			{/if}
-		</div>
+	<main class="main" class:tree={app.tab === 'tree'}>
+		{#if app.tab === 'tree'}
+			<TreeView {onGhost} />
+		{:else}
+			<div class="pad">
+				{#if app.tab === 'timeline'}
+					<TimelineView />
+				{:else}
+					<TodoView onOpen={openPerson} />
+				{/if}
+			</div>
+		{/if}
 	</main>
 	{#if app.selected && app.data.people.some((p) => p.id === app.selected)}
 		<aside class="sheet">
