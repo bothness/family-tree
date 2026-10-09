@@ -127,3 +127,4 @@ What this means for decisions made before then:
 - Later: the demo may be too wide to read at a glance (Charles's ten children plus their spouses make a very wide row). Options: a smaller opening view, fewer spouses of the youngest generation, or compact cards by default for the demo; and see V13 (portrait cards) and V14 (left-to-right tree) under "Later – Wide trees".
 - Later: fonts come from Google Fonts, which tells Google the visitor's address; self-hosting them would keep everything but place search and map tiles on our own host.
 - 9 Oct: two options for wide trees go on the roadmap (V13 portrait cards with the photo above the name; V14 a left-to-right tree, possibly as an alternative view).
+- 9 Oct: deployed: https://bothness.github.io/family-tree/ (public repo, Pages source "GitHub Actions"; every push to `main` redeploys).
