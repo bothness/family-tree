@@ -172,7 +172,6 @@ describe('siblings with no parents recorded', () => {
 });
 
 // The demo family (E4): cousin marriages join the Darwins and Wedgwoods twice over, and several people remarried.
-// Skipped until the layout handles three or more partners and siblings who intermarry (see ROADMAP, E4).
 describe('tree layout rules on the Darwin–Wedgwood demo', () => {
 	const dd = migrate(structuredClone(demo));
 	const at = (root: string, o: FocusOptions) => {
