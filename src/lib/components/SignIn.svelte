@@ -68,6 +68,6 @@
 		<div bind:this={box} class="gsi"></div>
 		{#if notInvited}<button class="linkish" onclick={signOut}>Use a different account</button>{/if}
 		{#if err}<p class="hint warn">{err}</p>{/if}
-		<p class="hint small">Signing in shares only your name and email address with this site.</p>
+		<p class="hint small">Signing in shares only your name and email address with this site. <a href="./privacy.html">Privacy</a></p>
 	</div>
 </div>

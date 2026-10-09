@@ -13,7 +13,8 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"validate": "node scripts/validate.mjs",
-		"dev:family": "SYNC=cloudflare vite build && wrangler d1 migrations apply family-tree --local && wrangler pages dev --port 8788"
+		"dev:family": "npm run build:family && wrangler d1 migrations apply family-tree --local && wrangler pages dev --port 8788",
+		"build:family": "SYNC=cloudflare vite build && cp -R static-family/. build/"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^5.20260930.2",
