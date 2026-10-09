@@ -369,7 +369,7 @@
 		<svg width="100%" height="100%" role="img" aria-label="Family tree">
 			<defs>
 				<!-- avatars on cards (V10): photo clip and stand-in silhouettes -->
-				<clipPath id="avatar-clip" clipPathUnits="userSpaceOnUse"><rect x="8" y="11" width="36" height="36" rx="5" /></clipPath>
+				<clipPath id="avatar-clip" clipPathUnits="userSpaceOnUse"><rect x="6" y="6" width="46" height="46" rx="5" /></clipPath>
 				{#each ['M', 'F', 'U'] as const as k (k)}
 					<symbol id="sil-{k}" viewBox="0 0 36 36"><rect class="sil-bg" width="36" height="36" rx="5" />{#each SILHOUETTE[k] as d (d)}<path class="sil" {d} />{/each}</symbol>
 				{/each}
@@ -387,7 +387,7 @@
 					{@const dates = cardDates(app.data, n.id)}
 					{@const dateGuess = lifeEvent(app.data, n.id, 'birth')?.date?.status === 'guess' || dates === 'no dates yet'}
 					{@const stage = p.research?.stage ?? 'none'}
-					{@const tx = app.showPhotos ? 52 : 11}
+					{@const tx = app.showPhotos ? 61 : 11}
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 					<g
 						class="node"
@@ -407,9 +407,9 @@
 						{#if app.showPhotos}
 							{@const ph = photoOf(app.data, n.id)}
 							{#if ph?.thumb}
-								<image href={ph.thumb} x="8" y="11" width="36" height="36" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
+								<image href={ph.thumb} x="6" y="6" width="46" height="46" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
 							{:else}
-								<use href="#sil-{silhouetteKey(p.sex?.value)}" x="8" y="11" width="36" height="36" />
+								<use href="#sil-{silhouetteKey(p.sex?.value)}" x="6" y="6" width="46" height="46" />
 							{/if}
 						{/if}
 						<text class="nm" class:pencil={guess} x={tx} y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>

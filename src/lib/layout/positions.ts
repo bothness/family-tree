@@ -16,7 +16,7 @@ import { edtfRange } from '../model/edtf.ts';
 
 /** Card width without photos (compact) and with them (V10); the layout takes the width to use. */
 export const NODE_W = 156,
-	PHOTO_W = 196,
+	PHOTO_W = 204,
 	NODE_H = 58,
 	GHOST_W = 104;
 /** Gap between partners' cards. */

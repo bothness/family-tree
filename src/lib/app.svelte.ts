@@ -4,7 +4,7 @@ import type { Dataset } from './model/types.ts';
 import type { RelativeKind } from './model/mutations.ts';
 import type { Camera } from './layout/viewport.ts';
 import type { DataStore } from './storage/index.ts';
-import { prepareImage } from './media/images.ts';
+import { betterThumb, prepareImage } from './media/images.ts';
 import { removePhoto, setPhoto } from './model/media.ts';
 import { uid } from './model/mutations.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
@@ -227,6 +227,16 @@ class AppState {
 		await this.store.putMedia(id, img.image);
 		const { replaced } = setPhoto(this.data, pid, { mime: img.mime, width: img.width, height: img.height, thumb: img.thumb }, id);
 		if (replaced) await this.store.deleteMedia(replaced);
+	}
+
+	/** Remake thumbnails saved before they were made bigger and smoother, from the kept copies. */
+	async refreshThumbs() {
+		for (const m of this.data.media) {
+			if (!m.thumb) continue;
+			const kept = await this.store?.getMedia(m.id);
+			const t = kept && (await betterThumb(m.thumb, kept).catch(() => undefined));
+			if (t) m.thumb = t;
+		}
 	}
 
 	async removePhoto(pid: string) {

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { Dataset } from './types.ts';
 import { deletePerson, emptyDataset, newPerson } from './mutations.ts';
 import { photoOf, removePhoto, setPhoto, unusedMedia } from './media.ts';
-import { fitWithin, squareCrop } from '../media/images.ts';
+import { fitWithin, halvings, squareCrop } from '../media/images.ts';
 
 let d: Dataset;
 let ann: string;
@@ -46,5 +46,12 @@ describe('image sizes', () => {
 	it('crops thumbnails square, nearer the top for portraits', () => {
 		expect(squareCrop(400, 300)).toEqual({ x: 50, y: 0, side: 300 });
 		expect(squareCrop(300, 500)).toEqual({ x: 0, y: 40, side: 300 });
+	});
+
+	it('shrinks by at most half per step, so downscaled photos stay smooth', () => {
+		expect(halvings(8, 1)).toEqual([4, 2, 1]);
+		expect(halvings(3, 1)).toEqual([1.5, 1]);
+		expect(halvings(1.5, 1)).toEqual([1]);
+		expect(halvings(1, 1)).toEqual([1]);
 	});
 });
