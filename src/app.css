@@ -295,6 +295,19 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .legend{display:none}
   .sheet{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:78%;border-left:0;border-top:1px solid var(--rule);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:10}
   .actions{margin-left:0}
+  /* Phone: keep the header, views and focus bar short, so the tree gets the screen. The view chips and focus
+     controls scroll sideways in one row instead of wrapping onto several. */
+  .top{padding:8px 12px;gap:6px 8px}
+  .brand{font-size:18px}
+  .brand span{font-size:17px}
+  .actions{order:1;margin-left:auto}
+  .tabs{order:2}
+  .search{order:3;flex:1 1 100%}
+  .bar{padding:6px 12px}
+  .views,.focusbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .views::-webkit-scrollbar,.focusbar::-webkit-scrollbar{display:none}
+  .views > *,.focusbar > *{flex:none;white-space:nowrap}
+  .map-note{bottom:44px}
 }
 @media (prefers-reduced-motion:no-preference){.sheet{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(8px)}}}
 /* backup reminder in the header (E5) */
