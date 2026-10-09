@@ -332,3 +332,29 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 /* legend: research progress dot */
 .legend .stage-key{display:inline-flex;align-items:baseline;gap:5px}
 .legend .stage-key svg{width:11px;height:11px;align-self:center}
+/* family edition: sync status (F2) */
+.sync-status{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);white-space:nowrap;cursor:default}
+.sync-status .dot{width:8px;height:8px;border-radius:50%;background:var(--rule)}
+.sync-status.saved .dot{background:var(--accent)}
+.sync-status.saving .dot,.sync-status.starting .dot{background:var(--accent-soft);box-shadow:0 0 0 1.5px var(--accent) inset}
+.sync-status.offline .dot,.sync-status.signed-out .dot,.sync-status.forbidden .dot{background:var(--warn)}
+.sync-status.offline,.sync-status.signed-out,.sync-status.forbidden{color:var(--warn)}
+button.sync-status{border:0;background:none;padding:4px 6px;border-radius:6px;font:inherit;font-size:13px}
+button.sync-status:hover{background:var(--paper)}
+.pop.account{display:grid;gap:10px;max-width:300px;font-size:14px}
+/* family edition: sign-in screen and access dialog (F4) */
+.signin{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--paper);padding:16px}
+.signin-card{max-width:400px;display:grid;justify-items:center;gap:12px;text-align:center;background:var(--sheet);border:1px solid var(--rule);border-radius:14px;padding:28px 24px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.signin-card p{margin:0}
+.signin-card .gsi{min-height:44px}
+.signin-card .small{font-size:12px}
+.dialog.access{max-width:560px}
+.people{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.people li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding:6px 0}
+.people .who{flex:1 1 200px;display:grid}
+.people .who .hint{font-size:12px}
+.hint.warn{color:var(--warn)}
+.dialog.access select{width:auto;flex:none}
+.dialog.access input[type=email]{width:auto;min-width:0}
+.dialog.access form.row{flex-wrap:nowrap}
+.people li{flex-wrap:nowrap}

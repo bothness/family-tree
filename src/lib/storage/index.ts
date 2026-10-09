@@ -14,6 +14,11 @@ export interface DataStore {
 	deleteMedia(id: string): Promise<void>;
 	/** Ids of all stored image files. */
 	listMedia(): Promise<string[]>;
+	/** Small values kept beside the data on this device (e.g. sync's record of the last synced version). */
+	getExtra<T>(key: string): Promise<T | null>;
+	putExtra(key: string, value: unknown): Promise<void>;
+	/** Remove everything kept on this device (the family edition's "Sign out"). */
+	wipe(): Promise<void>;
 }
 
 /** Where data lived before IndexedDB. Read once to move data across; left in place as a fallback copy. */
@@ -67,6 +72,18 @@ export function indexedDbStore(name = DB_NAME): DataStore {
 		},
 		async listMedia() {
 			return (await req((await tx('media', 'readonly')).getAllKeys())).map(String);
+		},
+		async getExtra<T>(key: string) {
+			return ((await req((await tx('data', 'readonly')).get(`extra:${key}`))) as T | undefined) ?? null;
+		},
+		async wipe() {
+			await req((await tx('data', 'readwrite')).clear());
+			await req((await tx('media', 'readwrite')).clear());
+		},
+		async putExtra(key, value) {
+			const store = await tx('data', 'readwrite');
+			if (value === null || value === undefined) await req(store.delete(`extra:${key}`));
+			else await req(store.put(value, `extra:${key}`));
 		}
 	};
 }
@@ -101,6 +118,29 @@ export const localStore: DataStore = {
 	async deleteMedia() {},
 	async listMedia() {
 		return [];
+	},
+	async wipe() {
+		try {
+			for (const k of Object.keys(localStorage)) if (k.startsWith('family-tree:')) localStorage.removeItem(k);
+		} catch {
+			/* ignore */
+		}
+	},
+	async getExtra<T>(key: string) {
+		try {
+			const s = localStorage.getItem(`family-tree:extra:${key}`);
+			return s ? (JSON.parse(s) as T) : null;
+		} catch {
+			return null;
+		}
+	},
+	async putExtra(key, value) {
+		try {
+			if (value === null || value === undefined) localStorage.removeItem(`family-tree:extra:${key}`);
+			else localStorage.setItem(`family-tree:extra:${key}`, JSON.stringify(value));
+		} catch {
+			/* ignore */
+		}
 	}
 };
 

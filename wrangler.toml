@@ -1,0 +1,17 @@
+# Family edition (Phase F): the same static build, plus the API in functions/ (Cloudflare Pages Functions), a D1
+# database (the tree's version list, the invite list, sessions) and an R2 bucket (each tree version, and photos).
+# Local development: `npm run dev:family` (wrangler's own emulator; nothing reaches Cloudflare).
+name = "mbfamilytree"
+compatibility_date = "2026-09-30"
+pages_build_output_dir = "build"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "family-tree"
+# The real database (created 9 Oct 2026). Local development uses a local copy (npm run dev:family).
+database_id = "037c9f6c-429e-4fec-a4b1-457983138a11"
+migrations_dir = "server/migrations"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "family-tree"

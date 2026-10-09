@@ -16,13 +16,23 @@
 	import SearchBox from '#lib/components/SearchBox.svelte';
 	import ViewBar from '#lib/components/ViewBar.svelte';
 	import BlankPrompt from '#lib/components/BlankPrompt.svelte';
+	import SyncStatus from '#lib/components/SyncStatus.svelte';
+	import SignIn from '#lib/components/SignIn.svelte';
 
 	// Load once (nothing is shown until then, so the sample never flashes up or overwrites saved data), then save
 	// shortly after each change. JSON.stringify reads the whole dataset, so the effect tracks it deeply.
 	onMount(async () => {
 		app.store = await browserStore();
-		const saved = await app.store.load().catch(() => null);
-		if (saved) app.data = saved;
+		if (__SYNC__) {
+			// Family edition: the shared tree (merged with anything this device hadn't sent yet).
+			const { startFamilySync } = await import('#lib/sync/start.ts');
+			const { store, data } = await startFamilySync(app.store);
+			app.store = store;
+			app.data = data;
+		} else {
+			const saved = await app.store.load().catch(() => null);
+			if (saved) app.data = saved;
+		}
 		app.ready = true;
 		if (app.data.people.length) app.askToKeep();
 		app.refreshThumbs();
@@ -161,6 +171,7 @@
 				<button class="x" onclick={() => app.snoozeBackup()} aria-label="Remind me later" title="Remind me in a few days">×</button>
 			</span>
 		{/if}
+		{#if __SYNC__}<SyncStatus />{/if}
 		<button class="btn" onclick={() => (app.showData = true)}>Data</button>
 	</div>
 </header>
@@ -195,6 +206,10 @@
 		</aside>
 	{/if}
 </div>
+
+{#if __SYNC__ && app.ready && (app.syncStatus === 'signed-out' || app.syncStatus === 'forbidden')}
+	<SignIn />
+{/if}
 
 {#if app.showData}
 	<DataDialog onClose={() => (app.showData = false)} />
