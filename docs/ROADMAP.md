@@ -60,6 +60,12 @@ What this means for decisions made before then:
 - **Place lookup at scale:** Nominatim's public service allows moderate use only, at most one request a second in total across all of an app's users, and forbids search-as-you-type. That's fine for one family, but a public edition with many users may need another geocoding service (e.g. Photon, or a commercial one) or our own proxy with caching. Keep the lookup behind `places/` so it can be swapped.
 - **Multi-editor features stay optional:** `meta` provenance and IDs already work for a single user; anything needing accounts goes behind the sync layer.
 - **Privacy wording:** say plainly that data stays on this device, and that clearing browser data deletes it unless exported.
+- **Deployable as static files:** the browser-only edition must build with SvelteKit's static adapter (`adapter-static`, already in use) and run from a plain static host such as **GitHub Pages**, with no server code. For GitHub Pages specifically:
+  - Serve from a sub-path (`username.github.io/family-tree/`): set `kit.paths.base` from an environment variable at build time, and keep all links and asset URLs relative to it.
+  - The SPA fallback must be `404.html` there (GitHub Pages serves it for unknown paths), not `200.html` as now. All app state is in the `#…` part of the address, so only the root page is ever requested.
+  - Add an empty `.nojekyll` file to the build, or Pages' Jekyll step hides SvelteKit's `_app/` folder.
+  - A GitHub Actions workflow can build and publish on each push to `main`.
+  - Everything the app loads at runtime must work from there: the MapLibre worker (already bundled as a static asset), OpenFreeMap tiles and Nominatim (called from the browser).
 
 ## Decisions log
 - 8 Oct: V2 = both "collapse to one person" and "reset to blank view".
@@ -90,3 +96,4 @@ What this means for decisions made before then:
 - 9 Oct: map (V12): a Map tab with a MapLibre globe and OpenFreeMap tiles (positron, or dark in dark mode); a dot per place sized by its births and deaths (count inside), filtered by the current focus or view; clicking a dot lists who was born or died there; places written by hand are listed as "not shown" with a pointer to "Find on the map". MapLibre loads only when the tab opens.
 - 9 Oct: photo cards are wider (196px) than compact cards (156px); the layout takes the card width as a parameter.
 - 9 Oct: place search is explicit ("Search OpenStreetMap for …"), never as you type: Nominatim's usage policy forbids client-side autocomplete. Places already in the tree are still suggested as you type.
+- 9 Oct: the browser-only edition must be deployable as static assets (SvelteKit static adapter) to a host such as GitHub Pages: base path from the build environment, 404.html fallback, .nojekyll, published by a GitHub Actions workflow.
