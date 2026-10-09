@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { app } from '#lib/app.svelte.ts';
 	import { fmtDate } from '#lib/model/edtf.ts';
-	import { displayName, lifeEvent, nameIsGuess, NOW, partnerIds, person } from '#lib/model/queries.ts';
+	import { displayName, lifeEvent, nameIsGuess, NOW, partnerIds, person, placeName } from '#lib/model/queries.ts';
+	import { edtfRange } from '#lib/model/edtf.ts';
+	import type { EdtfDate } from '#lib/model/types.ts';
 	import { timelineRows, UNKNOWN_END_FADE } from '#lib/layout/timeline.ts';
 
 	let width = $state(900);
@@ -16,14 +18,59 @@
 	const decades = $derived(Array.from({ length: (hi - lo) / 10 + 1 }, (_, i) => lo + i * 10));
 	const anyLiving = $derived(tl.rows.some((r) => r.living));
 
-	function partnershipTitle(fid: string, pid: string) {
+	// Hover (or keyboard focus) tooltips: a heading and a few lines, drawn above the thing pointed at.
+	let box: HTMLDivElement | undefined = $state();
+	let tip = $state<{ x: number; y: number; head: string; lines: string[] } | null>(null);
+	function show(e: Event, head: string, lines: string[]) {
+		if (!box) return;
+		const t = (e.currentTarget as Element).getBoundingClientRect(),
+			b = box.getBoundingClientRect();
+		tip = { x: t.left + t.width / 2 - b.left, y: t.top - b.top, head, lines: lines.filter(Boolean) };
+	}
+	const hide = () => (tip = null);
+
+	const sure = (d?: EdtfDate) => (d?.status === 'likely' ? ' (likely)' : d?.status === 'guess' ? ' (a guess)' : d?.status === 'conflicting' ? ' (sources disagree)' : '');
+	const when = (d?: EdtfDate) => (d?.edtf ? fmtDate(d.edtf) + sure(d) : '');
+
+	/** A marriage or partnership: what it was, with whom, when, and how it ended. */
+	function partnershipTip(fid: string, pid: string): [string, string[]] {
 		const f = app.data.families.find((f) => f.id === fid)!;
+		const r = f.relationship;
 		const other = partnerIds(f).find((x) => x !== pid);
-		return (f.relationship?.type === 'marriage' ? 'Married ' : 'Partnership from ') + fmtDate(f.relationship?.start?.edtf) + (other ? ' – ' + displayName(person(app.data, other)) : '');
+		const head = r?.type === 'marriage' ? 'Marriage' : r?.type === 'civil-partnership' ? 'Civil partnership' : 'Partnership';
+		const ended = { death: 'Until', divorce: 'Divorced', separation: 'Separated', annulment: 'Annulled', unknown: 'Ended' }[r?.endReason ?? 'unknown'];
+		return [
+			head,
+			[
+				other ? `With ${displayName(person(app.data, other))}` : 'Partner not known',
+				r?.start?.edtf ? `${r.type === 'marriage' ? 'Married' : 'From'} ${when(r.start)}` : 'Date not known',
+				r?.end?.edtf ? `${ended} ${when(r.end)}${r.endReason === 'death' ? ', when one of them died' : ''}` : '',
+				r?.status && r.status !== 'confirmed' ? `The relationship itself is ${r.status === 'guess' ? 'a guess' : r.status}` : ''
+			]
+		];
+	}
+
+	/** A life: born and died (with places), and roughly how long. */
+	function lifeTip(pid: string, living: boolean): [string, string[]] {
+		const p = person(app.data, pid);
+		const b = lifeEvent(app.data, pid, 'birth'),
+			d = lifeEvent(app.data, pid, 'death');
+		const at = (e?: typeof b) => (e?.place ? ', ' + placeName(app.data, e.place.placeId) : '');
+		const bs = edtfRange(b?.date?.edtf),
+			ds = edtfRange(d?.date?.edtf);
+		// Whole years from birth to death (from the start of each date, so 12 Jul 1730 to 3 Jan 1795 is 64).
+		const age = bs && ds ? Math.floor(ds.start - bs.start + 1e-9) : null;
+		return [
+			displayName(p),
+			[
+				b?.date?.edtf ? `Born ${when(b.date)}${at(b)}` : 'Birth not recorded',
+				d?.date?.edtf ? `Died ${when(d.date)}${at(d)}${age !== null && age >= 0 ? `, aged about ${age}` : ''}` : living ? 'Living' : 'Death not recorded'
+			]
+		];
 	}
 </script>
 
-<div bind:clientWidth={width}>
+<div class="tl" bind:clientWidth={width} bind:this={box}>
 	{#if !tl.rows.length}
 		<div class="empty">Add a birth year to anyone and they'll appear here.</div>
 	{:else}
@@ -45,28 +92,40 @@
 					{@const by = y + 22}
 					<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 					<text class="tlname" class:pencil={nameIsGuess(p)} x={X(r.start)} y={y + 14} onclick={() => app.select(r.id)}>{displayName(p)}</text>
+					{@const life = lifeTip(r.id, r.living)}
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<g class="tl-life" onpointerenter={(e) => show(e, ...life)} onpointerleave={hide}>
 					{#if r.birth && r.birth.end - r.birth.start > 0.2}
-						<rect x={X(r.birth.start)} y={by} width={(r.birth.end - r.birth.start) * px} height="8" fill="url(#fin)"><title>Born {fmtDate(lifeEvent(app.data, r.id, 'birth')?.date?.edtf)}</title></rect>
+						<rect x={X(r.birth.start)} y={by} width={(r.birth.end - r.birth.start) * px} height="8" fill="url(#fin)" />
 					{/if}
 					{#if !r.birth}
-						<rect x={X(r.start)} y={by} width={(r.solidStart - r.start) * px} height="8" fill="url(#fin)"><title>Birth not recorded</title></rect>
+						<rect x={X(r.start)} y={by} width={(r.solidStart - r.start) * px} height="8" fill="url(#fin)" />
 					{/if}
 					{#if r.solidEnd > r.solidStart}
-						<rect class="life" class:guess={r.birthIsGuess} x={X(r.solidStart)} y={by} width={(r.solidEnd - r.solidStart) * px} height="8"><title>{r.living ? 'Living' : ''}</title></rect>
+						<rect class="life" class:guess={r.birthIsGuess} x={X(r.solidStart)} y={by} width={(r.solidEnd - r.solidStart) * px} height="8" />
 					{/if}
 					{#if r.death}
 						{#if r.death.end - r.death.start > 0.2}
-							<rect x={X(r.death.start)} y={by} width={(r.death.end - r.death.start) * px} height="8" fill="url(#fout)"><title>Died {fmtDate(lifeEvent(app.data, r.id, 'death')?.date?.edtf)}</title></rect>
+							<rect x={X(r.death.start)} y={by} width={(r.death.end - r.death.start) * px} height="8" fill="url(#fout)" />
 						{/if}
 					{:else if !r.living}
-						<rect x={X(r.solidEnd)} y={by} width={UNKNOWN_END_FADE * px} height="8" fill="url(#foutp)"><title>Date of death not recorded</title></rect>
+						<rect x={X(r.solidEnd)} y={by} width={UNKNOWN_END_FADE * px} height="8" fill="url(#foutp)" />
 					{/if}
+					</g>
 					{#each r.partnerships as m (m.family.id)}
-						<circle class="mdot" cx={X((m.range.start + m.range.end) / 2)} cy={by + 4} r="4.5"><title>{partnershipTitle(m.family.id, r.id)}</title></circle>
+						{@const t = partnershipTip(m.family.id, r.id)}
+						<!-- svelte-ignore a11y_no_noninteractive_tabindex (focusable so the tooltip can be read from the keyboard) -->
+						<circle class="mdot" cx={X((m.range.start + m.range.end) / 2)} cy={by + 4} r="4.5" tabindex="0" role="img" aria-label="{t[0]}: {t[1].join('. ')}" onpointerenter={(e) => show(e, ...t)} onpointerleave={hide} onfocus={(e) => show(e, ...t)} onblur={hide} />
 					{/each}
 				{/each}
 			</svg>
 		</div>
+		{#if tip}
+			<div class="tip" style="left:{tip.x}px;top:{tip.y}px" role="tooltip">
+				<b>{tip.head}</b>
+				{#each tip.lines as l (l)}<span>{l}</span>{/each}
+			</div>
+		{/if}
 	{/if}
 	{#if tl.undated.length}
 		<p class="note">

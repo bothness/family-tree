@@ -320,3 +320,14 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .remind{display:inline-flex;align-items:center;gap:2px}
 .remind .btn{border-color:var(--warn);color:var(--warn)}
 .remind .x{border:0;background:none;font-size:18px;line-height:1;color:var(--ink-soft);padding:2px 4px}
+/* timeline tooltips */
+.tl{position:relative}
+.tl .tip{position:absolute;z-index:5;transform:translate(-50%,calc(-100% - 9px));display:grid;gap:1px;min-width:120px;max-width:300px;background:var(--ink);color:var(--paper);border-radius:7px;padding:6px 10px;font-size:13px;line-height:1.35;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none}
+.tl .tip b{font-family:var(--f-name);font-size:14px}
+.tl .tip::after{content:'';position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:var(--ink);transform:translateX(-50%) rotate(45deg)}
+.tl-life{cursor:default}
+.mdot{cursor:default}
+.mdot:hover,.mdot:focus-visible{stroke-width:3}
+/* legend: research progress dot */
+.legend .stage-key{display:inline-flex;align-items:baseline;gap:5px}
+.legend .stage-key svg{width:11px;height:11px;align-self:center}
