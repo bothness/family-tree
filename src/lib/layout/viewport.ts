@@ -53,14 +53,11 @@ export interface WheelLike {
 }
 
 const LINE_PX = 33, PAGE_PX = 800;
-/** Zoom per Safari mouse-wheel notch (about the same as one 100px Chrome notch). */
-const SAFARI_NOTCH = 0.2;
 
 /**
  * What a wheel event should do. Browsers don't say whether it came from a mouse or a trackpad, so this guesses:
  * - ⌘/Ctrl + scroll, and trackpad pinch (which browsers report as Ctrl + wheel): zoom
- * - mouse wheel: zoom. Recognised by line/page steps (Firefox), notches of 120 in `wheelDeltaY`, a `wheelDeltaY`
- *   that isn't the trackpad's exact -3 × deltaY (Chrome), or Safari's tell-tale fraction (see below)
+ * - mouse wheel (line/page steps, or `wheelDeltaY` that isn't the trackpad's exact -3 × deltaY): zoom
  * - anything else (trackpad two-finger scroll, sideways scroll): pan
  * Returns the zoom factor, or the pan offset in screen pixels.
  */
@@ -69,16 +66,12 @@ export function wheelAction(e: WheelLike): { zoom: number } | { pan: [number, nu
 	const dx = e.deltaX * unit,
 		dy = e.deltaY * unit;
 	if (e.ctrlKey || e.metaKey) return { zoom: Math.exp(-dy * 0.01) };
-	if (e.deltaX !== 0 || e.deltaY === 0) return { pan: [-dx, -dy] };
-	// Safari: a mouse-wheel notch is a small step plus 1/4096 (e.g. 4.000244140625, wheelDeltaY -12), while a
-	// trackpad scrolls in whole numbers (e.g. -1, wheelDeltaY 3). Each such notch is one standard zoom step.
-	const frac = Math.abs(e.deltaY) % 1;
-	if (e.deltaMode === 0 && frac > 0 && frac < 0.001) return { zoom: Math.exp(-Math.sign(dy) * SAFARI_NOTCH) };
 	// Trackpads report wheelDeltaY ≈ -3 × deltaY (an integer, so allow rounding when deltaY is fractional).
 	const trackpadLike = !!e.wheelDeltaY && Math.abs(e.wheelDeltaY + 3 * e.deltaY) <= 1;
-	// A mouse wheel moves in notches of 120.
+	// A mouse wheel moves in notches of 120 (Safari also reports deltaY = -wheelDeltaY / 3 for these, which would
+	// otherwise look like a trackpad).
 	const notch = !!e.wheelDeltaY && e.wheelDeltaY % 120 === 0;
-	const mouse = e.deltaMode !== 0 || (!!e.wheelDeltaY && (notch || !trackpadLike));
+	const mouse = e.deltaX === 0 && e.deltaY !== 0 && (e.deltaMode !== 0 || (!!e.wheelDeltaY && (notch || !trackpadLike)));
 	if (mouse) return { zoom: Math.exp(clamp(-dy * 0.002, -0.5, 0.5)) };
 	return { pan: [-dx, -dy] };
 }
