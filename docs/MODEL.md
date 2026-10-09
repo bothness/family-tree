@@ -35,6 +35,11 @@ Run: `npm i ajv ajv-formats && node validate.mjs example-data.json`
 - `scope.tags`: everyone with any of these tags. `scope.people`: a hand-picked list.
 - Replaces the earlier `direction`, `generations` and `includeSpouses`; `migrate()` converts them.
 
+## Places (added within v0.2, 9 Oct 2026)
+- `place.context`: the wider area shown after the name ("West Yorkshire, England"), filled in by the lookup and editable.
+- `links.osm`: the OpenStreetMap object ("relation/118362"); with `coordinates` and `links.wikidata` it comes from the Nominatim lookup. A place without them was written by hand.
+- Places found by lookup are reused by OSM id; a hand-written place can be linked in place ("Find on the map"), which updates every event using it, keeping its own name (the lookup's name becomes another name).
+
 ## Derived (computed, not stored)
 Sortable date ranges, generations, connected branches, and the gaps report (guesses, unsourced events, open families, placeholders, missing births).
 

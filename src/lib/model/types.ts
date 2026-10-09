@@ -16,7 +16,12 @@ export interface Citation { sourceId: string; detail?: string; note?: string }
 export interface EdtfDate { edtf: string; status?: Status; citations?: Citation[]; note?: string }
 
 export interface Link { url: string; label?: string }
-export interface ExternalLinks { wikidata?: string; urls?: Link[] }
+export interface ExternalLinks {
+	wikidata?: string;
+	/** OpenStreetMap object (places), e.g. "relation/118362". */
+	osm?: string;
+	urls?: Link[];
+}
 export interface Research { stage?: ResearchStage; todo?: string[] }
 export interface Meta { createdAt?: string; createdBy?: string; updatedAt?: string; updatedBy?: string }
 
@@ -98,6 +103,8 @@ export interface LifeEvent {
 export interface Place {
 	id: string;
 	name: string;
+	/** The wider area, shown after the name to tell places apart, e.g. "West Yorkshire, England". */
+	context?: string;
 	type?: string;
 	parentId?: string;
 	altNames?: { name: string; period?: string; lang?: string }[];

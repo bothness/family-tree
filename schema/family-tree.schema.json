@@ -183,6 +183,11 @@
           "items": {
             "$ref": "#/$defs/Link"
           }
+        },
+        "osm": {
+          "type": "string",
+          "pattern": "^(node|way|relation)/[0-9]+$",
+          "description": "OpenStreetMap object (places), e.g. 'relation/118362'."
         }
       }
     },
@@ -635,6 +640,10 @@
         },
         "name": {
           "type": "string"
+        },
+        "context": {
+          "type": "string",
+          "description": "The wider area, shown after the name to tell places apart, e.g. 'West Yorkshire, England' (filled in from the lookup)."
         },
         "type": {
           "type": "string",

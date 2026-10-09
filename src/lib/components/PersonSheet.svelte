@@ -2,10 +2,11 @@
 	import { app } from '#lib/app.svelte.ts';
 	import StatusPicker from './StatusPicker.svelte';
 	import AddRelative from './AddRelative.svelte';
+	import PlaceInput from './PlaceInput.svelte';
 	import { edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
 	import {
 		birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, fullName, halfSiblings,
-		lifeEvent, nameIsGuess, NOW, partnerIds, person, placeName, PRESUMED_DEAD_AFTER, primaryName, soloFam
+		lifeEvent, nameIsGuess, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName, soloFam
 	} from '#lib/model/queries.ts';
 	import { deletePerson, setChildOf, setLife } from '#lib/model/mutations.ts';
 	import { expandToInclude, type FocusOptions } from '#lib/model/focus.ts';
@@ -148,10 +149,7 @@
 			<input type="text" class:pencil={e?.date?.status === 'guess'} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 1858, c.1858, 1880s"
 				onchange={(ev) => { setLife(d, pid, kind, val(ev), null); if (kind === 'death') p.deceased = true; }} />
 		</label>
-		<label class="fld"><span>Place</span>
-			<input type="text" value={e?.place ? placeName(d, e.place.placeId) : ''} placeholder="Town or parish" list="placelist"
-				onchange={(ev) => setLife(d, pid, kind, null, val(ev))} />
-		</label>
+		<div class="fld"><span>Place</span><PlaceInput {pid} {kind} /></div>
 	</div>
 	{#if e?.date}
 		<div class="row"><span class="hint">This date is</span><StatusPicker value={e.date.status} onchange={(v) => (e.date!.status = v)} /></div>
@@ -377,6 +375,3 @@
 <div class="del-row">
 	<button class="btn danger small" onclick={remove}>{confirmDel ? `Tap again to delete ${displayName(p)}` : 'Delete this person'}</button>
 </div>
-<datalist id="placelist">
-	{#each d.places as pl (pl.id)}<option value={pl.name}></option>{/each}
-</datalist>
