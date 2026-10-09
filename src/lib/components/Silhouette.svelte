@@ -1,20 +1,23 @@
 <script module lang="ts">
-	/** Head-and-shoulders shapes in a 36 × 36 box, by recorded sex (M, F, or U for not known). Shared with the
+	/** Stand-ins for people without a photo, by recorded sex (M, F, or U for not known): faces from Google's
+	 *  Material Symbols (rounded, filled: face_6, face_3 and face), Apache License 2.0,
+	 *  https://github.com/google/material-design-icons. Each is one path in Material's 960-unit box. Shared with the
 	 *  tree cards, which draw them as SVG symbols. */
-	export const SILHOUETTE: Record<'M' | 'F' | 'U', string[]> = {
-		M: ['M18 7a6.5 6.5 0 1 1 0 13a6.5 6.5 0 1 1 0-13z', 'M5 36c0-7 5.8-11 13-11s13 4 13 11z'],
-		F: ['M18 6c-5.2 0-8 3.8-8 8.6 0 3.4.7 6.8-.8 9.4h17.6c-1.5-2.6-.8-6-.8-9.4C26 9.8 23.2 6 18 6z', 'M6 36c0-6.4 5.4-10 12-10s12 3.6 12 10z'],
-		U: ['M18 7a6.5 6.5 0 1 1 0 13a6.5 6.5 0 1 1 0-13z', 'M6 36c0-6.5 5.4-10.5 12-10.5S30 29.5 30 36z']
+	export const SILHOUETTE: Record<'M' | 'F' | 'U', string> = {
+		M: 'M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480v-12q-73 0-116-39.5T635-622q-7-14-18.5-21t-25.5-7H370q-15 0-26.5 7T325-622q-26 52-69 91.5T140-491v11q0 141 99.5 240.5T480-140ZM315.5-398.5Q300-414 300-437t15.5-38.5Q331-491 354-491t38.5 15.5Q408-460 408-437t-15.5 38.5Q377-383 354-383t-38.5-15.5Zm253 0Q553-414 553-437t15.5-38.5Q584-491 607-491t38.5 15.5Q661-460 661-437t-15.5 38.5Q630-383 607-383t-38.5-15.5Z',
+		F: 'M479.74-220Q622-220 721-319.34q99-99.35 99-240.66 0-39.1-8.5-75.05Q803-671 788-704q-28 21-60.61 32.5T660-660q-55 0-101.5-28T480-761q-32 45-78.5 73T300-660q-34.78 0-67.39-11.5T172-704q-15 33-23.5 69.5T140-560q0 141.31 99.27 240.66Q338.53-220 479.74-220ZM392.5-478.73q15.5-15.72 15.5-38.5 0-22.77-15.73-38.27-15.72-15.5-38.5-15.5-22.77 0-38.27 15.73-15.5 15.72-15.5 38.5 0 22.77 15.73 38.27 15.72 15.5 38.5 15.5 22.77 0 38.27-15.73Zm253 0q15.5-15.72 15.5-38.5 0-22.77-15.73-38.27-15.72-15.5-38.5-15.5-22.77 0-38.27 15.73-15.5 15.72-15.5 38.5 0 22.77 15.73 38.27 15.72 15.5 38.5 15.5 22.77 0 38.27-15.73ZM66-80q-26.14 0-44.07-19.5T6-145l38-417q8-84 45.5-157t96-126.5q58.5-53.5 134-84T480-960q85 0 160.5 30.5t134 84Q833-792 870.5-719T916-562l38 417q2 26-15.93 45.5T894-80H66Z',
+		U: 'M315.5-398.73q-15.5-15.72-15.5-38.5 0-22.77 15.73-38.27 15.72-15.5 38.5-15.5 22.77 0 38.27 15.73 15.5 15.72 15.5 38.5 0 22.77-15.73 38.27-15.72 15.5-38.5 15.5-22.77 0-38.27-15.73Zm253 0q-15.5-15.72-15.5-38.5 0-22.77 15.73-38.27 15.72-15.5 38.5-15.5 22.77 0 38.27 15.73 15.5 15.72 15.5 38.5 0 22.77-15.73 38.27-15.72 15.5-38.5 15.5-22.77 0-38.27-15.73ZM480-140q142.38 0 241.19-98.95T820-480.47q0-25.53-4-50.53t-10-46q-20 5-43.26 7-23.26 2-48.74 2-97.11 0-183.56-40Q444-648 383-722q-34 81-97.5 141.5T140-487v7q0 142.37 98.81 241.19Q337.63-140 480-140Zm0 60q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z'
 	};
+	export const SILHOUETTE_VIEWBOX = '0 -960 960 960';
 	export const silhouetteKey = (sex: string | undefined): 'M' | 'F' | 'U' => (sex === 'M' || sex === 'F' ? sex : 'U');
 </script>
 
 <script lang="ts">
-	// Stand-in when someone has no photo (V10).
+	// Stand-in when someone has no photo (V10): a face on a soft tile, about three quarters of its size.
 	let { sex = 'U', size = 36 }: { sex?: string; size?: number } = $props();
 </script>
 
 <svg width={size} height={size} viewBox="0 0 36 36" aria-hidden="true">
 	<rect class="sil-bg" width="36" height="36" rx="5" />
-	{#each SILHOUETTE[silhouetteKey(sex)] as d (d)}<path class="sil" {d} />{/each}
+	<svg x="4.5" y="4.5" width="27" height="27" viewBox={SILHOUETTE_VIEWBOX}><path class="sil" d={SILHOUETTE[silhouetteKey(sex)]} /></svg>
 </svg>

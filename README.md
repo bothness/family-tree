@@ -16,3 +16,7 @@ Data is saved in your browser. Use **Data** to copy it out, or to paste in data 
 - `docs/MODEL.md`: the data model
 - `schema/family-tree.schema.json`: JSON Schema (v0.2)
 - `CLAUDE.md`: project notes for Claude Code
+
+## Credits
+- Placeholder faces for people without a photo: [Material Symbols](https://github.com/google/material-design-icons) by Google (face_6, face_3, face; rounded, filled), Apache License 2.0.
+- Map tiles: [OpenFreeMap](https://openfreemap.org), © OpenMapTiles, data © OpenStreetMap contributors. Place search: [Nominatim](https://nominatim.org) (OpenStreetMap).

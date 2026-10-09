@@ -7,7 +7,7 @@
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
 	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, cardSize, layoutTree, routeShown, type TreeLayout } from '#lib/layout/tree.ts';
 	import { DropdownMenu } from 'bits-ui';
-	import { SILHOUETTE, silhouetteKey } from './Silhouette.svelte';
+	import { SILHOUETTE, SILHOUETTE_VIEWBOX, silhouetteKey } from './Silhouette.svelte';
 	import { photoOf } from '#lib/model/media.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
@@ -410,7 +410,7 @@
 				<clipPath id="avatar-clip" clipPathUnits="userSpaceOnUse"><rect x="6" y="6" width="46" height="46" rx="5" /></clipPath>
 				<clipPath id="avatar-clip-p" clipPathUnits="userSpaceOnUse"><rect x="6" y="6" width={PP} height={PP} rx="5" /></clipPath>
 				{#each ['M', 'F', 'U'] as const as k (k)}
-					<symbol id="sil-{k}" viewBox="0 0 36 36"><rect class="sil-bg" width="36" height="36" rx="5" />{#each SILHOUETTE[k] as d (d)}<path class="sil" {d} />{/each}</symbol>
+					<symbol id="sil-{k}" viewBox="0 0 36 36"><rect class="sil-bg" width="36" height="36" rx="5" /><svg x="4.5" y="4.5" width="27" height="27" viewBox={SILHOUETTE_VIEWBOX}><path class="sil" d={SILHOUETTE[k]} /></svg></symbol>
 				{/each}
 			</defs>
 			<g transform="translate({cam.x},{cam.y}) scale({cam.k})">
