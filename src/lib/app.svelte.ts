@@ -59,8 +59,8 @@ class AppState {
 	store: DataStore | null = null;
 	/** Show photos on tree cards (V10). Off = compact cards. A per-browser preference, not part of the data. */
 	showPhotos = $state(readPref('showPhotos', true));
-	/** Wide trees (V13, V14): photo above the name (narrower, taller cards), and generations left to right. */
-	portrait = $state(readPref('portrait', false));
+	/** Tree layout (V13, V14): vertical (generations top to bottom, narrow cards with the photo above the name) or
+	 *  horizontal (left to right, wide cards with the photo beside it). */
 	across = $state(readPref('across', false));
 	tab = $state<Tab>('tree');
 	selected = $state<string | null>(null);
@@ -269,10 +269,7 @@ class AppState {
 	setShowPhotos(on: boolean) {
 		this.showPhotos = on;
 		writePref('showPhotos', on);
-	}
-	setPortrait(on: boolean) {
-		writePref('portrait', (this.portrait = on));
-		if (on) this.setShowPhotos(true);
+		// Cards change size a lot (especially in a vertical tree), so show the whole tree again.
 		this.fitTree();
 	}
 	setAcross(on: boolean) {

@@ -21,9 +21,11 @@ export const NODE_W = 156,
 	PHOTO_W = 204,
 	NODE_H = 58,
 	GHOST_W = 104;
-/** Cards with the photo above the name (V13): narrower and taller. */
-export const PORTRAIT_W = 120,
-	PORTRAIT_H = 132;
+/** Vertical trees (V13): narrower cards with the photo above the name (or just the name, wrapped, without
+ *  photos); horizontal trees (V14) use the wide cards. */
+export const PORTRAIT_W = 112,
+	PORTRAIT_H = 170,
+	PORTRAIT_NOPHOTO_H = 72;
 /** The size of the boxes the layout places: cards (w × h) and missing-children placeholders (ghost × h). */
 export interface CardSize { w: number; h: number; ghost: number }
 export const cardSize = (w = NODE_W, h = NODE_H, ghost = GHOST_W): CardSize => ({ w, h, ghost });

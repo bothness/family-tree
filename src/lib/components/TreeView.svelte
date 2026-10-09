@@ -5,7 +5,7 @@
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
-	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_W, cardSize, layoutTree, routeShown, type TreeLayout } from '#lib/layout/tree.ts';
+	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, cardSize, layoutTree, routeShown, type TreeLayout } from '#lib/layout/tree.ts';
 	import { DropdownMenu } from 'bits-ui';
 	import { SILHOUETTE, silhouetteKey } from './Silhouette.svelte';
 	import { photoOf } from '#lib/model/media.ts';
@@ -13,9 +13,14 @@
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
 
-	/** Cards as drawn: compact without photos; with photos, the photo beside the name (wide) or above it (V13). */
-	const portrait = $derived(app.showPhotos && app.portrait);
-	const size = $derived(portrait ? cardSize(PORTRAIT_W, PORTRAIT_H) : cardSize(app.showPhotos ? PHOTO_W : NODE_W, NODE_H));
+	/** Cards as drawn. Vertical tree: narrow cards, the photo above the name (V13). Horizontal tree: wide cards, the
+	 *  photo beside it (V14). Either way the Photos switch only shows or hides the photos. */
+	const portrait = $derived(!app.across);
+	const size = $derived(
+		portrait ? cardSize(PORTRAIT_W, app.showPhotos ? PORTRAIT_H : PORTRAIT_NOPHOTO_H) : cardSize(app.showPhotos ? PHOTO_W : NODE_W, NODE_H)
+	);
+	/** Portrait photo: the card's width less its padding, square. */
+	const PP = PORTRAIT_W - 12;
 	const layout = $derived(layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, size, app.across));
 	/** Card width and height as drawn, and the missing-children placeholders' (as big as a card left to right). */
 	const CW = $derived(size.w),
@@ -394,7 +399,7 @@
 			<defs>
 				<!-- avatars on cards (V10): photo clip and stand-in silhouettes -->
 				<clipPath id="avatar-clip" clipPathUnits="userSpaceOnUse"><rect x="6" y="6" width="46" height="46" rx="5" /></clipPath>
-				<clipPath id="avatar-clip-p" clipPathUnits="userSpaceOnUse"><rect x={(PORTRAIT_W - 64) / 2} y="10" width="64" height="64" rx="6" /></clipPath>
+				<clipPath id="avatar-clip-p" clipPathUnits="userSpaceOnUse"><rect x="6" y="6" width={PP} height={PP} rx="5" /></clipPath>
 				{#each ['M', 'F', 'U'] as const as k (k)}
 					<symbol id="sil-{k}" viewBox="0 0 36 36"><rect class="sil-bg" width="36" height="36" rx="5" />{#each SILHOUETTE[k] as d (d)}<path class="sil" {d} />{/each}</symbol>
 				{/each}
@@ -430,16 +435,18 @@
 					>
 						<rect class="nbox" width={CW} height={CH} rx="6" />
 						{#if portrait}
-							<!-- V13: photo above the name; the name over up to two lines, centred -->
-							{@const ph = photoOf(app.data, n.id)}
-							{@const px = (CW - 64) / 2}
-							{#if ph?.thumb}
-								<image href={ph.thumb} x={px} y="10" width="64" height="64" clip-path="url(#avatar-clip-p)" preserveAspectRatio="xMidYMid slice" />
-							{:else}
-								<use href="#sil-{silhouetteKey(p.sex?.value)}" x={px} y="10" width="64" height="64" />
+							<!-- V13: the photo across the top, then the name over up to two lines, centred, and the dates -->
+							{@const top = app.showPhotos ? PP + 6 : 0}
+							{#if app.showPhotos}
+								{@const ph = photoOf(app.data, n.id)}
+								{#if ph?.thumb}
+									<image href={ph.thumb} x="6" y="6" width={PP} height={PP} clip-path="url(#avatar-clip-p)" preserveAspectRatio="xMidYMid slice" />
+								{:else}
+									<use href="#sil-{silhouetteKey(p.sex?.value)}" x="6" y="6" width={PP} height={PP} />
+								{/if}
 							{/if}
-							{#each twoLines(displayName(p), guess ? 16 : 14) as line, i (i)}
-								<text class="nm" class:pencil={guess} x={CW / 2} y={94 + i * 15} text-anchor="middle">{line}</text>
+							{#each twoLines(displayName(p), guess ? 15 : 13) as line, i (i)}
+								<text class="nm" class:pencil={guess} x={CW / 2} y={top + 20 + i * 15} text-anchor="middle">{line}</text>
 							{/each}
 							<text class="dt" class:pencil={dateGuess} x={CW / 2} y={CH - 9} text-anchor="middle">{dates}</text>
 						{:else}
@@ -454,8 +461,9 @@
 							<text class="nm" class:pencil={guess} x={tx} y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
 							<text class="dt" class:pencil={dateGuess} x={tx} y="45">{dates}</text>
 						{/if}
-						<circle class="stage {stage}" cx={CW - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
-						{#if app.picked?.includes(n.id)}<text class="tick" x={CW - 14} y={CH - 9} text-anchor="middle">✓</text>{/if}
+						<!-- research stage, bottom right, clear of the name and photo -->
+						<circle class="stage {stage}" cx={CW - 10} cy={CH - 10} r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
+						{#if app.picked?.includes(n.id)}<text class="tick" x={CW - 14} y="20" text-anchor="middle">✓</text>{/if}
 					</g>
 				{/each}
 				{#each markers as m (m.key)}
@@ -482,27 +490,34 @@
 				{/each}
 			</g>
 		</svg>
-		<div class="zoombar" role="group" aria-label="Zoom">
-			<button type="button" onclick={() => zoomBy(0.8)} aria-label="Zoom out" title="Zoom out (−)">−</button>
-			<button type="button" class="pct" onclick={() => zoomBy(1 / cam.k)} title="Back to 100%">{Math.round(cam.k * 100)}%</button>
-			<button type="button" onclick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in (+)">+</button>
-			<button type="button" onclick={() => app.fitTree()} title="Show everyone (0)">Fit</button>
-			<button type="button" aria-pressed={app.showPhotos} onclick={() => app.setShowPhotos(!app.showPhotos)} title={app.showPhotos ? 'Compact cards, without photos' : 'Show photos on cards'}>Photos</button>
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger class="zoom-more" aria-label="Tree layout" title="Tree layout">Layout ▾</DropdownMenu.Trigger>
-				<DropdownMenu.Portal>
-					<DropdownMenu.Content class="menu" side="top" align="end" sideOffset={6}>
-						<div class="menu-note">Cards</div>
-						<DropdownMenu.Item class="menu-item" onSelect={() => (app.setShowPhotos(true), app.setPortrait(false))}>{app.showPhotos && !app.portrait ? '✓ ' : ''}Photo beside the name</DropdownMenu.Item>
-						<DropdownMenu.Item class="menu-item" onSelect={() => app.setPortrait(true)}>{portrait ? '✓ ' : ''}Photo above the name (narrower)</DropdownMenu.Item>
-						<DropdownMenu.Item class="menu-item" onSelect={() => app.setShowPhotos(false)}>{!app.showPhotos ? '✓ ' : ''}No photos (compact)</DropdownMenu.Item>
-						<DropdownMenu.Separator class="menu-sep" />
-						<div class="menu-note">Generations</div>
-						<DropdownMenu.Item class="menu-item" onSelect={() => app.setAcross(false)}>{!app.across ? '✓ ' : ''}Top to bottom</DropdownMenu.Item>
-						<DropdownMenu.Item class="menu-item" onSelect={() => app.setAcross(true)}>{app.across ? '✓ ' : ''}Left to right</DropdownMenu.Item>
-					</DropdownMenu.Content>
-				</DropdownMenu.Portal>
-			</DropdownMenu.Root>
+		<div class="zoombar" role="toolbar" aria-label="Tree controls">
+			<div class="zgroup" role="group" aria-label="Zoom">
+				<button type="button" onclick={() => zoomBy(0.8)} aria-label="Zoom out" title="Zoom out (−)">−</button>
+				<button type="button" class="pct" onclick={() => zoomBy(1 / cam.k)} title="Back to 100%">{Math.round(cam.k * 100)}%</button>
+				<button type="button" onclick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in (+)">+</button>
+			</div>
+			<div class="zgroup">
+				<button type="button" onclick={() => app.fitTree()} aria-label="Fit to screen" title="Fit everyone on screen (0)">
+					<svg class="zicon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" /></svg>
+				</button>
+			</div>
+			<div class="zgroup">
+				<label class="zswitch" title={app.showPhotos ? 'Hide photos on cards' : 'Show photos on cards'}>
+					<input type="checkbox" role="switch" checked={app.showPhotos} onchange={(e) => app.setShowPhotos(e.currentTarget.checked)} />
+					<span class="track" aria-hidden="true"></span>Photos
+				</label>
+			</div>
+			<div class="zgroup">
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger class="zlayout" title="Tree layout">{app.across ? 'Horizontal' : 'Vertical'}<svg class="zicon chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" /></svg></DropdownMenu.Trigger>
+					<DropdownMenu.Portal>
+						<DropdownMenu.Content class="menu" side="top" align="end" sideOffset={6}>
+							<DropdownMenu.Item class="menu-item" onSelect={() => app.setAcross(false)}>{!app.across ? '✓ ' : ''}Vertical: generations top to bottom</DropdownMenu.Item>
+							<DropdownMenu.Item class="menu-item" onSelect={() => app.setAcross(true)}>{app.across ? '✓ ' : ''}Horizontal: generations left to right</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Portal>
+				</DropdownMenu.Root>
+			</div>
 		</div>
 	</div>
 {/if}

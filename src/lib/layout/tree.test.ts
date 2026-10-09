@@ -6,7 +6,7 @@ import { migrate } from '../model/migrate.ts';
 import { components } from '../model/queries.ts';
 import { focusSet, type FocusOptions } from '../model/focus.ts';
 import { viewMembers } from '../model/views.ts';
-import { cardSize, layoutTree, sideways, turn, PORTRAIT_H, PORTRAIT_W, type CardSize } from './tree.ts';
+import { cardSize, layoutTree, sideways, turn, NODE_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, type CardSize } from './tree.ts';
 import { checkLayout } from './check.ts';
 import { isotonic, PHOTO_W } from './positions.ts';
 import { routeConnectors } from './connectors.ts';
@@ -193,14 +193,15 @@ describe('tree layout rules on the Darwin–Wedgwood demo', () => {
 		});
 });
 
-// Wide trees: portrait cards (V13) and left-to-right trees (V14), checked against the same rules. A left-to-right
+// Vertical trees with narrow cards (V13) and horizontal (left-to-right) trees (V14), checked against the same rules. A left-to-right
 // tree is worked out on its side and then flipped, so its rules are checked before the flip.
-describe('tree layout rules with portrait cards and left to right', () => {
+describe('tree layout rules, vertical (narrow cards) and horizontal', () => {
 	const dd = migrate(structuredClone(demo) as unknown as Dataset);
 	const sizes: [string, CardSize][] = [
-		['portrait cards', cardSize(PORTRAIT_W, PORTRAIT_H)],
-		['left to right', turn(cardSize(PHOTO_W))],
-		['left to right, portrait', turn(cardSize(PORTRAIT_W, PORTRAIT_H))]
+		['vertical, photos', cardSize(PORTRAIT_W, PORTRAIT_H)],
+		['vertical, no photos', cardSize(PORTRAIT_W, PORTRAIT_NOPHOTO_H)],
+		['horizontal, photos', turn(cardSize(PHOTO_W))],
+		['horizontal, no photos', turn(cardSize(NODE_W))]
 	];
 	for (const [mode, S] of sizes)
 		for (const [data, name, root, o] of [

@@ -6,7 +6,7 @@ import type { Dataset } from '../model/types.ts';
 import { cardSize, layoutPositions, type Box, type BranchLabel, type CardSize, type GhostBox, type NodeBox } from './positions.ts';
 import { pathOf, routeConnectors, type Anchor, type Line } from './connectors.ts';
 
-export { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_W, cardSize } from './positions.ts';
+export { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, cardSize } from './positions.ts';
 export type { Anchor, Box, BranchLabel, CardSize, GhostBox, Line, NodeBox };
 export type { LineStyle } from './connectors.ts';
 
