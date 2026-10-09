@@ -160,7 +160,7 @@
 	{@const e = kind === 'birth' ? birth : death}
 	<div class="row life-row">
 		<label class="fld"><span>{label}</span>
-			<input type="text" class:pencil={e?.date?.status === 'guess'} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 1858, c.1858, 1880s"
+			<input type="text" class:pencil={e?.date?.status === 'guess'} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 12 Feb 1858, c.1858, 1880s"
 				onchange={(ev) => { setLife(d, pid, kind, val(ev), null); if (kind === 'death') p.deceased = true; }} />
 		</label>
 		<div class="fld"><span>Place</span><PlaceInput {pid} {kind} /></div>

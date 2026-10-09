@@ -4,8 +4,18 @@
 export interface DateRange { start: number; end: number; span?: boolean }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_NAMES = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+/** A month typed as its first three letters or in full, in any case (1–12), or 0. */
+const monthOf = (w: string) => {
+	const l = w.toLowerCase();
+	return MONTH_NAMES.findIndex((n) => n === l || n.slice(0, 3) === l) + 1;
+};
+const daysIn = (y: number, m: number) => new Date(Date.UTC(y, m, 0)).getUTCDate();
+const pad2 = (n: number) => String(n).padStart(2, '0');
 
-/** Convert a user-typed date into EDTF. Unrecognised input is returned unchanged. */
+/** Convert a user-typed date into EDTF. Unrecognised input is returned unchanged. Besides the everyday forms
+ *  ("c.1858", "1880s", "before 1901", "1901-1911", "2/6/1883"), dates as the app shows them are understood:
+ *  "12 Feb 1809" or "12 February 1809", and "Feb 1809" or "February 1809" (a plain day, a four-digit year). */
 export function parseUserDate(input: string | null | undefined): string {
 	const s = (input ?? '').trim();
 	if (!s) return '';
@@ -17,6 +27,13 @@ export function parseUserDate(input: string | null | undefined): string {
 	if ((m = s.match(/^(\d{4})\s*[–-]\s*(\d{4})$/))) return m[1] + '/' + m[2];
 	if ((m = s.match(/^(\d{1,2})[/.](\d{1,2})[/.](\d{4})$/)))
 		return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+	if ((m = s.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/))) {
+		const mo = monthOf(m[2]),
+			day = +m[1];
+		// A day that doesn't exist in that month (31 Apr, 29 Feb 1900) isn't a date: keep what was typed.
+		return mo && day >= 1 && day <= daysIn(+m[3], mo) ? `${m[3]}-${pad2(mo)}-${pad2(day)}` : s;
+	}
+	if ((m = s.match(/^([A-Za-z]+)\s+(\d{4})$/)) && monthOf(m[1])) return `${m[2]}-${pad2(monthOf(m[1]))}`;
 	return s;
 }
 

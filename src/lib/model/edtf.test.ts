@@ -13,6 +13,28 @@ describe('parseUserDate', () => {
 		['2/6/1883', '1883-06-02'],
 		['', '']
 	])('%s → %s', (input, out) => expect(parseUserDate(input)).toBe(out));
+
+	it.each([
+		['12 Feb 1809', '1809-02-12'],
+		['12 February 1809', '1809-02-12'],
+		['2 jun 1883', '1883-06-02'],
+		['02 JUNE 1883', '1883-06-02'],
+		['Feb 1809', '1809-02'],
+		['september 1939', '1939-09'],
+		['29 Feb 2000', '2000-02-29'],
+		['31 Dec 1999', '1999-12-31']
+	])('dates as the app shows them: %s → %s', (input, out) => expect(parseUserDate(input)).toBe(out));
+
+	it.each([
+		['12th Feb 1809'], // no suffixes on the day
+		['1st May 1900'],
+		['12 Feb 09'], // years have four digits
+		['12 Sept 1809'], // three letters or the full name
+		['31 Apr 1900'], // not a day in that month
+		['29 Feb 1900'], // not a leap year
+		['0 Jan 1900'],
+		['12 Foo 1809']
+	])("doesn't take %s as a date (kept as typed)", (input) => expect(parseUserDate(input)).toBe(input));
 });
 
 describe('fmtDate', () => {
@@ -26,7 +48,7 @@ describe('fmtDate', () => {
 	])('%s → %s', (input, out) => expect(fmtDate(input)).toBe(out));
 
 	it('round-trips user input', () => {
-		for (const s of ['c.1858', '1880s', 'bef. 1901']) expect(fmtDate(parseUserDate(s))).toBe(s);
+		for (const s of ['c.1858', '1880s', 'bef. 1901', '12 Feb 1809', 'Feb 1809', '2 Jun 1883']) expect(fmtDate(parseUserDate(s))).toBe(s);
 	});
 });
 
