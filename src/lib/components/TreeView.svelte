@@ -5,13 +5,17 @@
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
-	import { GHOST_W, NODE_H, NODE_W, layoutTree, type TreeLayout } from '#lib/layout/tree.ts';
+	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, layoutTree, type TreeLayout } from '#lib/layout/tree.ts';
+	import { SILHOUETTE, silhouetteKey } from './Silhouette.svelte';
+	import { photoOf } from '#lib/model/media.ts';
 	import { routeConnectors } from '#lib/layout/connectors.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
 
-	const layout = $derived(layoutTree(app.data, app.visibleBranches, app.activeFocus?.id));
+	const layout = $derived(layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, app.showPhotos ? PHOTO_W : NODE_W));
+	/** Card width in use (wider with photos). */
+	const CW = $derived(layout.cardW);
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe' } as const;
 
@@ -63,7 +67,7 @@
 		if (!animating) return { nodes: to.nodes.map((n) => ({ ...n, o: 1 })), ghosts: to.ghosts.map((g) => ({ ...g, o: 1 })), lines: to.lines, anchors: to.anchors };
 		const nodes = to.nodes.map((n) => ({ ...n, ...blend(from.nodes, n.id, n, k), o: from.nodes.has(n.id) ? 1 : k }));
 		const ghosts = to.ghosts.map((g) => ({ ...g, ...blend(from.ghosts, g.familyId, g, k), o: from.ghosts.has(g.familyId) ? 1 : k }));
-		return { nodes, ghosts, ...routeConnectors(app.data, nodes, ghosts) };
+		return { nodes, ghosts, ...routeConnectors(app.data, nodes, ghosts, to.cardW) };
 	});
 
 	// Focus edge markers: "↑ parents" above someone whose parents are just out of view, "+3 children" below a family.
@@ -74,7 +78,7 @@
 		return (app.focusView?.edges ?? []).flatMap((e) => {
 			if (e.dir === 'up') {
 				const n = at.get(e.personId);
-				return n ? [{ key: `u:${e.personId}`, up: true, x: n.x + NODE_W / 2, y0: n.y, y1: n.y - STUB, text: e.hidden === 1 ? '↑ parent' : '↑ parents' }] : [];
+				return n ? [{ key: `u:${e.personId}`, up: true, x: n.x + CW / 2, y0: n.y, y1: n.y - STUB, text: e.hidden === 1 ? '↑ parent' : '↑ parents' }] : [];
 			}
 			const a = anim.anchors[e.familyId];
 			if (!a) return [];
@@ -167,7 +171,7 @@
 			const n = layout.nodes.find((n) => n.id === id);
 			if (!n) return;
 			const t = target();
-			const next = ensureVisible(t, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
+			const next = ensureVisible(t, { x: n.x, y: n.y, w: CW, h: NODE_H }, vw, vh);
 			if (next !== t) glide(next);
 		});
 	});
@@ -183,7 +187,7 @@
 			if (!fresh.length || fresh.length > 3 || app.centreTarget || !vw || !vh) return;
 			const t = target();
 			let c = t;
-			for (const n of fresh) c = ensureVisible(c, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
+			for (const n of fresh) c = ensureVisible(c, { x: n.x, y: n.y, w: CW, h: NODE_H }, vw, vh);
 			if (c !== t) glide(c);
 		});
 	});
@@ -195,7 +199,7 @@
 		if (!id || !vw || !vh) return;
 		untrack(() => {
 			const n = layout.nodes.find((n) => n.id === id);
-			if (n) glide(centreOn(app.camera ?? fitAll(), n.x + NODE_W / 2, n.y + NODE_H / 2, vw, vh));
+			if (n) glide(centreOn(app.camera ?? fitAll(), n.x + CW / 2, n.y + NODE_H / 2, vw, vh));
 		});
 		requestAnimationFrame(() => requestAnimationFrame(() => app.centreTarget === id && (app.centreTarget = null)));
 	});
@@ -356,6 +360,13 @@
 		role="presentation"
 	>
 		<svg width="100%" height="100%" role="img" aria-label="Family tree">
+			<defs>
+				<!-- avatars on cards (V10): photo clip and stand-in silhouettes -->
+				<clipPath id="avatar-clip" clipPathUnits="userSpaceOnUse"><rect x="8" y="11" width="36" height="36" rx="5" /></clipPath>
+				{#each ['M', 'F', 'U'] as const as k (k)}
+					<symbol id="sil-{k}" viewBox="0 0 36 36"><rect class="sil-bg" width="36" height="36" rx="5" />{#each SILHOUETTE[k] as d (d)}<path class="sil" {d} />{/each}</symbol>
+				{/each}
+			</defs>
 			<g transform="translate({cam.x},{cam.y}) scale({cam.k})">
 				{#each layout.labels as l (l.x)}
 					<text class="brlabel" x={l.x} y={l.y}>{l.text}</text>
@@ -369,6 +380,7 @@
 					{@const dates = cardDates(app.data, n.id)}
 					{@const dateGuess = lifeEvent(app.data, n.id, 'birth')?.date?.status === 'guess' || dates === 'no dates yet'}
 					{@const stage = p.research?.stage ?? 'none'}
+					{@const tx = app.showPhotos ? 52 : 11}
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 					<g
 						class="node"
@@ -384,11 +396,19 @@
 						onclick={() => cardClick(n.id)}
 						onkeydown={(e) => key(e, () => cardClick(n.id))}
 					>
-						<rect class="nbox" width={NODE_W} height={NODE_H} rx="6" />
-						<text class="nm" class:pencil={guess} x="11" y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
-						<text class="dt" class:pencil={dateGuess} x="11" y="45">{dates}</text>
-						<circle class="stage {stage}" cx={NODE_W - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
-						{#if app.picked?.includes(n.id)}<text class="tick" x={NODE_W - 14} y={NODE_H - 9} text-anchor="middle">✓</text>{/if}
+						<rect class="nbox" width={CW} height={NODE_H} rx="6" />
+						{#if app.showPhotos}
+							{@const ph = photoOf(app.data, n.id)}
+							{#if ph?.thumb}
+								<image href={ph.thumb} x="8" y="11" width="36" height="36" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
+							{:else}
+								<use href="#sil-{silhouetteKey(p.sex?.value)}" x="8" y="11" width="36" height="36" />
+							{/if}
+						{/if}
+						<text class="nm" class:pencil={guess} x={tx} y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
+						<text class="dt" class:pencil={dateGuess} x={tx} y="45">{dates}</text>
+						<circle class="stage {stage}" cx={CW - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
+						{#if app.picked?.includes(n.id)}<text class="tick" x={CW - 14} y={NODE_H - 9} text-anchor="middle">✓</text>{/if}
 					</g>
 				{/each}
 				{#each markers as m (m.key)}
@@ -422,6 +442,7 @@
 			<button type="button" class="pct" onclick={() => zoomBy(1 / cam.k)} title="Back to 100%">{Math.round(cam.k * 100)}%</button>
 			<button type="button" onclick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in (+)">+</button>
 			<button type="button" onclick={() => app.fitTree()} title="Show everyone (0)">Fit</button>
+			<button type="button" aria-pressed={app.showPhotos} onclick={() => app.setShowPhotos(!app.showPhotos)} title={app.showPhotos ? 'Compact cards, without photos' : 'Show photos on cards'}>Photos</button>
 		</div>
 	</div>
 {/if}

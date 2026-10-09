@@ -7,7 +7,7 @@ export const uid = (prefix: string) =>
 	`${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 export function emptyDataset(): Dataset {
-	return { schemaVersion: '0.2', people: [], families: [], events: [], places: [], sources: [], views: [] };
+	return { schemaVersion: '0.2', people: [], families: [], events: [], places: [], sources: [], views: [], media: [] };
 }
 
 export function findOrCreatePlace(d: Dataset, name: string): string | null {
@@ -201,6 +201,8 @@ export function deletePerson(d: Dataset, pid: string) {
 	});
 	d.events.forEach((e) => (e.participants = e.participants.filter((x) => x.personId !== pid)));
 	d.events = d.events.filter((e) => e.participants.length);
+	// Their photo entry goes too, unless someone else uses it (the image file is deleted by the app).
+	d.media = d.media.filter((m) => d.people.some((p) => p.photo === m.id));
 	// Saved views: drop views centred on them, and take them out of hand-picked lists.
 	d.views = d.views.filter((v) => v.scope?.root !== pid);
 	for (const v of d.views) if (v.scope?.people?.includes(pid)) v.scope.people = v.scope.people.filter((x) => x !== pid);

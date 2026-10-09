@@ -11,6 +11,7 @@ export function tidy(d: Loose): Dataset {
 	d.places ??= [];
 	d.sources ??= [];
 	d.views ??= [];
+	d.media ??= [];
 	for (const f of d.families) {
 		f.partners ??= [];
 		f.children ??= [];

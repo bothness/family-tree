@@ -2,7 +2,7 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { emptyDataset, newPerson } from '../model/mutations.ts';
-import { indexedDbStore, LEGACY_KEY } from './index.ts';
+import { indexedDbStore, LEGACY_KEY, makeBackup, pruneMedia, readBackup } from './index.ts';
 
 // Each test gets its own database (connections stay open, so deleting one between tests would block).
 let n = 0;
@@ -39,5 +39,39 @@ describe('IndexedDB store', () => {
 		expect(b?.size).toBe(3);
 		await s.deleteMedia('media_1');
 		expect(await s.getMedia('media_1')).toBeNull();
+	});
+});
+
+describe('backups', () => {
+	it('include photo files, and loading one puts them back', async () => {
+		const a = indexedDbStore(name);
+		const d = emptyDataset();
+		const ann = newPerson(d, 'Ann').id;
+		d.media.push({ id: 'media_1', kind: 'image', mime: 'image/jpeg', thumb: 'data:image/jpeg;base64,AA==' });
+		d.people.find((p) => p.id === ann)!.photo = 'media_1';
+		await a.putMedia('media_1', new Blob([new Uint8Array([1, 2, 3])], { type: 'image/jpeg' }));
+		const text = await makeBackup(a, d);
+		expect(JSON.parse(text).mediaFiles.media_1).toMatch(/^data:image\/jpeg;base64,/);
+
+		const b = indexedDbStore(`${name}-other`);
+		const back = await readBackup(b, text);
+		expect(back.people[0].photo).toBe('media_1');
+		expect('mediaFiles' in back).toBe(false);
+		expect((await b.getMedia('media_1'))?.size).toBe(3);
+	});
+
+	it('prunes photo files nothing refers to', async () => {
+		const s = indexedDbStore(name);
+		await s.putMedia('media_keep', new Blob(['a']));
+		await s.putMedia('media_gone', new Blob(['b']));
+		const d = emptyDataset();
+		d.media.push({ id: 'media_keep', kind: 'image', mime: 'image/jpeg' });
+		await pruneMedia(s, d);
+		expect(await s.listMedia()).toEqual(['media_keep']);
+	});
+
+	it('loads plain data without photos', async () => {
+		const d = await readBackup(indexedDbStore(name), JSON.stringify(emptyDataset()));
+		expect(d.media).toEqual([]);
 	});
 });

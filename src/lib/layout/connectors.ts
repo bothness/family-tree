@@ -33,7 +33,7 @@ export const BUS_BASE = 24,
 
 const styleOf = (st?: Status | ''): LineStyle => (st === 'guess' ? 'guess' : st === 'likely' ? 'likely' : 'solid');
 
-export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]): { lines: Line[]; anchors: Record<string, Anchor> } {
+export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[], W = NODE_W): { lines: Line[]; anchors: Record<string, Anchor> } {
 	const pos = new Map(nodes.map((n) => [n.id, n]));
 	const ghostOf = new Map(ghosts.map((g) => [g.familyId, g]));
 	const lines: Line[] = [];
@@ -58,16 +58,16 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 			const [a, b] = [...ps].sort((p, q) => p.x - q.x);
 			ay = a.y + NODE_H / 2;
 			const st = f.relationship?.status ?? (f.partners.some((x) => x.status === 'guess') ? 'guess' : '');
-			h(`${f.id}:couple`, f, 'couple', a.x + NODE_W, b.x, ay, styleOf(st));
-			ax = (a.x + NODE_W + b.x) / 2;
+			h(`${f.id}:couple`, f, 'couple', a.x + W, b.x, ay, styleOf(st));
+			ax = (a.x + W + b.x) / 2;
 			anchors[f.id] = { x: ax, y: ay, couple: true, bottom: a.y + NODE_H };
 		} else if (ps.length) {
-			ax = ps[0].x + NODE_W / 2;
+			ax = ps[0].x + W / 2;
 			ay = ps[0].y + NODE_H;
 			anchors[f.id] = { x: ax, y: ay, couple: false, bottom: ay };
 		}
 
-		const targets = cs.map(({ id, n }) => ({ key: `${f.id}:c:${id}`, x: n.x + NODE_W / 2, y: n.y, style: styleOf(f.children.find((c) => c.personId === id)!.status) }));
+		const targets = cs.map(({ id, n }) => ({ key: `${f.id}:c:${id}`, x: n.x + W / 2, y: n.y, style: styleOf(f.children.find((c) => c.personId === id)!.status) }));
 		if (gh) targets.push({ key: `${f.id}:ghost`, x: gh.x + GHOST_W / 2, y: gh.y, style: missingCount(f) ? 'ghost' : 'maybe' });
 		if (!targets.length) continue;
 		const xs = targets.map((t) => t.x).concat(ax != null ? [ax] : []);

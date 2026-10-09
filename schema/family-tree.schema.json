@@ -50,6 +50,12 @@
       "items": {
         "$ref": "#/$defs/View"
       }
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Media"
+      }
     }
   },
   "$defs": {
@@ -324,6 +330,10 @@
         "deceased": {
           "type": "boolean",
           "description": "True if the person has died. Absent means living or not known; the app treats anyone born over 110 years ago as probably deceased."
+        },
+        "photo": {
+          "$ref": "#/$defs/MediaId",
+          "description": "Portrait shown on tree cards."
         },
         "links": {
           "$ref": "#/$defs/ExternalLinks"
@@ -863,6 +873,52 @@
               "default": true
             }
           }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "MediaId": {
+      "type": "string",
+      "pattern": "^media_[A-Za-z0-9_-]+$"
+    },
+    "Media": {
+      "description": "A picture (V10). Only a resized copy is kept, never the original: the image itself (about 800px) is stored apart from the dataset (in the browser's IndexedDB, or alongside a backup file), keyed by id; the dataset holds a small thumbnail for cards.",
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "mime"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/MediaId"
+        },
+        "kind": {
+          "enum": [
+            "image"
+          ]
+        },
+        "mime": {
+          "type": "string",
+          "description": "e.g. 'image/jpeg'."
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "thumb": {
+          "type": "string",
+          "description": "Small square thumbnail for tree cards, as a data: URL."
+        },
+        "caption": {
+          "type": "string"
         },
         "meta": {
           "$ref": "#/$defs/Meta"

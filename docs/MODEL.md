@@ -40,6 +40,11 @@ Run: `npm i ajv ajv-formats && node validate.mjs example-data.json`
 - `links.osm`: the OpenStreetMap object ("relation/118362"); with `coordinates` and `links.wikidata` it comes from the Nominatim lookup. A place without them was written by hand.
 - Places found by lookup are reused by OSM id; a hand-written place can be linked in place ("Find on the map"), which updates every event using it, keeping its own name (the lookup's name becomes another name).
 
+## Photos (added within v0.2, 9 Oct 2026)
+- `media[]`: `Media { id, kind: 'image', mime, width, height, thumb, caption? }`; `person.photo` is a Media id.
+- Only a resized copy is kept (longest side 800px, JPEG), never the original. The image itself is stored apart from the dataset (IndexedDB in the browser) under its id; `thumb` is a small square data: URL for tree cards, so cards show without loading files.
+- Backups (Data → Download backup) are the dataset plus `mediaFiles` (each image as a data: URL), so one file holds everything. `mediaFiles` isn't part of the schema; it's removed when a backup is loaded.
+
 ## Derived (computed, not stored)
 Sortable date ranges, generations, connected branches, and the gaps report (guesses, unsourced events, open families, placeholders, missing births).
 

@@ -3,6 +3,7 @@
 	import StatusPicker from './StatusPicker.svelte';
 	import AddRelative from './AddRelative.svelte';
 	import PlaceInput from './PlaceInput.svelte';
+	import PhotoPicker from './PhotoPicker.svelte';
 	import { edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
 	import {
 		birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, fullName, halfSiblings,
@@ -130,7 +131,10 @@
 			confirmDel = true;
 			return;
 		}
+		const photo = p.photo;
 		deletePerson(d, pid);
+		// Their photo file goes too, unless someone else still uses it.
+		if (photo && !d.media.some((m) => m.id === photo)) app.store?.deleteMedia(photo);
 		app.select(null);
 	}
 	const otherPartner = (f: Family) => partnerIds(f).find((x) => x !== pid);
@@ -157,6 +161,7 @@
 {/snippet}
 
 <div class="sheet-head">
+	<PhotoPicker {pid} />
 	<div>
 		<h2 class:pencil={nameIsGuess(p)}>{displayName(p)}</h2>
 		{#if p.knownAs}<div class="sub">{fullName(p)}</div>{/if}

@@ -14,7 +14,9 @@ import type { Dataset, Family } from '../model/types.ts';
 import { birthStart, childIds, partnerIds, sexRank } from '../model/queries.ts';
 import { edtfRange } from '../model/edtf.ts';
 
+/** Card width without photos (compact) and with them (V10); the layout takes the width to use. */
 export const NODE_W = 156,
+	PHOTO_W = 196,
 	NODE_H = 58,
 	GHOST_W = 104;
 /** Gap between partners' cards. */
@@ -34,7 +36,7 @@ export interface NodeBox { id: string; x: number; y: number }
 export interface GhostBox { familyId: string; x: number; y: number; missing: number | null }
 export interface BranchLabel { text: string; x: number; y: number }
 export interface Box { x: number; y: number; w: number; h: number }
-export interface Positions { nodes: NodeBox[]; ghosts: GhostBox[]; labels: BranchLabel[]; bounds: Box }
+export interface Positions { nodes: NodeBox[]; ghosts: GhostBox[]; labels: BranchLabel[]; bounds: Box; /** Card width used. */ cardW: number }
 
 interface Unit {
 	key: string;
@@ -70,7 +72,7 @@ export function missingCount(f: Family): number | null {
 const relStart = (f: Family) => edtfRange(f.relationship?.start?.edtf)?.start ?? Infinity;
 const byBirth = (d: Dataset) => (a: string, b: string) => birthStart(d, a) - birthStart(d, b) || a.localeCompare(b);
 
-function layoutComponent(d: Dataset, ids: string[], root?: string) {
+function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W: number) {
 	const inC = new Set(ids);
 	const birth = byBirth(d);
 	const fams: Fam[] = d.families
@@ -123,11 +125,11 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 		const group = new Set([id]);
 		for (const m of group) for (const { p } of partners.get(m) ?? []) group.add(p);
 		const members = arrange([...group], partners, d);
-		const u: Unit = { key: members[0], g: gen.get(id)!, members, w: members.length * NODE_W + (members.length - 1) * CARD_GAP, x: 0, placed: false };
+		const u: Unit = { key: members[0], g: gen.get(id)!, members, w: members.length * W + (members.length - 1) * CARD_GAP, x: 0, placed: false };
 		units.push(u);
 		for (const m of members) unitOf.set(m, u);
 	}
-	const cardLeft = (u: Unit, id: string) => u.members.indexOf(id) * (NODE_W + CARD_GAP);
+	const cardLeft = (u: Unit, id: string) => u.members.indexOf(id) * (W + CARD_GAP);
 
 	// Placeholders for missing children: only under visible parents, and only when every known child is in view
 	// (otherwise the edge of a focus would look like a research gap).
@@ -149,8 +151,8 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 			const both = vis.length === 2 && unitOf.get(vis[1]) === u;
 			if (both) {
 				const [l, r] = vis.map((p) => cardLeft(u, p)).sort((a, b) => a - b);
-				fm.anchorOff = r - l === NODE_W + CARD_GAP ? l + NODE_W + CARD_GAP / 2 : (l + r + NODE_W) / 2;
-			} else fm.anchorOff = cardLeft(u, vis[0]) + NODE_W / 2;
+				fm.anchorOff = r - l === W + CARD_GAP ? l + W + CARD_GAP / 2 : (l + r + W) / 2;
+			} else fm.anchorOff = cardLeft(u, vis[0]) + W / 2;
 		}
 	}
 	const childOf = new Map<string, Fam>();
@@ -177,7 +179,7 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 	for (const fm of fams) if (fm.parent) for (const k of fm.kids) (parentFams.get(k) ?? parentFams.set(k, []).get(k)!).push(fm);
 	/** The person in a unit who is the child of `fm` (where the unit hangs from), or the placeholder itself. */
 	const childLeft = (k: Unit, fm: Fam) => (k.ghost ? 0 : cardLeft(k, k.members.find((m) => fm.cs.includes(m))!));
-	const childW = (k: Unit) => (k.ghost ? GHOST_W : NODE_W);
+	const childW = (k: Unit) => (k.ghost ? GHOST_W : W);
 
 	// 3. Order units within rows: walk down from the earliest roots; a group that only joins in below (a partner's
 	// parents) is inserted above the person it joins, once there are positions to aim for.
@@ -266,7 +268,7 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 		else u.members.forEach((m) => nodes.push({ id: m, x: u.x + cardLeft(u, m), y }));
 	}
 	const focusNode = root ? nodes.find((n) => n.id === root) : undefined;
-	const dx = focusNode ? -(focusNode.x + NODE_W / 2) : -Math.min(...nodes.map((n) => n.x), ...ghosts.map((g) => g.x));
+	const dx = focusNode ? -(focusNode.x + W / 2) : -Math.min(...nodes.map((n) => n.x), ...ghosts.map((g) => g.x));
 	for (const b of [...nodes, ...ghosts]) b.x += dx;
 	return { nodes, ghosts };
 }
@@ -365,20 +367,20 @@ export function isotonic(want: { x: number; wt: number }[], gaps: number[]): num
 }
 
 /** Lay out each group of people (focus view: one group, with the focus person at x = 0), side by side. */
-export function layoutPositions(d: Dataset, branches: { label: string; ids: string[] }[], root?: string): Positions {
-	const out: Positions = { nodes: [], ghosts: [], labels: [], bounds: { x: 0, y: 0, w: 0, h: 0 } };
+export function layoutPositions(d: Dataset, branches: { label: string; ids: string[] }[], root?: string, W = NODE_W): Positions {
+	const out: Positions = { nodes: [], ghosts: [], labels: [], bounds: { x: 0, y: 0, w: 0, h: 0 }, cardW: W };
 	let right = -Infinity;
 	for (const b of branches) {
 		if (!b.ids.length) continue;
-		const L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined);
+		const L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined, W);
 		const lefts = [...L.nodes.map((n) => n.x), ...L.ghosts.map((g) => g.x)];
 		const dx = right === -Infinity ? 0 : right + COMP_GAP - Math.min(...lefts);
 		for (const n of L.nodes) out.nodes.push({ ...n, x: n.x + dx });
 		for (const g of L.ghosts) out.ghosts.push({ ...g, x: g.x + dx });
 		if (branches.length > 1) out.labels.push({ text: b.label, x: Math.min(...lefts) + dx, y: -LABEL_DY });
-		right = Math.max(...L.nodes.map((n) => n.x + NODE_W), ...L.ghosts.map((g) => g.x + GHOST_W)) + dx;
+		right = Math.max(...L.nodes.map((n) => n.x + W), ...L.ghosts.map((g) => g.x + GHOST_W)) + dx;
 	}
-	const boxes = [...out.nodes.map((n) => ({ ...n, w: NODE_W })), ...out.ghosts.map((g) => ({ ...g, w: GHOST_W }))];
+	const boxes = [...out.nodes.map((n) => ({ ...n, w: W })), ...out.ghosts.map((g) => ({ ...g, w: GHOST_W }))];
 	if (boxes.length) {
 		const x0 = Math.min(...boxes.map((b) => b.x)),
 			y0 = Math.min(...boxes.map((b) => b.y), ...out.labels.map((l) => l.y - 14)),

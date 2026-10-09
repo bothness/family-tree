@@ -1,13 +1,14 @@
 // Checks a tree layout against the Phase C rules. Returns a list of problems (empty = all good). Used by tests.
 import type { Dataset } from '../model/types.ts';
 import { birthStart, childIds, partnerIds, person } from '../model/queries.ts';
-import { GHOST_W, NODE_H, NODE_W, type TreeLayout } from './tree.ts';
+import { GHOST_W, NODE_H, type TreeLayout } from './tree.ts';
 
-/** How far (px) beyond the outermost children's centres a parent couple may sit and still count as "above" them. */
-export const CENTRE_TOLERANCE = NODE_W;
 
 export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] {
 	const out: string[] = [];
+	const NODE_W = L.cardW;
+	/** How far (px) beyond the outermost children's centres a parent couple may sit and still count as "above" them. */
+	const CENTRE_TOLERANCE = NODE_W;
 	const name = (id: string) => person(d, id)?.names?.[0]?.given ?? id;
 	const pos = new Map(L.nodes.map((n) => [n.id, n]));
 

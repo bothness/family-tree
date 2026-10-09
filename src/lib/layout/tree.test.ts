@@ -7,7 +7,7 @@ import { focusSet, type FocusOptions } from '../model/focus.ts';
 import { viewMembers } from '../model/views.ts';
 import { layoutTree } from './tree.ts';
 import { checkLayout } from './check.ts';
-import { isotonic } from './positions.ts';
+import { isotonic, PHOTO_W } from './positions.ts';
 import { routeConnectors } from './connectors.ts';
 import { emptyDataset } from '../model/mutations.ts';
 import type { Dataset } from '../model/types.ts';
@@ -22,6 +22,7 @@ const subset = (ids: string[]) => ({ ids, L: layoutTree(d, components(d, ids).ma
 
 const cases: [string, () => { ids: string[]; L: ReturnType<typeof layoutTree> }][] = [
 	['everyone', () => ({ ids: d.people.map((p) => p.id), L: layoutTree(d, everyone()) })],
+	['everyone, wider cards with photos', () => ({ ids: d.people.map((p) => p.id), L: layoutTree(d, everyone(), undefined, PHOTO_W) })],
 	['Thomas ±2/1 with siblings', () => focus('per_thomas_smith', { up: 2, down: 1, width: 'siblings' })],
 	['Thomas ±2/1 all relatives', () => focus('per_thomas_smith', { up: 2, down: 1, width: 'all' })],
 	["William's descendants", () => focus('per_william_smith', { up: 0, down: Infinity, width: 'direct' })],

@@ -54,6 +54,22 @@ export interface Person {
 	/** Free-text sources. */
 	sourceNotes?: string;
 	research?: Research;
+	/** Portrait shown on tree cards: a Media id. */
+	photo?: string;
+	meta?: Meta;
+}
+
+/** A picture (V10). Only a resized copy is kept; the image itself is stored apart from the dataset (IndexedDB,
+ *  or alongside a backup file) under its id, and the dataset holds a small thumbnail for cards. */
+export interface Media {
+	id: string;
+	kind: 'image';
+	mime: string;
+	width?: number;
+	height?: number;
+	/** Small square thumbnail for tree cards, as a data: URL. */
+	thumb?: string;
+	caption?: string;
 	meta?: Meta;
 }
 
@@ -157,4 +173,5 @@ export interface Dataset {
 	places: Place[];
 	sources: Source[];
 	views: View[];
+	media: Media[];
 }

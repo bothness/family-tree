@@ -4,6 +4,8 @@ import type { Dataset } from './model/types.ts';
 import type { RelativeKind } from './model/mutations.ts';
 import type { Camera } from './layout/viewport.ts';
 import type { DataStore } from './storage/index.ts';
+import { prepareImage } from './media/images.ts';
+import { removePhoto, setPhoto } from './model/media.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
 import { components, displayName, person, primaryName } from './model/queries.ts';
 import { addView, focusScope, sameFocus, setViewScope, viewFocus, viewKind, viewMembers, type FocusRule } from './model/views.ts';
@@ -27,6 +29,23 @@ function branchLabel(d: Dataset, comp: string[]): string {
 	const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
 	return top ? top[0] : displayName(person(d, comp[0]));
 }
+// Per-browser display preferences (not part of the family data).
+const PREFS = 'family-tree:prefs';
+function readPref<T>(k: string, dflt: T): T {
+	try {
+		return (JSON.parse(localStorage.getItem(PREFS) ?? '{}')[k] as T) ?? dflt;
+	} catch {
+		return dflt;
+	}
+}
+function writePref(k: string, v: unknown) {
+	try {
+		localStorage.setItem(PREFS, JSON.stringify({ ...JSON.parse(localStorage.getItem(PREFS) ?? '{}'), [k]: v }));
+	} catch {
+		/* ignore */
+	}
+}
+
 const labelled = (d: Dataset, comps: string[][]) => comps.map((ids) => ({ label: branchLabel(d, ids), ids }));
 
 class AppState {
@@ -35,6 +54,8 @@ class AppState {
 	ready = $state(false);
 	/** Where data and photos are kept (set on start-up). */
 	store: DataStore | null = null;
+	/** Show photos on tree cards (V10). Off = compact cards. A per-browser preference, not part of the data. */
+	showPhotos = $state(readPref('showPhotos', true));
 	tab = $state<Tab>('tree');
 	selected = $state<string | null>(null);
 	/** Which "add relative" form is open in the person panel. */
@@ -189,6 +210,25 @@ class AppState {
 		this.picked = null;
 		this.pickingFor = null;
 		this.fitTree();
+	}
+
+	setShowPhotos(on: boolean) {
+		this.showPhotos = on;
+		writePref('showPhotos', on);
+	}
+
+	/** Give someone a photo from a picked file: only a resized copy is kept (see media/images.ts). */
+	async addPhoto(pid: string, file: Blob) {
+		if (!this.store) throw new Error('Storage is not ready yet.');
+		const img = await prepareImage(file);
+		const { id, replaced } = setPhoto(this.data, pid, { mime: img.mime, width: img.width, height: img.height, thumb: img.thumb });
+		await this.store.putMedia(id, img.image);
+		if (replaced) await this.store.deleteMedia(replaced);
+	}
+
+	async removePhoto(pid: string) {
+		const id = removePhoto(this.data, pid);
+		if (id) await this.store?.deleteMedia(id);
 	}
 
 	select(id: string | null, addKind: RelativeKind | null = null) {
