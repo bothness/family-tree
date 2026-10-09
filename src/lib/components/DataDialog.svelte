@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { app, sampleData } from '#lib/app.svelte.ts';
+	import { app, demoData } from '#lib/app.svelte.ts';
 	import { emptyDataset } from '#lib/model/mutations.ts';
 	import { makeBackup, pruneMedia, readBackup } from '#lib/storage/index.ts';
 
@@ -39,7 +39,7 @@
 			armed = kind;
 			return;
 		}
-		useData(kind === 'reset' ? sampleData() : emptyDataset());
+		useData(kind === 'reset' ? demoData() : emptyDataset());
 	}
 
 	// Backups (one file with everything, photos included).
@@ -82,7 +82,7 @@
 		<div class="row">
 			<button class="btn small" onclick={copy}>{copied ? 'Copied' : 'Copy'}</button>
 			<button class="btn small" onclick={() => load()}>Load pasted data</button>
-			<button class="btn small" onclick={() => replace('reset')}>{armed === 'reset' ? 'Tap again to replace everything with the sample' : 'Restore sample'}</button>
+			<button class="btn small" onclick={() => replace('reset')}>{armed === 'reset' ? 'Tap again to replace everything with the demo family' : 'Load the demo family'}</button>
 			<button class="btn small danger" onclick={() => replace('clear')}>{armed === 'clear' ? 'Tap again to clear everything' : 'Start empty'}</button>
 			{#if err}<span class="hint" style="color:var(--warn)">{err}</span>{/if}
 		</div>

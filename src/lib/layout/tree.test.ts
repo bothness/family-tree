@@ -1,6 +1,7 @@
 // The Phase C layout, checked against its rules on the sample data in the modes the app uses.
 import { describe, expect, it } from 'vitest';
 import sample from '../data/example-data.json';
+import demo from '../data/demo-darwin.json';
 import { migrate } from '../model/migrate.ts';
 import { components } from '../model/queries.ts';
 import { focusSet, type FocusOptions } from '../model/focus.ts';
@@ -168,4 +169,27 @@ describe('siblings with no parents recorded', () => {
 		expect(checkLayout(d4, L, ids)).toEqual([]);
 		expect(L.lines.some((l) => l.key === 'sibs:bus')).toBe(true);
 	});
+});
+
+// The demo family (E4): cousin marriages join the Darwins and Wedgwoods twice over, and several people remarried.
+// Skipped until the layout handles three or more partners and siblings who intermarry (see ROADMAP, E4).
+describe.skip('tree layout rules on the Darwin–Wedgwood demo', () => {
+	const dd = migrate(structuredClone(demo));
+	const at = (root: string, o: FocusOptions) => {
+		const ids = [...focusSet(dd, root, o).ids];
+		return { ids, L: layoutTree(dd, [{ label: '', ids }], root) };
+	};
+	const demoCases: [string, () => { ids: string[]; L: ReturnType<typeof layoutTree> }][] = [
+		['everyone', () => ({ ids: dd.people.map((p) => p.id), L: layoutTree(dd, components(dd).map((ids) => ({ label: 'x', ids }))) })],
+		["Charles's family view", () => at('per_charles', { up: 2, down: 1, width: 'direct' })],
+		['Descendants of Erasmus', () => at('per_erasmus', { up: 0, down: Infinity, width: 'direct' })],
+		['Francis (three marriages) all relatives', () => at('per_francis', { up: 1, down: 1, width: 'all' })],
+		['Elizabeth Collier ±1 all relatives', () => at('per_elizabeth_collier', { up: 1, down: 1, width: 'all' })],
+		['Ralph Vaughan Williams ancestors', () => at('per_ralph_vw', { up: Infinity, down: 0, width: 'direct' })]
+	];
+	for (const [name, make] of demoCases)
+		it(name, () => {
+			const { ids, L } = make();
+			expect(checkLayout(dd, L, ids)).toEqual([]);
+		});
 });

@@ -6,17 +6,18 @@ import type { Camera } from './layout/viewport.ts';
 import type { DataStore } from './storage/index.ts';
 import { betterThumb, prepareImage } from './media/images.ts';
 import { removePhoto, setPhoto } from './model/media.ts';
-import { uid } from './model/mutations.ts';
+import { emptyDataset, uid } from './model/mutations.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
 import { components, displayName, person, primaryName } from './model/queries.ts';
 import { addView, focusScope, sameFocus, setViewScope, viewFocus, viewKind, viewMembers, type FocusRule } from './model/views.ts';
 import { migrate } from './model/migrate.ts';
-import sample from './data/example-data.json';
+import demo from './data/demo-darwin.json';
 
 export type Tab = 'tree' | 'timeline' | 'map' | 'todo';
 export type Focus = FocusRule;
 
-export const sampleData = (): Dataset => migrate(structuredClone(sample));
+/** The demo family (E4): the Darwins and Wedgwoods, offered on an empty tree but never loaded unasked. */
+export const demoData = (): Dataset => migrate(structuredClone(demo) as unknown as Dataset);
 
 /** Label for an unconnected group on the canvas: its most common birth surname. */
 function branchLabel(d: Dataset, comp: string[]): string {
@@ -50,7 +51,7 @@ function writePref(k: string, v: unknown) {
 const labelled = (d: Dataset, comps: string[][]) => comps.map((ids) => ({ label: branchLabel(d, ids), ids }));
 
 class AppState {
-	data = $state<Dataset>(sampleData());
+	data = $state<Dataset>(emptyDataset());
 	/** Saved data has been loaded (until then nothing is shown or saved). */
 	ready = $state(false);
 	/** Where data and photos are kept (set on start-up). */
@@ -167,6 +168,13 @@ class AppState {
 		this.select(null);
 		this.blank = true;
 		this.fitTree();
+	}
+
+	/** Replace the (empty) tree with the demo family, and open on Charles Darwin's family. */
+	loadDemo() {
+		this.data = demoData();
+		this.select(null);
+		this.openView('view_charles_family');
 	}
 
 	/** Save the current focus as a new view and open it. */
