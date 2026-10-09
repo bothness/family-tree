@@ -368,3 +368,5 @@ button.sync-status:hover{background:var(--paper)}
 .ro-text{margin:0 0 6px;white-space:pre-wrap}
 .ro .fam{display:grid;gap:3px}
 .ghost.inert{cursor:default}
+/* A switch placed straight in a section keeps its own width (as the certainty switches in rows do). */
+.blk > .seg{justify-self:start}
