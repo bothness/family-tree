@@ -1,0 +1,3 @@
+# The private family edition: no crawling at all.
+User-agent: *
+Disallow: /
