@@ -55,8 +55,8 @@ interface Fam {
 	parent?: Unit;
 	anchorOff: number;
 	kids: Unit[];
-	/** A child married to someone whose own parents are in view: the couple sits at this family's edge facing
-	 *  the spouse ('left' or 'right'), so each side's brothers and sisters stay together. */
+	/** A child married to someone whose own parents are in view, and which side of them that spouse is on: the
+	 *  spouse's brothers and sisters are placed beyond this family's children on that side. */
 	bridge?: Unit;
 	side?: 'left' | 'right';
 }
@@ -157,21 +157,17 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 	for (const fm of fams) if (fm.parent) for (const c of fm.cs) childOf.set(c, fm);
 	for (const fm of fams) {
 		const ghost = fm.kids;
-		let kidUnits = [...new Set([...fm.cs].sort(birth).map((c) => unitOf.get(c)!))];
-		// Siblings stay in age order, except that a child married to someone whose own parents are in view goes at
-		// the edge facing their spouse (sibling sets either side of the couple), and the placeholder for missing
-		// children then goes on the outer edge.
+		// Siblings in strict age order (oldest left), then the placeholder for missing children.
+		const kidUnits = [...new Set([...fm.cs].sort(birth).map((c) => unitOf.get(c)!))];
+		fm.kids = [...kidUnits, ...ghost];
 		for (const k of kidUnits) {
 			const m = k.members.find((x) => fm.cs.includes(x))!;
 			const spouse = k.members.find((o) => o !== m && childOf.has(o) && childOf.get(o) !== fm);
 			if (!spouse || !fm.parent) continue;
 			fm.bridge = k;
 			fm.side = k.members.indexOf(spouse) > k.members.indexOf(m) ? 'right' : 'left';
-			kidUnits = kidUnits.filter((u) => u !== k);
-			kidUnits = fm.side === 'right' ? [...kidUnits, k] : [k, ...kidUnits];
 			break;
 		}
-		fm.kids = fm.side === 'right' ? [...ghost, ...kidUnits] : [...kidUnits, ...ghost];
 	}
 	const famsOf = new Map<Unit, Fam[]>();
 	for (const fm of fams)
@@ -214,19 +210,25 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 	sweep();
 	for (const r of deferred) {
 		let fresh = [...reach(r)].filter((u) => !u.placed);
-		// A spouse's brothers and sisters go on the spouse's side of the couple, next to it, in order.
+		// A spouse's brothers and sisters go on the spouse's side, beyond the other family's children (which stay in
+		// age order around the couple), in age order.
 		for (const fm of fams) {
 			if (!fm.bridge?.placed) continue;
 			const block = fm.kids.filter((k) => k !== fm.bridge && fresh.includes(k));
 			if (!block.length) continue;
 			const row = rows[fm.bridge.g];
+			const other = (parentFams.get(fm.bridge) ?? []).find((g) => g !== fm && g.kids.every((k) => k.placed));
+			const run = (other?.kids ?? [fm.bridge]).filter((k) => row.includes(k)).map((k) => row.indexOf(k));
 			if (fm.side === 'left') {
-				let x = fm.bridge.x + fm.bridge.w + SIB_GAP;
-				row.splice(row.indexOf(fm.bridge) + 1, 0, ...block);
+				// The spouse is on the left, so this family's other children go to the right of that run.
+				const end = row[Math.max(...run)];
+				let x = end.x + end.w + FAM_GAP;
+				row.splice(Math.max(...run) + 1, 0, ...block);
 				for (const k of block) (k.x = x), (x += k.w + SIB_GAP), (k.placed = true);
 			} else {
-				let x = fm.bridge.x;
-				row.splice(row.indexOf(fm.bridge), 0, ...block);
+				const startU = row[Math.min(...run)];
+				let x = startU.x - FAM_GAP + SIB_GAP;
+				row.splice(Math.min(...run), 0, ...block);
 				for (const k of [...block].reverse()) (x -= k.w + SIB_GAP), (k.x = x), (k.placed = true);
 			}
 			fresh = fresh.filter((u) => !u.placed);

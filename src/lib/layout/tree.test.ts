@@ -93,7 +93,7 @@ describe('isotonic', () => {
 	});
 });
 
-describe('sibling sets either side of a couple (V8)', () => {
+describe('sibling sets either side of a couple (V8), in strict age order', () => {
 	// Husband (b.1878) with an older brother and a younger sister; wife with a sister; both sets of parents in view;
 	// some of the husband's siblings are missing.
 	const d2: Dataset = emptyDataset();
@@ -116,9 +116,9 @@ describe('sibling sets either side of a couple (V8)', () => {
 			.map((x) => x[0]);
 
 	it('passes the layout rules', () => expect(checkLayout(d2, L, d2.people.map((p) => p.id))).toEqual([]));
-	it("puts each partner's family on their side, the married child at the edge facing their spouse", () => {
+	it("keeps strict age order, with the spouse's brothers and sisters beyond the other family's children", () => {
 		expect(row(0)).toEqual(['hf', 'hm', 'wf', 'wm']);
-		expect(row(L.nodes.find((n) => n.id === 'husband')!.y)).toEqual(['+f_h', 'older', 'younger', 'husband', 'wife', 'sister']);
+		expect(row(L.nodes.find((n) => n.id === 'husband')!.y)).toEqual(['older', 'husband', 'wife', 'younger', '+f_h', 'sister']);
 	});
 	it('also works in a focus view on the wife', () => {
 		const ids = [...focusSet(d2, 'wife', { up: 1, down: 0, width: 'siblings' }).ids];
@@ -153,5 +153,18 @@ describe('connectors', () => {
 	it('anchors a couple at the middle of their line, a lone parent below their card', () => {
 		expect(anchors.fa).toMatchObject({ x: 163, couple: true });
 		expect(anchors.fb).toMatchObject({ x: 478, couple: false });
+	});
+});
+
+describe('siblings with no parents recorded', () => {
+	const d4: Dataset = emptyDataset();
+	d4.people.push({ id: 'ann', names: [{ given: 'Ann' }] }, { id: 'bob', names: [{ given: 'Bob' }] });
+	d4.families.push({ id: 'sibs', partners: [], children: [{ personId: 'ann' }, { personId: 'bob' }] });
+	it('lays out a focus on one of them, with the other beside them joined by a line', () => {
+		const ids = [...focusSet(d4, 'ann', { up: 1, down: 1, width: 'siblings' }).ids];
+		const L = layoutTree(d4, [{ label: '', ids }], 'ann');
+		expect(ids.sort()).toEqual(['ann', 'bob']);
+		expect(checkLayout(d4, L, ids)).toEqual([]);
+		expect(L.lines.some((l) => l.key === 'sibs:bus')).toBe(true);
 	});
 });

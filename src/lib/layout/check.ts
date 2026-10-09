@@ -28,7 +28,8 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 	// Whose child each visible person is, counting only families with a parent in view.
 	const parentFam = new Map<string, string>();
 	for (const f of d.families) if (partnerIds(f).some((p) => pos.has(p))) for (const c of childIds(f)) if (pos.has(c)) parentFam.set(c, f.id);
-	/** A child married to someone whose own parents are in view: they sit at their family's edge facing the spouse. */
+	/** A child married to someone whose own parents are in view: they sit with their spouse's family's children,
+	 *  so their own siblings may be some way off; they don't count when checking their family is unbroken. */
 	const marriedAcross = (c: string, fid: string) =>
 		d.families.some((g) => partnerIds(g).includes(c) && partnerIds(g).some((o) => o !== c && pos.has(o) && parentFam.has(o) && parentFam.get(o) !== fid));
 
@@ -41,11 +42,10 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 			if (a.y !== b.y) out.push(`${name(a.id)} and ${name(b.id)} are on different rows`);
 			else if (boxes.some((x) => x.y === a.y && x.x > a.x && x.x < b.x)) out.push(`someone sits between ${name(a.id)} and ${name(b.id)}`);
 		}
-		// Children below their parents, siblings in birth order (except a child married across, see above).
+		// Children below their parents, siblings in strict birth order.
 		for (const c of cs) for (const p of ps) if (pos.get(c)!.y <= pos.get(p)!.y) out.push(`${name(c)} is not below ${name(p)}`);
-		const ordered = ps.length ? cs.filter((c) => !marriedAcross(c, f.id)) : cs;
-		const byX = [...ordered].sort((a, b) => pos.get(a)!.x - pos.get(b)!.x);
-		const byBirth = [...ordered].sort((a, b) => birthStart(d, a) - birthStart(d, b));
+		const byX = [...cs].sort((a, b) => pos.get(a)!.x - pos.get(b)!.x);
+		const byBirth = [...cs].sort((a, b) => birthStart(d, a) - birthStart(d, b));
 		if (byX.some((c, i) => c !== byBirth[i] && birthStart(d, c) !== birthStart(d, byBirth[i]))) out.push(`${f.id}: children not in birth order`);
 		// Parents with one family sit over their children's block. Exact centring can't always hold (a partner's
 		// parents may want the same space), and someone with several families sits between them by design, so
@@ -60,27 +60,37 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 		}
 	}
 
-	// Each family's children form one unbroken run on their row: nobody else's child sits among them (V8).
+	// Each family's children form one unbroken run on their row: nobody else's child sits among them, apart from
+	// those children's own partners (V8). A child married across sits by their spouse, so the run is counted
+	// without them.
 	for (const f of d.families) {
 		if (!partnerIds(f).some((p) => pos.has(p))) continue;
-		const xs = [...childIds(f).filter((c) => pos.has(c)).map((c) => pos.get(c)!), ...L.ghosts.filter((g) => g.familyId === f.id)];
+		const xs = [
+			...childIds(f).filter((c) => pos.has(c) && !marriedAcross(c, f.id)).map((c) => pos.get(c)!),
+			...L.ghosts.filter((g) => g.familyId === f.id)
+		];
 		if (xs.length < 2) continue;
 		const y = xs[0].y,
 			lo = Math.min(...xs.map((b) => b.x)),
 			hi = Math.max(...xs.map((b) => b.x));
+		const partnersOfKids = new Set(
+			d.families.filter((g) => partnerIds(g).some((p) => childIds(f).includes(p))).flatMap((g) => partnerIds(g))
+		);
 		for (const n of L.nodes) {
 			const pf = parentFam.get(n.id);
-			if (n.y === y && n.x > lo && n.x < hi && pf && pf !== f.id) out.push(`${name(n.id)} sits among ${f.id}'s children`);
+			if (n.y === y && n.x > lo && n.x < hi && pf && pf !== f.id && !partnersOfKids.has(n.id)) out.push(`${name(n.id)} sits among ${f.id}'s children`);
 		}
 	}
-	// A couple whose parents are both in view: each one's brothers and sisters are on their own side (V8).
+	// A couple whose parents are both in view: at least one partner's brothers and sisters are all on their own side
+	// (with strict age order the other's may be on both sides of the couple) (V8).
 	for (const f of d.families) {
 		const ps = partnerIds(f).filter((p) => pos.has(p) && parentFam.has(p));
 		if (ps.length !== 2 || parentFam.get(ps[0]) === parentFam.get(ps[1])) continue;
 		const [a, b] = ps.map((p) => pos.get(p)!).sort((p, q) => p.x - q.x);
 		const sibs = (p: string) => childIds(d.families.find((g) => g.id === parentFam.get(p))!).filter((c) => c !== p && pos.has(c));
-		for (const s of sibs(a.id)) if (pos.get(s)!.x > a.x) out.push(`${name(s)} is on the wrong side of ${name(a.id)} and ${name(b.id)}`);
-		for (const s of sibs(b.id)) if (pos.get(s)!.x < b.x) out.push(`${name(s)} is on the wrong side of ${name(a.id)} and ${name(b.id)}`);
+		const leftOk = sibs(a.id).every((s) => pos.get(s)!.x < a.x),
+			rightOk = sibs(b.id).every((s) => pos.get(s)!.x > b.x);
+		if (!leftOk && !rightOk) out.push(`${name(a.id)} and ${name(b.id)}'s brothers and sisters are mixed on both sides`);
 	}
 	// No vertical line runs through a card.
 	for (const l of L.lines)

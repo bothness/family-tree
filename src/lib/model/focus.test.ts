@@ -151,3 +151,26 @@ describe('expandToInclude', () => {
 		expect(ex({ up: 1, down: 1, width: 'direct' }, 'stepkid')).toBeNull();
 	});
 });
+
+describe('focusSet: siblings with no parents recorded', () => {
+	const d2: Dataset = emptyDataset();
+	d2.people.push({ id: 'ann', names: [{ given: 'Ann' }] }, { id: 'bob', names: [{ given: 'Bob' }] }, { id: 'kid', names: [{ given: 'Kid' }] });
+	d2.families.push(
+		{ id: 'sibs', partners: [], children: [{ personId: 'ann' }, { personId: 'bob' }] },
+		{ id: 'bobs', partners: [{ personId: 'bob' }], children: [{ personId: 'kid' }] }
+	);
+	const ids = (o: FocusOptions) => [...focusSet(d2, 'ann', o).ids].sort();
+
+	it('shows them with siblings or all relatives, whatever the generations', () => {
+		expect(ids({ up: 0, down: 1, width: 'siblings' })).toEqual(['ann', 'bob']);
+		expect(ids({ up: 2, down: 0, width: 'siblings' })).toEqual(['ann', 'bob']);
+		expect(ids({ up: 1, down: 1, width: 'all' })).toEqual(['ann', 'bob', 'kid']);
+	});
+	it('hides them on the direct line, or when collapsed', () => {
+		expect(ids({ up: 2, down: 2, width: 'direct' })).toEqual(['ann']);
+		expect(ids({ up: 0, down: 0, width: 'siblings' })).toEqual(['ann']);
+	});
+	it('can be reached by Expand view', () => {
+		expect(expandToInclude(d2, 'ann', { up: 1, down: 1, width: 'direct' }, 'bob')).toEqual({ up: 1, down: 1, width: 'siblings' });
+	});
+});

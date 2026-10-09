@@ -82,10 +82,14 @@ export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResu
 
 	// Siblings at every generation: the other children of each ancestor shown (so never without a visible parent).
 	const collateral: string[] = [];
-	if (o.width !== 'direct')
-		for (const a of ancestors)
-			if (a !== rootId)
-				for (const f of famsAsPartner(d, a)) for (const c of childIds(f)) if (add(c, gen.get(a)! + 1)) collateral.push(c);
+	if (o.width !== 'direct' && !collapsed)
+		for (const a of ancestors) {
+			if (a !== rootId) for (const f of famsAsPartner(d, a)) for (const c of childIds(f)) if (add(c, gen.get(a)! + 1)) collateral.push(c);
+			// Brothers and sisters recorded with no parents at all: there's no parent to show, so they come with
+			// the siblings setting alone.
+			const own = famAsChild(d, a);
+			if (own && !partnerIds(own).length) for (const c of childIds(own)) if (add(c, gen.get(a)!)) collateral.push(c);
+		}
 	if (o.width === 'all') descend(collateral);
 
 	// A family with a child in view and one parent in view also shows the other parent (e.g. a half-sibling's mother),

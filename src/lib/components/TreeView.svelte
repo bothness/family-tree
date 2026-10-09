@@ -5,7 +5,7 @@
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
-	import { GHOST_W, NODE_H, NODE_W, layoutTree, type GhostBox, type NodeBox, type TreeLayout } from '#lib/layout/tree.ts';
+	import { GHOST_W, NODE_H, NODE_W, layoutTree, type TreeLayout } from '#lib/layout/tree.ts';
 	import { routeConnectors } from '#lib/layout/connectors.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
@@ -16,15 +16,15 @@
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe' } as const;
 
 	// ---- animation between layouts (V11) ----
-	// Cards that stay glide from where they're drawn to their new place; people entering fade in, people leaving
-	// fade out where they were. Lines and markers are re-routed from the moving cards every frame.
+	// Cards that stay glide from where they're drawn to their new place; people entering fade in; people leaving
+	// go at once (fading them out while others move looked odd). Lines and markers are re-routed from the moving
+	// cards every frame.
 	const DURATION = 420;
 	const dur = () => (prefersReducedMotion.current ? 0 : DURATION);
 	type Pt = { x: number; y: number };
 	const progress = new Tween(1, { easing: cubicOut });
 	let from = $state.raw({ nodes: new Map<string, Pt>(), ghosts: new Map<string, Pt>() });
 	let to = $state.raw<TreeLayout>(untrack(() => layout));
-	let leaving = $state.raw<{ nodes: NodeBox[]; ghosts: GhostBox[] }>({ nodes: [], ghosts: [] });
 	const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 	const blend = (m: Map<string, Pt>, id: string, p: Pt, k: number) => {
 		const f = m.get(id);
@@ -46,17 +46,12 @@
 				L.nodes.some((n) => !same(now.nodes.get(n.id), n)) ||
 				L.ghosts.some((g) => !same(now.ghosts.get(g.familyId), g));
 			if (moved && dur()) {
-				leaving = {
-					nodes: to.nodes.filter((n) => !L.nodes.some((m) => m.id === n.id)).map((n) => ({ ...n, ...now.nodes.get(n.id)! })),
-					ghosts: to.ghosts.filter((g) => !L.ghosts.some((h) => h.familyId === g.familyId)).map((g) => ({ ...g, ...now.ghosts.get(g.familyId)! }))
-				};
 				from = now;
 				progress.set(0, { duration: 0 });
 				progress.set(1, { duration: dur() });
 			} else {
 				// Nothing moved (e.g. typing a name): no animation, nothing to re-route.
 				from = { nodes: new Map(), ghosts: new Map() };
-				leaving = { nodes: [], ghosts: [] };
 				progress.set(1, { duration: 0 });
 			}
 			to = L;
@@ -65,10 +60,10 @@
 	const anim = $derived.by(() => {
 		const k = progress.current;
 		const animating = k < 1 && (from.nodes.size > 0 || from.ghosts.size > 0);
-		if (!animating) return { nodes: to.nodes.map((n) => ({ ...n, o: 1 })), ghosts: to.ghosts.map((g) => ({ ...g, o: 1 })), lines: to.lines, anchors: to.anchors, gone: [], goneGhosts: [], goneO: 0 };
+		if (!animating) return { nodes: to.nodes.map((n) => ({ ...n, o: 1 })), ghosts: to.ghosts.map((g) => ({ ...g, o: 1 })), lines: to.lines, anchors: to.anchors };
 		const nodes = to.nodes.map((n) => ({ ...n, ...blend(from.nodes, n.id, n, k), o: from.nodes.has(n.id) ? 1 : k }));
 		const ghosts = to.ghosts.map((g) => ({ ...g, ...blend(from.ghosts, g.familyId, g, k), o: from.ghosts.has(g.familyId) ? 1 : k }));
-		return { nodes, ghosts, ...routeConnectors(app.data, nodes, ghosts), gone: leaving.nodes, goneGhosts: leaving.ghosts, goneO: 1 - k };
+		return { nodes, ghosts, ...routeConnectors(app.data, nodes, ghosts) };
 	});
 
 	// Focus edge markers: "↑ parents" above someone whose parents are just out of view, "+3 children" below a family.
@@ -367,19 +362,6 @@
 				{/each}
 				{#each anim.lines as l (l.key)}
 					<path class={lineClass[l.style]} d={l.d} />
-				{/each}
-				{#each anim.gone as n (n.id)}
-					<!-- leaving: fades out where it was -->
-					{@const p = person(app.data, n.id)}
-					<g class="node leaving" transform="translate({n.x},{n.y})" opacity={anim.goneO} aria-hidden="true">
-						<rect class="nbox" width={NODE_W} height={NODE_H} rx="6" />
-						{#if p}<text class="nm" class:pencil={nameIsGuess(p)} x="11" y="25">{trunc(displayName(p), 18)}</text>{/if}
-					</g>
-				{/each}
-				{#each anim.goneGhosts as g (g.familyId)}
-					<g class="ghost leaving" class:maybe={!g.missing} transform="translate({g.x},{g.y})" opacity={anim.goneO} aria-hidden="true">
-						<rect width={GHOST_W} height={NODE_H} rx="6" />
-					</g>
 				{/each}
 				{#each anim.nodes as n (n.id)}
 					{@const p = person(app.data, n.id)!}
