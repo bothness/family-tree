@@ -117,6 +117,16 @@
 	{/each}
 </div>
 
+{#if p.research?.stage || p.research?.todo?.length}
+	<div class="blk ro">
+		<div class="lbl">Research</div>
+		{#if p.research?.stage}<div>{STAGE[p.research.stage]}</div>{/if}
+		{#if p.research?.todo?.length}
+			<ul class="evlist">{#each p.research.todo as t, i (i)}<li>☐ {t}</li>{/each}</ul>
+		{/if}
+	</div>
+{/if}
+
 {#if p.notes || p.sourceNotes || p.links?.wikidata || p.links?.urls?.length || p.tags?.length}
 	<div class="blk ro">
 		{#if p.notes}<div class="lbl">Biography and notes</div><p class="ro-text">{p.notes}</p>{/if}
@@ -129,15 +139,5 @@
 			</ul>
 		{/if}
 		{#if p.tags?.length}<div class="hint">Tags: {p.tags.join(', ')}</div>{/if}
-	</div>
-{/if}
-
-{#if p.research?.stage || p.research?.todo?.length}
-	<div class="blk ro">
-		<div class="lbl">Research</div>
-		{#if p.research?.stage}<div>{STAGE[p.research.stage]}</div>{/if}
-		{#if p.research?.todo?.length}
-			<ul class="evlist">{#each p.research.todo as t, i (i)}<li>☐ {t}</li>{/each}</ul>
-		{/if}
 	</div>
 {/if}

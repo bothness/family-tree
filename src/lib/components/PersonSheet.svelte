@@ -355,6 +355,25 @@
 	{/if}
 </div>
 
+<!-- Research: its own section (its stage is the dot on the tree cards), between Family and the notes. -->
+<div class="blk">
+	<div class="lbl">Research</div>
+	<span class="seg" role="group" aria-label="Research stage">
+		{#each STAGES as [v, l] (v)}
+			<button type="button" aria-pressed={p.research?.stage === v} onclick={() => ((p.research ??= {}).stage = v)}>{l}</button>
+		{/each}
+	</span>
+	<ul class="evlist">
+		{#each p.research?.todo ?? [] as t, i (i)}
+			<li><span class="grow">☐ {t}</span><button class="del" aria-label="Remove" onclick={() => p.research!.todo!.splice(i, 1)}>×</button></li>
+		{/each}
+	</ul>
+	<div class="row">
+		<input type="text" bind:value={todoText} placeholder="Add a research task" style="flex:1" onkeydown={(e) => e.key === 'Enter' && addTodo()} />
+		<button class="btn small" onclick={addTodo}>Add</button>
+	</div>
+</div>
+
 <details class="more" bind:open={moreOpen}>
 	<summary>Notes, sources and links <span>{[p.notes && 'notes', p.sourceNotes && 'sources', (p.links?.wikidata || p.links?.urls?.length) && 'links'].filter(Boolean).join(' · ')}</span></summary>
 	<div class="blk" style="border:0;margin-top:6px">
@@ -384,21 +403,6 @@
 		</label>
 	</div>
 	<div class="blk">
-		<div class="lbl">Research</div>
-		<span class="seg" role="group">
-			{#each STAGES as [v, l] (v)}
-				<button type="button" aria-pressed={p.research?.stage === v} onclick={() => ((p.research ??= {}).stage = v)}>{l}</button>
-			{/each}
-		</span>
-		<ul class="evlist">
-			{#each p.research?.todo ?? [] as t, i (i)}
-				<li><span class="grow">☐ {t}</span><button class="del" aria-label="Remove" onclick={() => p.research!.todo!.splice(i, 1)}>×</button></li>
-			{/each}
-		</ul>
-		<div class="row">
-			<input type="text" bind:value={todoText} placeholder="Add a research task" style="flex:1" onkeydown={(e) => e.key === 'Enter' && addTodo()} />
-			<button class="btn small" onclick={addTodo}>Add</button>
-		</div>
 		<label class="check"><input type="checkbox" checked={!!p.placeholder} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) p.placeholder = true; else delete p.placeholder; }} /> Placeholder for an unknown person</label>
 	</div>
 </details>
