@@ -89,6 +89,15 @@ describe('wheelAction', () => {
 		expect(isZoom(wheelAction({ ...base, deltaY: -80, wheelDeltaY: 240 }))).toBe(true);
 	});
 
+	it("recognises Safari's mouse wheel by its 1/4096 fraction, zooming one step per notch", () => {
+		// Values reported by a real mouse and trackpad in Safari.
+		const down = wheelAction({ ...base, deltaY: 4.000244140625, wheelDeltaY: -12 });
+		const up = wheelAction({ ...base, deltaY: -4.000244140625, wheelDeltaY: 12 });
+		expect(isZoom(down) && down.zoom).toBeCloseTo(Math.exp(-0.2));
+		expect(isZoom(up) && up.zoom).toBeCloseTo(Math.exp(0.2));
+		expect(wheelAction({ ...base, deltaY: -1, wheelDeltaY: 3 })).toEqual({ pan: [-0, 1] });
+	});
+
 	it('treats Firefox line-mode wheel as zoom', () => {
 		expect(isZoom(wheelAction({ ...base, deltaY: 3, deltaMode: 1 }))).toBe(true);
 	});
