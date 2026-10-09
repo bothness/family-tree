@@ -185,14 +185,17 @@ const COLLECTIONS = ['people', 'families', 'events', 'places', 'sources', 'views
 const withoutMeta = (x: Obj) => ({ ...x, meta: undefined });
 
 /** Mark what changed since `base` (people, families, events, places…) with when and by whom, so a later merge
- *  can tell which edit is newer. Changes `d` in place. */
+ *  can tell which edit is newer; unchanged items keep the stamp they had in `base` (so the app's own copy needn't
+ *  carry stamps). Changes `d` in place. */
 export function stampChanges(base: Dataset | null, d: Dataset, by: string, at = new Date().toISOString()) {
 	for (const c of COLLECTIONS) {
 		const before = new Map(((base?.[c] ?? []) as unknown as Obj[]).map((x) => [x.id as string, x]));
 		for (const x of d[c] as unknown as Obj[]) {
 			const old = before.get(x.id as string);
-			if (old && eq(withoutMeta(old), withoutMeta(x))) continue;
-			x.meta = { ...(isObj(x.meta) ? x.meta : {}), updatedAt: at, updatedBy: by };
+			if (old && eq(withoutMeta(old), withoutMeta(x))) {
+				if (old.meta !== undefined) x.meta = structuredClone(old.meta);
+				else delete x.meta;
+			} else x.meta = { ...(isObj(x.meta) ? x.meta : {}), updatedAt: at, updatedBy: by };
 		}
 	}
 }
