@@ -50,7 +50,7 @@ Run `npm test` and `npm run check` before finishing any change.
   - done: zoom, pan and fit (V1); search and centre (V3); focus mode with separate up/down depths and a direct / + siblings / all relatives width switch (V3, V4). Focus is kept in the page address (`#focus=…&up=…&down=…&w=…`) and filters every tab.
   - done: saved views (V5/V6), shown as chips under the header (`ViewBar.svelte`, `model/views.ts`). One rule per view: a focus (`scope.root` + `up`/`down`/`width`, absent depth = all generations), a tag, or a hand-picked `people` list. Opening a focus view fills the focus bar; changes show "Update view". The open view is in the page address too (`#view=…`).
   - done: collapse to one person (a 0/0 focus shows only that person, no partners) and Reset to an empty canvas (`app.blank`, `#start`) (V2).
-- **Phase C (tree layout) is done** on branch `phase-c-layout` (not yet merged to `main`): our own layout (V8), line hops (V9) and animated transitions (V11). Layout rules:
+- **Phase C (tree layout) is done** (merged to `main` 9 Oct 2026): our own layout (V8), line hops (V9) and animated transitions (V11). Layout rules:
   - centred; in a focus view the focus person is at x = 0, so the view grows around them
   - father on the left for a couple; someone with several partners sits between them, earliest partnership on the left
   - siblings grouped and ordered by age; each family's children hang under their own couple
