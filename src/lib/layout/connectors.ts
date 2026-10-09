@@ -4,10 +4,12 @@
 // Each family: a line between the two partners (if side by side), a drop from its midpoint (or from a single
 // parent's card) to the family's own horizontal "bus", and a stub from the bus to each child. Families whose
 // buses would overlap in the same gap get different heights (V8), and where a vertical line crosses another
-// family's bus the bus hops over it (V9).
+// family's bus the bus hops over it (V9). Partners with someone between them (a third partner, say) are joined
+// by a raised line just above the cards, and their children's line drops through the gap just inside the
+// "outer" partner (the one with fewer partners), so it never runs through a card.
 import type { Dataset, Family, Status } from '../model/types.ts';
 import { childIds, partnerIds } from '../model/queries.ts';
-import { GHOST_W, NODE_H, NODE_W, missingCount, type GhostBox, type NodeBox } from './positions.ts';
+import { GHOST_W, NODE_H, NODE_W, anchorOffset, missingCount, type GhostBox, type NodeBox } from './positions.ts';
 
 /** ghost = to a placeholder for children known to be missing; maybe = to a "more children?" one. */
 export type LineStyle = 'solid' | 'likely' | 'guess' | 'ghost' | 'maybe';
@@ -30,6 +32,11 @@ export interface Anchor { x: number; y: number; couple: boolean; bottom: number 
 export const BUS_BASE = 24,
 	LANE_STEP = 12,
 	HOP_R = 5;
+/** Raised couple lines: the first sits this far above the cards, nested ones RAISE_STEP higher; they meet the
+ *  cards this far in from the partners' inner edges. */
+export const RAISE_BASE = 9,
+	RAISE_STEP = 6,
+	RAISE_INSET = 16;
 
 const styleOf = (st?: Status | ''): LineStyle => (st === 'guess' ? 'guess' : st === 'likely' ? 'likely' : 'solid');
 
@@ -45,6 +52,25 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 	const v = (key: string, f: Family, kind: Line['kind'], x: number, y1: number, y2: number, style: LineStyle) =>
 		lines.push({ key, familyId: f.id, kind, d: '', style, seg: { x1: x, y1, x2: x, y2 }, hops: [] });
 
+	// Couples on one row, and how many partners each person has there (as in positions.ts).
+	const rowCouples = d.families.filter((f) => {
+		const ps = partnerIds(f).map((id) => pos.get(id));
+		return ps.length === 2 && ps[0] && ps[1] && ps[0].y === ps[1].y;
+	});
+	const partnerCount = new Map<string, number>();
+	for (const f of rowCouples) for (const p of partnerIds(f)) partnerCount.set(p, (partnerCount.get(p) ?? 0) + 1);
+	// Raised lines' heights: on each row, a line nested inside another sits below it (shortest lowest).
+	const between = (a: NodeBox, b: NodeBox) => nodes.some((n) => n.y === a.y && n.x > a.x && n.x < b.x);
+	const raised = new Map<string, number>();
+	const spans = rowCouples
+		.map((f) => ({ f, ab: partnerIds(f).map((id) => pos.get(id)!).sort((p, q) => p.x - q.x) }))
+		.filter(({ ab: [a, b] }) => between(a, b))
+		.sort((p, q) => p.ab[1].x - p.ab[0].x - (q.ab[1].x - q.ab[0].x) || p.f.id.localeCompare(q.f.id));
+	for (const [i, { f, ab }] of spans.entries()) {
+		const under = spans.slice(0, i).filter((o) => o.ab[0].y === ab[0].y && o.ab[0].x < ab[1].x && ab[0].x < o.ab[1].x);
+		raised.set(f.id, Math.max(-1, ...under.map((o) => raised.get(o.f.id)!)) + 1);
+	}
+
 	for (const f of [...d.families].sort((a, b) => a.id.localeCompare(b.id))) {
 		const ps = partnerIds(f).flatMap((id) => pos.get(id) ?? []),
 			cs = childIds(f).flatMap((id) => (pos.has(id) ? [{ id, n: pos.get(id)! }] : []));
@@ -56,10 +82,22 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 			ay = 0;
 		if (ps.length === 2 && ps[0].y === ps[1].y) {
 			const [a, b] = [...ps].sort((p, q) => p.x - q.x);
-			ay = a.y + NODE_H / 2;
 			const st = f.relationship?.status ?? (f.partners.some((x) => x.status === 'guess') ? 'guess' : '');
-			h(`${f.id}:couple`, f, 'couple', a.x + W, b.x, ay, styleOf(st));
-			ax = (a.x + W + b.x) / 2;
+			const lane = raised.get(f.id);
+			if (lane === undefined) {
+				ay = a.y + NODE_H / 2;
+				h(`${f.id}:couple`, f, 'couple', a.x + W, b.x, ay, styleOf(st));
+				ax = (a.x + W + b.x) / 2;
+			} else {
+				ay = a.y - RAISE_BASE - lane * RAISE_STEP;
+				const x1 = a.x + W - RAISE_INSET,
+					x2 = b.x + RAISE_INSET;
+				v(`${f.id}:couple-l`, f, 'couple', x1, a.y, ay, styleOf(st));
+				h(`${f.id}:couple`, f, 'couple', x1, x2, ay, styleOf(st));
+				v(`${f.id}:couple-r`, f, 'couple', x2, ay, b.y, styleOf(st));
+				const [ia, ib] = [a.id, b.id].map((p) => partnerCount.get(p) ?? 0);
+				ax = a.x + anchorOffset(0, b.x - a.x, !(ia > ib), W);
+			}
 			anchors[f.id] = { x: ax, y: ay, couple: true, bottom: a.y + NODE_H };
 		} else if (ps.length) {
 			ax = ps[0].x + W / 2;
@@ -95,10 +133,10 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 		for (const t of b.targets) v(t.key, b.f, 'stub', t.x, y, t.y, t.style);
 	}
 
-	// V9: a bus hops over any other family's vertical line that crosses it.
+	// V9: a bus (or a raised couple line) hops over any other family's vertical line that crosses it.
 	const verticals = lines.filter((l) => l.kind === 'drop' || l.kind === 'stub');
 	for (const l of lines) {
-		if (l.kind !== 'bus') continue;
+		if (l.kind !== 'bus' && !(l.kind === 'couple' && raised.has(l.familyId) && l.seg.y1 === l.seg.y2)) continue;
 		const { x1, x2, y1: y } = l.seg;
 		l.hops = verticals
 			.filter((u) => u.familyId !== l.familyId && u.seg.x1 > x1 + HOP_R && u.seg.x1 < x2 - HOP_R && Math.min(u.seg.y1, u.seg.y2) < y - 0.5 && Math.max(u.seg.y1, u.seg.y2) > y + 0.5)

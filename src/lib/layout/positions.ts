@@ -1,8 +1,10 @@
 // Phase C tree layout, step 1: where each card goes. Lines are drawn separately (connectors.ts) from these
 // positions alone, so the tree can be animated by moving cards and re-running the connectors.
 //
-// Rules (docs/ROADMAP.md): one row per generation; partners side by side (father left for a single couple;
-// someone with several partners sits between them, earliest partnership on the left); each family's children
+// Rules (docs/ROADMAP.md): one row per generation; partners side by side (father left for a single couple, unless
+// both partners' parents are in view the other way round and can't be moved, when they swap so lines don't cross;
+// someone with several partners sits between them, earlier partnerships on the left, each partner's other partners
+// further out; a couple who can't be side by side get a raised line, see connectors.ts); each family's children
 // form a block under their parents, oldest first; parents centred over their children; a partner's own parents
 // placed above them; nothing ordered by when it was added.
 //
@@ -143,18 +145,20 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 	}
 
 	// Each family's parent unit, where its line leaves that unit, and its children's units (oldest first).
-	for (const fm of fams) {
-		const vis = fm.ps.length ? fm.ps : [];
-		if (vis.length) {
-			const u = unitOf.get(vis[0])!;
-			fm.parent = u;
-			const both = vis.length === 2 && unitOf.get(vis[1]) === u;
-			if (both) {
-				const [l, r] = vis.map((p) => cardLeft(u, p)).sort((a, b) => a - b);
-				fm.anchorOff = r - l === W + CARD_GAP ? l + W + CARD_GAP / 2 : (l + r + W) / 2;
-			} else fm.anchorOff = cardLeft(u, vis[0]) + W / 2;
+	const setAnchor = (fm: Fam) => {
+		const vis = fm.ps;
+		const u = fm.parent!;
+		if (vis.length === 2 && unitOf.get(vis[1]) === u) {
+			const [l, r] = [...vis].sort((a, b) => cardLeft(u, a) - cardLeft(u, b));
+			const outerLeft = !(partnerCount(partners, l) > partnerCount(partners, r));
+			fm.anchorOff = anchorOffset(cardLeft(u, l), cardLeft(u, r), outerLeft, W);
+		} else fm.anchorOff = cardLeft(u, vis[0]) + W / 2;
+	};
+	for (const fm of fams)
+		if (fm.ps.length) {
+			fm.parent = unitOf.get(fm.ps[0])!;
+			setAnchor(fm);
 		}
-	}
 	const childOf = new Map<string, Fam>();
 	for (const fm of fams) if (fm.parent) for (const c of fm.cs) childOf.set(c, fm);
 	for (const fm of fams) {
@@ -221,7 +225,14 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 			const row = rows[fm.bridge.g];
 			const other = (parentFams.get(fm.bridge) ?? []).find((g) => g !== fm && g.kids.every((k) => k.placed));
 			const run = (other?.kids ?? [fm.bridge]).filter((k) => row.includes(k)).map((k) => row.indexOf(k));
-			if (fm.side === 'left') {
+			// If this family's parents are already placed (their own parents were in view first), put the block on
+			// their side, so its lines stay short; otherwise beyond the run on the spouse's side.
+			let side = fm.side;
+			if (fm.parent?.placed && !fresh.includes(fm.parent)) {
+				const mid = (row[Math.min(...run)].x + row[Math.max(...run)].x + row[Math.max(...run)].w) / 2;
+				side = fm.parent.x + fm.anchorOff > mid ? 'left' : 'right';
+			}
+			if (side === 'left') {
 				// The spouse is on the left, so this family's other children go to the right of that run.
 				const end = row[Math.max(...run)];
 				let x = end.x + end.w + FAM_GAP;
@@ -259,6 +270,35 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 		sweep();
 	}
 
+	// A couple whose parents are both in view but placed the other way round: if either set of parents is free to
+	// move (no parents of their own in view), move the smaller unit across the other; if both are fixed (e.g.
+	// cousins whose parents are brother and sister, in age order), swap the couple instead. Either way their
+	// parents' lines don't cross; a swapped couple outranks "father on the left".
+	let changed = false;
+	for (const u of units) {
+		if (u.members.length !== 2) continue;
+		const pu = (m: string) => {
+			const fm = childOf.get(m);
+			return fm?.parent?.placed ? { fm, u: fm.parent, x: fm.parent.x + fm.anchorOff } : undefined;
+		};
+		const [a, b] = u.members.map(pu);
+		if (!a || !b || a.u === b.u || a.x <= b.x) continue;
+		const free = [a.u, b.u].filter((v) => v.g === a.u.g && !parentFams.get(v)?.length).sort((p, q) => p.members.length - q.members.length);
+		if (a.u.g === b.u.g && free.length) {
+			const row = rows[a.u.g];
+			const mover = free[0];
+			row.splice(row.indexOf(mover), 1);
+			// a's parents belong on the left of b's.
+			if (mover === a.u) row.splice(row.indexOf(b.u), 0, mover);
+			else row.splice(row.indexOf(a.u) + 1, 0, mover);
+		} else {
+			u.members.reverse();
+			for (const fm of fams) if (fm.parent === u) setAnchor(fm);
+		}
+		changed = true;
+	}
+	if (changed) sweep();
+
 	// 4. Read off positions; the focus person (if any) sits at x = 0.
 	const nodes: NodeBox[] = [],
 		ghosts: GhostBox[] = [];
@@ -273,8 +313,19 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 	return { nodes, ghosts };
 }
 
+const partnerCount = (partners: Map<string, unknown[]>, p: string) => partners.get(p)?.length ?? 0;
+
+/** Where a couple's line to their children leaves their unit, from the partners' card offsets (l < r). Side by side:
+ *  the middle of the gap between them. Otherwise (someone between them): the gap just inside the "outer" partner,
+ *  the one with fewer partners, since the gaps beside the person they share are used by their other couples. */
+export function anchorOffset(l: number, r: number, outerLeft: boolean, W: number): number {
+	if (r - l === W + CARD_GAP) return l + W + CARD_GAP / 2;
+	return outerLeft ? l + W + CARD_GAP / 2 : r - CARD_GAP / 2;
+}
+
 /** Arrange people joined by partnerships on one row. A couple: father left. Someone with several partners sits
- *  between them, earliest partnership on the left. */
+ *  between them, earlier partnerships on the left (the first half, rounding up), later ones on the right; each
+ *  partner's own other partners sit next to them, further out. */
 function arrange(group: string[], partners: Map<string, { p: string; f: Family }[]>, d: Dataset): string[] {
 	const birth = byBirth(d);
 	if (group.length === 1) return group;

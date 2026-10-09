@@ -349,7 +349,11 @@
 <svelte:window onkeydown={onKey} />
 
 {#if !app.data.people.length}
-	<div class="empty">No one here yet. Use <b>+ New person</b> to start a tree.</div>
+	<div class="empty blank">
+		<p class="blank-title">No one here yet.</p>
+		<p>Use <b>+ New person</b> to start your tree, or <button class="btn small" onclick={() => app.loadDemo()}>Load the demo family</button> to look around first.</p>
+		<p class="hint">The demo is the Darwins and Wedgwoods: Charles Darwin, his grandfather Erasmus, the potter Josiah Wedgwood and their families, with gaps and guesses as in a real tree.</p>
+	</div>
 {:else if app.blank && !app.picked}
 	<BlankPrompt />
 {:else}

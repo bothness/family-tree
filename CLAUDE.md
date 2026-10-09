@@ -52,9 +52,9 @@ Run `npm test` and `npm run check` before finishing any change.
   - done: collapse to one person (a 0/0 focus shows only that person, no partners) and Reset to an empty canvas (`app.blank`, `#start`) (V2).
 - **Phase C (tree layout) is done** (merged to `main` 9 Oct 2026): our own layout (V8), line hops (V9) and animated transitions (V11). Layout rules:
   - centred; in a focus view the focus person is at x = 0, so the view grows around them
-  - father on the left for a couple; someone with several partners sits between them, earliest partnership on the left
+  - father on the left for a couple (unless both partners' parents are in view and placed the other way round: free-standing parents are moved, otherwise the couple swaps, so lines never cross); someone with several partners sits between them, earlier partnerships on the left (three or more: the first half on the left), each partner's other partners further out; partners with someone between them get a raised line, and their children's line drops just inside the outer partner
   - siblings grouped and ordered by age; each family's children hang under their own couple
-  - strict age order, always; when both partners' parents are in view, the spouse's siblings go beyond the other family's children on the spouse's side
+  - strict age order, always; when both partners' parents are in view, the spouse's siblings go beyond the other family's children (on their parents' side if those are already placed, else the spouse's side). When two families intermarry more than once, the spouse joins their partner within one family's run and their own parents' line reaches over (e.g. Josiah Wedgwood III beside Caroline Darwin)
   - a partner's parents are placed above them (e.g. the Murphys above Bridget)
   - families whose children's lines would overlap get separate heights; lines hop where they cross
   - nothing ordered by when it was added (the layout is the same whatever order people and families were stored in)
@@ -63,4 +63,4 @@ Run `npm test` and `npm run check` before finishing any change.
   - G6: place lookup with Nominatim (`places/nominatim.ts`, one request a second, cached), keeping coordinates, OSM and Wikidata ids; `model/places.ts`; place field `PlaceInput.svelte` and editor `PlaceDetails.svelte`.
   - V10: photos (`media/images.ts` resizes to 800px, shrinking by halves so it stays smooth, plus a 192px thumbnail (older small ones are remade on load); `model/media.ts`); silhouettes; a Photos toggle for compact cards.
   - V12: Map tab (`MapView.svelte`, `layout/map.ts`): MapLibre globe with OpenFreeMap tiles. MapLibre's worker URL is set explicitly (`setWorkerUrl`), which the Vite dev server needs.
-- **Next is Phase E** (exports, first run and deploying): E1 GEDCOM export, E2 ZIP export with photos, E3 blank first run with a demo option, E4 new demo family, E5 persistent storage and backup reminders, E6 GitHub Pages deploy.
+- **Phase E** in progress (branch `demo-darwin`): E3 blank first run with "Load the demo family" and E4 the Darwin–Wedgwood demo (`src/lib/data/demo-darwin.json`, built by `scripts/data/make-demo-darwin.py`; the Smith sample `example-data.json` stays as the test fixture) are done. Still to do: E1 GEDCOM export, E2 ZIP export with photos, E5 persistent storage and backup reminders, E6 GitHub Pages deploy.

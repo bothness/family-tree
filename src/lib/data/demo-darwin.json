@@ -1,0 +1,6914 @@
+{
+	"schemaVersion": "0.2",
+	"people": [
+		{
+			"id": "per_erasmus",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Erasmus",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Physician, poet and inventor; a founder of the Lunar Society of Birmingham. Grandfather of both Charles Darwin and Francis Galton.",
+			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "researched"
+			}
+		},
+		{
+			"id": "per_mary_howard",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Mary",
+					"surname": "Howard",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Mary",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Polly Howard",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Daughter of Charles Howard, a Lichfield solicitor.",
+			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress",
+				"todo": [
+					"Find exact marriage date (1757)"
+				]
+			}
+		},
+		{
+			"id": "per_charles_1758",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charles",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Medical student; died young, of an infection caught while dissecting.",
+			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_erasmus_jr",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Erasmus",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Lawyer. Bought Breadsall Priory, and drowned in the river at the bottom of its garden; much of the family thought it suicide.",
+			"sourceNotes": "Darwin Correspondence Project name register",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_8435",
+						"label": "Darwin Correspondence Project: Erasmus Darwin (1759–99)"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Check the place of death"
+				]
+			}
+		},
+		{
+			"id": "per_elizabeth_1763",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Elizabeth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Died at about four months old.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_robert",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Robert Waring",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Physician in Shrewsbury; lived at The Mount. Father of Charles Darwin.",
+			"sourceNotes": "Wikipedia: Robert Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Robert_Darwin",
+						"label": "Wikipedia: Robert Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "researched"
+			}
+		},
+		{
+			"id": "per_william_alvey",
+			"names": [
+				{
+					"type": "birth",
+					"given": "William Alvey",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Died at 19 days old.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_mary_parker",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Mary",
+					"surname": "Parker",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Mary",
+					"surname": "Day",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Governess hired to look after the young Robert. She and Erasmus had two daughters; she later married Joseph Day.",
+			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find Mary Parker's birth and death dates"
+				]
+			}
+		},
+		{
+			"id": "per_susanna_parker",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Susanna",
+					"surname": "Parker",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Susanna",
+					"surname": "Hadley",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "With her sister Mary, ran a girls’ boarding school at Ashbourne from 1794, for which Erasmus wrote his Plan for the Conduct of Female Education (1797). Some sources call her Susan.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://romantic-circles.org/sites/default/files/imported/editions/loves-plants/3.02.%20Education.pdf",
+						"label": "Romantic Circles: Darwin on female education"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_henry_hadley",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Henry",
+					"surname": "Hadley",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://romantic-circles.org/sites/default/files/imported/editions/loves-plants/3.02.%20Education.pdf",
+						"label": "Romantic Circles: Darwin on female education"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find dates"
+				]
+			}
+		},
+		{
+			"id": "per_mary_parker_jr",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Mary",
+					"surname": "Parker",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_joseph_day",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Joseph",
+					"surname": "Day",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Birmingham merchant.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_earl_portmore",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charles",
+					"surname": "Colyear",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "2nd Earl of Portmore",
+			"deceased": true,
+			"sourceNotes": "Wikipedia: Charles Colyear, 2nd Earl of Portmore",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_elizabeth_collier_sr",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Elizabeth",
+					"surname": "Collier",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find dates"
+				]
+			}
+		},
+		{
+			"id": "per_elizabeth_collier",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Elizabeth",
+					"surname": "Collier",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Elizabeth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Elizabeth Pole",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Widow of Colonel Pole when she married Erasmus. The illegitimate daughter of the 2nd Earl of Portmore.",
+			"sourceNotes": "thepeerage.com; Find a Grave (death 5 Feb 1832, marriage 6 Mar 1781)",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Elizabeth_Darwin",
+						"label": "Wikipedia: Elizabeth Darwin"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					},
+					{
+						"url": "https://revolutionaryplayers.org.uk/?p=3626",
+						"label": "Revolutionary Players: Elizabeth Pole"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress",
+				"todo": [
+					"Find where she died"
+				]
+			}
+		},
+		{
+			"id": "per_col_pole",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Edward Sacheverell",
+					"surname": "Chandos Pole",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "Colonel Pole",
+			"deceased": true,
+			"notes": "Of Radbourne Hall, Derbyshire.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_sacheverell_pole",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Sacheverell",
+					"surname": "Chandos Pole",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"pole"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://revolutionaryplayers.org.uk/?p=3626",
+						"label": "Revolutionary Players: Elizabeth Pole"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find dates"
+				]
+			}
+		},
+		{
+			"id": "per_edward",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Edward",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_violetta",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Frances Anne Violetta",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Frances Anne Violetta",
+					"surname": "Galton",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Violetta Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Mother of Francis Galton.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_1796",
+						"label": "Darwin Correspondence Project: Violetta Darwin"
+					},
+					{
+						"url": "https://thepeerage.com/p34718.htm",
+						"label": "thepeerage.com: Frances Anne Violetta Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_emma_1784",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Emma Georgina Elizabeth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_francis_sacheverel",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Francis Sacheverel",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "Sir Francis Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Physician and traveller; knighted.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_john_1787",
+			"names": [
+				{
+					"type": "birth",
+					"given": "John",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "Revd John Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_henry_1789",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Henry",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Died in infancy.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_harriet",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Harriet",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_tertius_galton",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Samuel Tertius",
+					"surname": "Galton",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"galton"
+			],
+			"notes": "Birmingham banker.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Samuel_Tertius_Galton",
+						"label": "Wikipedia: Samuel Tertius Galton"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_francis_galton",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Francis",
+					"surname": "Galton",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"galton"
+			],
+			"notes": "Statistician and polymath; half-cousin of Charles Darwin.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Galton",
+						"label": "Wikipedia: Francis Galton"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress",
+				"todo": [
+					"Add his older brothers and sisters (seven or nine children in all?)"
+				]
+			}
+		},
+		{
+			"id": "per_josiah_1",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Josiah",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "Potter; founder of the Wedgwood firm, built the Etruria works. Friend of Erasmus Darwin in the Lunar Society.",
+			"sourceNotes": "Wikipedia: Josiah Wedgwood (birth date is his baptism, probably the day he was born)",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Josiah_Wedgwood",
+						"label": "Wikipedia: Josiah Wedgwood"
+					}
+				]
+			},
+			"research": {
+				"stage": "researched"
+			}
+		},
+		{
+			"id": "per_sarah_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Sarah",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "A distant cousin of Josiah.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Josiah_Wedgwood",
+						"label": "Wikipedia: Josiah Wedgwood"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_susannah",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Susannah",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Susannah",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood",
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress",
+				"todo": [
+					"Find exact date of death (July 1817?)"
+				]
+			}
+		},
+		{
+			"id": "per_john_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "John",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "Founder of the Royal Horticultural Society.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_richard_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Richard",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_josiah_2",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Josiah",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "Josiah Wedgwood II",
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "Ran the pottery after his father. Bought Maer Hall in 1807; known in the family as \"Uncle Jos\".",
+			"sourceNotes": "Wikipedia: Josiah Wedgwood II",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Josiah_Wedgwood_II",
+						"label": "Wikipedia: Josiah Wedgwood II"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress"
+			}
+		},
+		{
+			"id": "per_tom_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Thomas",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "Early experimenter in photography.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_catherine_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Catherine",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_sarah_jr",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Sarah",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_mary_anne_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Mary Anne",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_bessy_allen",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Elizabeth",
+					"surname": "Allen",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Elizabeth",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Bessy Allen",
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find marriage date (1792?)"
+				]
+			}
+		},
+		{
+			"id": "per_sarah_e",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Sarah Elizabeth",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_josiah_3",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Josiah",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "Josiah Wedgwood III",
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "Moved the family to Leith Hill Place, Surrey, in 1847.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_5027",
+						"label": "Darwin Correspondence Project: Josiah Wedgwood III"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_mary_ann_1796",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Mary Ann",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_charlotte",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charlotte",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Charlotte",
+					"surname": "Langton",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_henry_allen",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Henry Allen",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_frank_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Francis",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_hensleigh",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Hensleigh",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "Philologist.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_fanny",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Frances",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Fanny Wedgwood",
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_emma",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Emma",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Emma",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood",
+				"darwin"
+			],
+			"notes": "Charles Darwin's first cousin and wife. A good pianist; family accounts say she had two or three lessons from Chopin.",
+			"sourceNotes": "Wikipedia: Emma Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Emma_Darwin",
+						"label": "Wikipedia: Emma Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "researched"
+			}
+		},
+		{
+			"id": "per_marianne",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Marianne",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Marianne",
+					"surname": "Parker",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_henry_parker",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Henry",
+					"surname": "Parker",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Physician.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find dates",
+					"Add their children"
+				]
+			}
+		},
+		{
+			"id": "per_caroline",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Caroline Sarah",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Caroline Sarah",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin",
+				"wedgwood"
+			],
+			"notes": "Married her cousin Josiah Wedgwood III.",
+			"sourceNotes": "Wikipedia gives 1800; thepeerage.com 1801.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					},
+					{
+						"url": "https://thepeerage.com/p53229.htm",
+						"label": "thepeerage.com: Caroline Sarah Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress",
+				"todo": [
+					"Settle her year of birth: 1800 or 1801?"
+				]
+			}
+		},
+		{
+			"id": "per_susan",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Susan Elizabeth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_erasmus_alvey",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Erasmus Alvey",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Charles's elder brother; lived in London.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_charles",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charles Robert",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "Charles Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Naturalist. Sailed on HMS Beagle 1831–36; published On the Origin of Species in 1859. Lived at Down House, Kent, from 1842.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Darwin",
+						"label": "Wikipedia: Charles Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "researched"
+			}
+		},
+		{
+			"id": "per_catherine",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Emily Catherine",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Emily Catherine",
+					"surname": "Langton",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Catherine Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_charles_langton",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charles",
+					"surname": "Langton",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Clergyman. Married two of the cousins in turn.",
+			"sourceNotes": "Darwin Correspondence Project name register",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_2809",
+						"label": "Darwin Correspondence Project: Charles Langton"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_sophy_1838",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Sophy Marianne",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"notes": "Died as a baby.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_sophy_1842",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Katherine Elizabeth Sophy",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Sophy Wedgwood",
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"sourceNotes": "Wikipedia and thepeerage.com differ on her name.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					},
+					{
+						"url": "https://thepeerage.com/p53229.htm",
+						"label": "thepeerage.com: Caroline Sarah Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find her death date"
+				]
+			}
+		},
+		{
+			"id": "per_margaret_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Margaret Susan",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Margaret Susan",
+					"surname": "Vaughan Williams",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_lucy_wedgwood",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Lucy Caroline",
+					"surname": "Wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"wedgwood"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://thepeerage.com/p53229.htm",
+						"label": "thepeerage.com: Caroline Sarah Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_arthur_vw",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Arthur",
+					"surname": "Vaughan Williams",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Vicar of Down Ampney.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Ralph_Vaughan_Williams",
+						"label": "Wikipedia: Ralph Vaughan Williams"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find birth date"
+				]
+			}
+		},
+		{
+			"id": "per_ralph_vw",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Ralph",
+					"surname": "Vaughan Williams",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Composer. Great-great-grandson of Josiah Wedgwood, and Charles Darwin’s great-nephew.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Ralph_Vaughan_Williams",
+						"label": "Wikipedia: Ralph Vaughan Williams"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress"
+			}
+		},
+		{
+			"id": "per_william",
+			"names": [
+				{
+					"type": "birth",
+					"given": "William Erasmus",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Banker in Southampton.",
+			"sourceNotes": "Wikipedia: William Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/William_Erasmus_Darwin",
+						"label": "Wikipedia: William Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_sara_sedgwick",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Sara",
+					"surname": "Sedgwick",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Sara",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "American, from Cambridge, Massachusetts.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/William_Erasmus_Darwin",
+						"label": "Wikipedia: William Erasmus Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_annie",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Anne Elizabeth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Annie Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Charles's favourite child. Died at Great Malvern, where she had been taken for the water cure.",
+			"sourceNotes": "Wikipedia: Anne Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Anne_Darwin",
+						"label": "Wikipedia: Anne Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "researched"
+			}
+		},
+		{
+			"id": "per_mary_eleanor",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Mary Eleanor",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Lived 23 days.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://www.findagrave.com/memorial/91914049/mary-eleanor-darwin",
+						"label": "Find a Grave: Mary Eleanor Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_henrietta",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Henrietta Emma",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Henrietta Emma",
+					"surname": "Litchfield",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Etty Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Edited her father's books, and her mother's letters.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_richard_litchfield",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Richard Buckley",
+					"surname": "Litchfield",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_george",
+			"names": [
+				{
+					"type": "birth",
+					"given": "George Howard",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Astronomer and mathematician at Cambridge.",
+			"sourceNotes": "Wikipedia: George Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/George_Darwin",
+						"label": "Wikipedia: George Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress"
+			}
+		},
+		{
+			"id": "per_maud",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Martha",
+					"surname": "du Puy",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Martha",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Maud du Puy",
+			"deceased": true,
+			"notes": "From Philadelphia.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/George_Darwin",
+						"label": "Wikipedia: George Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find her birth date and place"
+				]
+			}
+		},
+		{
+			"id": "per_bessy",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Elizabeth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Bessy Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Never married.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_francis",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Francis",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Botanist; worked with his father on plant movement. Married three times.",
+			"sourceNotes": "Wikipedia: Francis Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress"
+			}
+		},
+		{
+			"id": "per_amy_ruck",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Amy Richenda",
+					"surname": "Ruck",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Amy Richenda",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Died soon after Bernard was born.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_ellen_crofts",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Ellen Wordsworth",
+					"surname": "Crofts",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Ellen Wordsworth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Lecturer in English literature at Newnham College.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_florence_fisher",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Florence Henrietta",
+					"surname": "Fisher",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Florence Henrietta",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Widow of the legal historian F. W. Maitland.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_maitland",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Frederic William",
+					"surname": "Maitland",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "F. W. Maitland",
+			"deceased": true,
+			"notes": "Legal historian.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_ermengard",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Ermengard",
+					"surname": "Maitland",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Francis Darwin's stepdaughter.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_fredegond",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Fredegond",
+					"surname": "Maitland",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Fredegond Shove",
+			"deceased": true,
+			"notes": "Poet.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_leonard",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Leonard",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Soldier, politician and economist. Married twice; no children.",
+			"sourceNotes": "Wikipedia: Leonard Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Leonard_Darwin",
+						"label": "Wikipedia: Leonard Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress"
+			}
+		},
+		{
+			"id": "per_elizabeth_fraser",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Elizabeth Frances",
+					"surname": "Fraser",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Elizabeth Frances",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Leonard_Darwin",
+						"label": "Wikipedia: Leonard Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find birth date"
+				]
+			}
+		},
+		{
+			"id": "per_mildred_massingberd",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charlotte Mildred",
+					"surname": "Massingberd",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Charlotte Mildred",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Leonard's second cousin.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Leonard_Darwin",
+						"label": "Wikipedia: Leonard Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find birth date"
+				]
+			}
+		},
+		{
+			"id": "per_horace",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Horace",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Engineer; founded the Cambridge Scientific Instrument Company.",
+			"sourceNotes": "Wikipedia: Horace Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress",
+				"todo": [
+					"Find place of death (Cambridge?)"
+				]
+			}
+		},
+		{
+			"id": "per_ida_farrer",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Emma Cecilia",
+					"surname": "Farrer",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Emma Cecilia",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Ida Farrer",
+			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_charles_waring",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charles Waring",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Died of scarlet fever at about 18 months, during an outbreak in the village.",
+			"sourceNotes": "Darwin Correspondence Project",
+			"links": {
+				"urls": [
+					{
+						"url": "https://www.darwinproject.ac.uk/letter/DCP-LETT-2300.xml",
+						"label": "Darwin Correspondence Project: letter to W. D. Fox, 1858"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_gwen",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Gwendolen Mary",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Gwendolen Mary",
+					"surname": "Raverat",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Gwen Raverat",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Wood engraver; wrote Period Piece, about a Cambridge childhood.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Gwen_Raverat",
+						"label": "Wikipedia: Gwen Raverat"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_jacques_raverat",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Jacques",
+					"surname": "Raverat",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "French painter.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Gwen_Raverat",
+						"label": "Wikipedia: Gwen Raverat"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch",
+				"todo": [
+					"Find birth date"
+				]
+			}
+		},
+		{
+			"id": "per_charles_galton",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Charles Galton",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Physicist.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_margaret_darwin",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Margaret Elizabeth",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Margaret Elizabeth",
+					"surname": "Keynes",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Margaret Keynes",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Geoffrey_Keynes",
+						"label": "Wikipedia: Geoffrey Keynes"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_geoffrey_keynes",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Geoffrey",
+					"surname": "Keynes",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Surgeon; brother of John Maynard Keynes.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Geoffrey_Keynes",
+						"label": "Wikipedia: Geoffrey Keynes"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_william_robert",
+			"names": [
+				{
+					"type": "birth",
+					"given": "William Robert",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_leonard_1899",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Leonard",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Died as a baby.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_bernard",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Bernard Richard Meirion",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"knownAs": "Bernard Darwin",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Golfer and golf writer.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_frances",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Frances Crofts",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Frances Crofts",
+					"surname": "Cornford",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Frances Cornford",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Poet.",
+			"sourceNotes": "Wikipedia: Frances Cornford gives both 19 and 30 August 1960.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frances_Cornford",
+						"label": "Wikipedia: Frances Cornford"
+					}
+				]
+			},
+			"research": {
+				"stage": "in-progress",
+				"todo": [
+					"Settle her date of death: 19 or 30 August 1960?"
+				]
+			}
+		},
+		{
+			"id": "per_francis_cornford",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Francis Macdonald",
+					"surname": "Cornford",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"notes": "Classical scholar.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frances_Cornford",
+						"label": "Wikipedia: Frances Cornford"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_erasmus_iv",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Erasmus",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "M",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Killed in the Second Battle of Ypres.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_ruth",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Ruth Frances",
+					"surname": "Darwin",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		},
+		{
+			"id": "per_nora",
+			"names": [
+				{
+					"type": "birth",
+					"given": "Emma Nora",
+					"surname": "Darwin",
+					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Emma Nora",
+					"surname": "Barlow",
+					"status": "confirmed"
+				}
+			],
+			"sex": {
+				"value": "F",
+				"status": "confirmed"
+			},
+			"knownAs": "Nora Barlow",
+			"deceased": true,
+			"tags": [
+				"darwin"
+			],
+			"notes": "Botanist; edited her grandfather’s autobiography and Beagle diary.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
+			"research": {
+				"stage": "sketch"
+			}
+		}
+	],
+	"families": [
+		{
+			"id": "fam_erasmus_howard",
+			"partners": [
+				{
+					"personId": "per_erasmus",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mary_howard",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1757",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1770",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_charles_1758",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_erasmus_jr",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_elizabeth_1763",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_robert",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_william_alvey",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_hadley_parker",
+			"partners": [
+				{
+					"personId": "per_henry_hadley",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_susanna_parker",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1809",
+					"status": "confirmed"
+				}
+			},
+			"children": [],
+			"childrenComplete": "unknown"
+		},
+		{
+			"id": "fam_erasmus_parker",
+			"partners": [
+				{
+					"personId": "per_erasmus",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mary_parker",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "partnership",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1771",
+					"status": "likely"
+				}
+			},
+			"children": [
+				{
+					"personId": "per_susanna_parker",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mary_parker_jr",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes",
+			"notes": "Not married. The daughters took their mother’s surname."
+		},
+		{
+			"id": "fam_day_parker",
+			"partners": [
+				{
+					"personId": "per_joseph_day",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mary_parker",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1782",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1811",
+					"status": "likely"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "unknown"
+		},
+		{
+			"id": "fam_portmore",
+			"partners": [
+				{
+					"personId": "per_earl_portmore",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_elizabeth_collier_sr",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "partnership",
+				"status": "confirmed"
+			},
+			"children": [
+				{
+					"personId": "per_elizabeth_collier",
+					"relation": "biological",
+					"status": "likely"
+				}
+			],
+			"childrenComplete": "unknown",
+			"notes": "Not married. Their daughter took her mother’s name."
+		},
+		{
+			"id": "fam_pole_collier",
+			"partners": [
+				{
+					"personId": "per_col_pole",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_elizabeth_collier",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"end": {
+					"edtf": "1780-11-27",
+					"status": "likely"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_sacheverell_pole",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "no",
+			"expectedChildren": {
+				"min": 3,
+				"note": "Sources say she had three children by Colonel Pole; only Sacheverell is named here."
+			}
+		},
+		{
+			"id": "fam_erasmus_collier",
+			"partners": [
+				{
+					"personId": "per_erasmus",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_elizabeth_collier",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1781-03-06",
+					"status": "likely"
+				},
+				"end": {
+					"edtf": "1802-04-18",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_edward",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_violetta",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_emma_1784",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_francis_sacheverel",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_john_1787",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_henry_1789",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_harriet",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes",
+			"notes": "Married at Radbourne, Derbyshire (one local history)."
+		},
+		{
+			"id": "fam_galton_darwin",
+			"partners": [
+				{
+					"personId": "per_tertius_galton",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_violetta",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1807-03-30",
+					"status": "likely"
+				}
+			},
+			"children": [
+				{
+					"personId": "per_francis_galton",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "no",
+			"expectedChildren": {
+				"min": 7,
+				"note": "Wikipedia lists seven children, thepeerage.com nine. Francis was the youngest."
+			}
+		},
+		{
+			"id": "fam_wedgwood_1",
+			"partners": [
+				{
+					"personId": "per_josiah_1",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_sarah_wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1764-01-25",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1795-01-03",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_susannah",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_john_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_richard_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_josiah_2",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_tom_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_catherine_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_sarah_jr",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mary_anne_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes",
+			"notes": "Married at Astbury, Cheshire."
+		},
+		{
+			"id": "fam_wedgwood_2",
+			"partners": [
+				{
+					"personId": "per_josiah_2",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_bessy_allen",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1792",
+					"status": "likely"
+				},
+				"end": {
+					"edtf": "1843-07-12",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_sarah_e",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_josiah_3",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mary_ann_1796",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_charlotte",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_henry_allen",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_frank_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_hensleigh",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_fanny",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_emma",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_darwin_wedgwood",
+			"partners": [
+				{
+					"personId": "per_robert",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_susannah",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1796-04-18",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1817",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_marianne",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_caroline",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_susan",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_erasmus_alvey",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_charles",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_catherine",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes",
+			"notes": "Married at St Marylebone, London."
+		},
+		{
+			"id": "fam_parker_darwin",
+			"partners": [
+				{
+					"personId": "per_henry_parker",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_marianne",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1824",
+					"status": "confirmed"
+				}
+			},
+			"children": [],
+			"childrenComplete": "unknown"
+		},
+		{
+			"id": "fam_langton_wedgwood",
+			"partners": [
+				{
+					"personId": "per_charles_langton",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_charlotte",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1832-03-22",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1862",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "unknown",
+			"notes": "Married at Maer."
+		},
+		{
+			"id": "fam_langton_darwin",
+			"partners": [
+				{
+					"personId": "per_charles_langton",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_catherine",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1863-10-12",
+					"status": "likely"
+				},
+				"end": {
+					"edtf": "1866-02-02",
+					"status": "likely"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_wedgwood_3",
+			"partners": [
+				{
+					"personId": "per_josiah_3",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_caroline",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1837-08-01",
+					"status": "confirmed"
+				}
+			},
+			"children": [
+				{
+					"personId": "per_sophy_1838",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_sophy_1842",
+					"relation": "biological",
+					"status": "likely"
+				},
+				{
+					"personId": "per_margaret_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_lucy_wedgwood",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_vaughan_williams",
+			"partners": [
+				{
+					"personId": "per_arthur_vw",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_margaret_wedgwood",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"end": {
+					"edtf": "1875-02",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_ralph_vw",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "unknown"
+		},
+		{
+			"id": "fam_charles_emma",
+			"partners": [
+				{
+					"personId": "per_charles",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_emma",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1839-01-29",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1882-04-19",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_william",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_annie",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mary_eleanor",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_henrietta",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_george",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_bessy",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_francis",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_leonard",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_horace",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_charles_waring",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes",
+			"notes": "Married at St Peter’s, Maer. Ten children, three of whom died young."
+		},
+		{
+			"id": "fam_william_sara",
+			"partners": [
+				{
+					"personId": "per_william",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_sara_sedgwick",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1877",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1902",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_litchfield_darwin",
+			"partners": [
+				{
+					"personId": "per_richard_litchfield",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_henrietta",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1871",
+					"status": "confirmed"
+				}
+			},
+			"children": [],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_george_maud",
+			"partners": [
+				{
+					"personId": "per_george",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_maud",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1884",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1912-12-07",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_gwen",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_charles_galton",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_margaret_darwin",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_william_robert",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_leonard_1899",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_francis_amy",
+			"partners": [
+				{
+					"personId": "per_francis",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_amy_ruck",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1874",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1876",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_bernard",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_francis_ellen",
+			"partners": [
+				{
+					"personId": "per_francis",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_ellen_crofts",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1883-09",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1903",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_frances",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_francis_florence",
+			"partners": [
+				{
+					"personId": "per_francis",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_florence_fisher",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1913",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1920",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_maitland_fisher",
+			"partners": [
+				{
+					"personId": "per_maitland",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_florence_fisher",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1886-07-20",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1906-12",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_ermengard",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_fredegond",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_leonard_elizabeth",
+			"partners": [
+				{
+					"personId": "per_leonard",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_elizabeth_fraser",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1882-07-11",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1898-01-13",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_leonard_mildred",
+			"partners": [
+				{
+					"personId": "per_leonard",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_mildred_massingberd",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1900-11-29",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1940",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_horace_ida",
+			"partners": [
+				{
+					"personId": "per_horace",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_ida_farrer",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1880-01",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1928-09-22",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [
+				{
+					"personId": "per_erasmus_iv",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_ruth",
+					"relation": "biological",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_nora",
+					"relation": "biological",
+					"status": "confirmed"
+				}
+			],
+			"childrenComplete": "yes"
+		},
+		{
+			"id": "fam_raverat_darwin",
+			"partners": [
+				{
+					"personId": "per_jacques_raverat",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_gwen",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1911",
+					"status": "confirmed"
+				},
+				"end": {
+					"edtf": "1925",
+					"status": "confirmed"
+				},
+				"endReason": "death"
+			},
+			"children": [],
+			"childrenComplete": "no",
+			"expectedChildren": {
+				"min": 2,
+				"note": "Two daughters, Elisabeth and Sophie; not yet added."
+			}
+		},
+		{
+			"id": "fam_keynes_darwin",
+			"partners": [
+				{
+					"personId": "per_geoffrey_keynes",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_margaret_darwin",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1917",
+					"status": "confirmed"
+				}
+			},
+			"children": [],
+			"childrenComplete": "unknown"
+		},
+		{
+			"id": "fam_cornford_darwin",
+			"partners": [
+				{
+					"personId": "per_francis_cornford",
+					"status": "confirmed"
+				},
+				{
+					"personId": "per_frances",
+					"status": "confirmed"
+				}
+			],
+			"relationship": {
+				"type": "marriage",
+				"status": "confirmed",
+				"start": {
+					"edtf": "1909",
+					"status": "confirmed"
+				}
+			},
+			"children": [],
+			"childrenComplete": "unknown"
+		}
+	],
+	"events": [
+		{
+			"id": "evt_birth_erasmus",
+			"type": "birth",
+			"date": {
+				"edtf": "1731-12-12",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_elston",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus"
+				}
+			]
+		},
+		{
+			"id": "evt_death_erasmus",
+			"type": "death",
+			"date": {
+				"edtf": "1802-04-18",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_breadsall",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_mary_howard",
+			"type": "birth",
+			"date": {
+				"edtf": "1740",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_howard"
+				}
+			]
+		},
+		{
+			"id": "evt_death_mary_howard",
+			"type": "death",
+			"date": {
+				"edtf": "1770",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_howard"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_charles_1758",
+			"type": "birth",
+			"date": {
+				"edtf": "1758",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_1758"
+				}
+			]
+		},
+		{
+			"id": "evt_death_charles_1758",
+			"type": "death",
+			"date": {
+				"edtf": "1778",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_edinburgh",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_1758"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_erasmus_jr",
+			"type": "birth",
+			"date": {
+				"edtf": "1759",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus_jr"
+				}
+			]
+		},
+		{
+			"id": "evt_death_erasmus_jr",
+			"type": "death",
+			"date": {
+				"edtf": "1799",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_breadsall",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus_jr"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_elizabeth_1763",
+			"type": "birth",
+			"date": {
+				"edtf": "1763",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_elizabeth_1763"
+				}
+			]
+		},
+		{
+			"id": "evt_death_elizabeth_1763",
+			"type": "death",
+			"date": {
+				"edtf": "1763",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_elizabeth_1763"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_robert",
+			"type": "birth",
+			"date": {
+				"edtf": "1766-05-30",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_lichfield",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_robert"
+				}
+			]
+		},
+		{
+			"id": "evt_death_robert",
+			"type": "death",
+			"date": {
+				"edtf": "1848-11-13",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_shrewsbury",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_robert"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_william_alvey",
+			"type": "birth",
+			"date": {
+				"edtf": "1767",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_william_alvey"
+				}
+			]
+		},
+		{
+			"id": "evt_death_william_alvey",
+			"type": "death",
+			"date": {
+				"edtf": "1767",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_william_alvey"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_susanna_parker",
+			"type": "birth",
+			"date": {
+				"edtf": "1772",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_susanna_parker"
+				}
+			]
+		},
+		{
+			"id": "evt_death_susanna_parker",
+			"type": "death",
+			"date": {
+				"edtf": "1856",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_susanna_parker"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_mary_parker_jr",
+			"type": "birth",
+			"date": {
+				"edtf": "1774",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_parker_jr"
+				}
+			]
+		},
+		{
+			"id": "evt_death_mary_parker_jr",
+			"type": "death",
+			"date": {
+				"edtf": "1859",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_parker_jr"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_joseph_day",
+			"type": "birth",
+			"date": {
+				"edtf": "1745",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_joseph_day"
+				}
+			]
+		},
+		{
+			"id": "evt_death_joseph_day",
+			"type": "death",
+			"date": {
+				"edtf": "1811",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_joseph_day"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_earl_portmore",
+			"type": "birth",
+			"date": {
+				"edtf": "1700-08-27",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_earl_portmore"
+				}
+			]
+		},
+		{
+			"id": "evt_death_earl_portmore",
+			"type": "death",
+			"date": {
+				"edtf": "1785-07-05",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_earl_portmore"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_elizabeth_collier",
+			"type": "birth",
+			"date": {
+				"edtf": "1747",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_elizabeth_collier"
+				}
+			]
+		},
+		{
+			"id": "evt_death_elizabeth_collier",
+			"type": "death",
+			"date": {
+				"edtf": "1832-02-05",
+				"status": "likely"
+			},
+			"place": {
+				"placeId": "plc_breadsall",
+				"status": "guess"
+			},
+			"participants": [
+				{
+					"personId": "per_elizabeth_collier"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_col_pole",
+			"type": "birth",
+			"date": {
+				"edtf": "1718",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_col_pole"
+				}
+			]
+		},
+		{
+			"id": "evt_death_col_pole",
+			"type": "death",
+			"date": {
+				"edtf": "1780-11-27",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_col_pole"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_edward",
+			"type": "birth",
+			"date": {
+				"edtf": "1782",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_edward"
+				}
+			]
+		},
+		{
+			"id": "evt_death_edward",
+			"type": "death",
+			"date": {
+				"edtf": "1829",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_edward"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_violetta",
+			"type": "birth",
+			"date": {
+				"edtf": "1783",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_violetta"
+				}
+			]
+		},
+		{
+			"id": "evt_death_violetta",
+			"type": "death",
+			"date": {
+				"edtf": "1874",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_violetta"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_emma_1784",
+			"type": "birth",
+			"date": {
+				"edtf": "1784",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_emma_1784"
+				}
+			]
+		},
+		{
+			"id": "evt_death_emma_1784",
+			"type": "death",
+			"date": {
+				"edtf": "1818",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_emma_1784"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_francis_sacheverel",
+			"type": "birth",
+			"date": {
+				"edtf": "1786",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_francis_sacheverel"
+				}
+			]
+		},
+		{
+			"id": "evt_death_francis_sacheverel",
+			"type": "death",
+			"date": {
+				"edtf": "1859",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_francis_sacheverel"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_john_1787",
+			"type": "birth",
+			"date": {
+				"edtf": "1787",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_john_1787"
+				}
+			]
+		},
+		{
+			"id": "evt_death_john_1787",
+			"type": "death",
+			"date": {
+				"edtf": "1818",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_john_1787"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_henry_1789",
+			"type": "birth",
+			"date": {
+				"edtf": "1789",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_henry_1789"
+				}
+			]
+		},
+		{
+			"id": "evt_death_henry_1789",
+			"type": "death",
+			"date": {
+				"edtf": "1790",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_henry_1789"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_harriet",
+			"type": "birth",
+			"date": {
+				"edtf": "1790",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_harriet"
+				}
+			]
+		},
+		{
+			"id": "evt_death_harriet",
+			"type": "death",
+			"date": {
+				"edtf": "1825",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_harriet"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_tertius_galton",
+			"type": "birth",
+			"date": {
+				"edtf": "1783",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_tertius_galton"
+				}
+			]
+		},
+		{
+			"id": "evt_death_tertius_galton",
+			"type": "death",
+			"date": {
+				"edtf": "1844",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_tertius_galton"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_francis_galton",
+			"type": "birth",
+			"date": {
+				"edtf": "1822-02-16",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_birmingham",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_francis_galton"
+				}
+			]
+		},
+		{
+			"id": "evt_death_francis_galton",
+			"type": "death",
+			"date": {
+				"edtf": "1911-01-17",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_haslemere",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_francis_galton"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_josiah_1",
+			"type": "birth",
+			"date": {
+				"edtf": "1730-07-12",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_burslem",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_josiah_1"
+				}
+			]
+		},
+		{
+			"id": "evt_death_josiah_1",
+			"type": "death",
+			"date": {
+				"edtf": "1795-01-03",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_etruria",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_josiah_1"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_sarah_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1734",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sarah_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_sarah_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1815",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sarah_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_susannah",
+			"type": "birth",
+			"date": {
+				"edtf": "1765-01-03",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_susannah"
+				}
+			]
+		},
+		{
+			"id": "evt_death_susannah",
+			"type": "death",
+			"date": {
+				"edtf": "1817",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_susannah"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_john_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1766",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_john_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_john_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1844",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_john_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_richard_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1767",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_richard_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_richard_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1768",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_richard_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_josiah_2",
+			"type": "birth",
+			"date": {
+				"edtf": "1769-04-03",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_josiah_2"
+				}
+			]
+		},
+		{
+			"id": "evt_death_josiah_2",
+			"type": "death",
+			"date": {
+				"edtf": "1843-07-12",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_maer",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_josiah_2"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_tom_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1771",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_tom_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_tom_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1805",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_tom_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_catherine_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1774",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_catherine_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_catherine_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1823",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_catherine_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_sarah_jr",
+			"type": "birth",
+			"date": {
+				"edtf": "1776",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sarah_jr"
+				}
+			]
+		},
+		{
+			"id": "evt_death_sarah_jr",
+			"type": "death",
+			"date": {
+				"edtf": "1856",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sarah_jr"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_mary_anne_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1778",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_anne_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_mary_anne_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1786",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_anne_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_bessy_allen",
+			"type": "birth",
+			"date": {
+				"edtf": "1764",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_bessy_allen"
+				}
+			]
+		},
+		{
+			"id": "evt_death_bessy_allen",
+			"type": "death",
+			"date": {
+				"edtf": "1846",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_bessy_allen"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_sarah_e",
+			"type": "birth",
+			"date": {
+				"edtf": "1793",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sarah_e"
+				}
+			]
+		},
+		{
+			"id": "evt_death_sarah_e",
+			"type": "death",
+			"date": {
+				"edtf": "1880",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sarah_e"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_josiah_3",
+			"type": "birth",
+			"date": {
+				"edtf": "1795",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_josiah_3"
+				}
+			]
+		},
+		{
+			"id": "evt_death_josiah_3",
+			"type": "death",
+			"date": {
+				"edtf": "1880",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_josiah_3"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_mary_ann_1796",
+			"type": "birth",
+			"date": {
+				"edtf": "1796",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_ann_1796"
+				}
+			]
+		},
+		{
+			"id": "evt_death_mary_ann_1796",
+			"type": "death",
+			"date": {
+				"edtf": "1798",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_ann_1796"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_charlotte",
+			"type": "birth",
+			"date": {
+				"edtf": "1797",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charlotte"
+				}
+			]
+		},
+		{
+			"id": "evt_death_charlotte",
+			"type": "death",
+			"date": {
+				"edtf": "1862",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charlotte"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_henry_allen",
+			"type": "birth",
+			"date": {
+				"edtf": "1799",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_henry_allen"
+				}
+			]
+		},
+		{
+			"id": "evt_death_henry_allen",
+			"type": "death",
+			"date": {
+				"edtf": "1885",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_henry_allen"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_frank_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1800",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_frank_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_frank_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1888",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_frank_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_hensleigh",
+			"type": "birth",
+			"date": {
+				"edtf": "1803",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_hensleigh"
+				}
+			]
+		},
+		{
+			"id": "evt_death_hensleigh",
+			"type": "death",
+			"date": {
+				"edtf": "1891",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_hensleigh"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_fanny",
+			"type": "birth",
+			"date": {
+				"edtf": "1806",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_fanny"
+				}
+			]
+		},
+		{
+			"id": "evt_death_fanny",
+			"type": "death",
+			"date": {
+				"edtf": "1832",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_fanny"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_emma",
+			"type": "birth",
+			"date": {
+				"edtf": "1808-05-02",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_maer",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_emma"
+				}
+			]
+		},
+		{
+			"id": "evt_death_emma",
+			"type": "death",
+			"date": {
+				"edtf": "1896-10-02",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_emma"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_marianne",
+			"type": "birth",
+			"date": {
+				"edtf": "1798",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_marianne"
+				}
+			]
+		},
+		{
+			"id": "evt_death_marianne",
+			"type": "death",
+			"date": {
+				"edtf": "1858",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_marianne"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_caroline",
+			"type": "birth",
+			"date": {
+				"edtf": "1800",
+				"status": "conflicting"
+			},
+			"participants": [
+				{
+					"personId": "per_caroline"
+				}
+			]
+		},
+		{
+			"id": "evt_death_caroline",
+			"type": "death",
+			"date": {
+				"edtf": "1888",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_caroline"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_susan",
+			"type": "birth",
+			"date": {
+				"edtf": "1803",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_susan"
+				}
+			]
+		},
+		{
+			"id": "evt_death_susan",
+			"type": "death",
+			"date": {
+				"edtf": "1866",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_susan"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_erasmus_alvey",
+			"type": "birth",
+			"date": {
+				"edtf": "1804",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus_alvey"
+				}
+			]
+		},
+		{
+			"id": "evt_death_erasmus_alvey",
+			"type": "death",
+			"date": {
+				"edtf": "1881",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus_alvey"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_charles",
+			"type": "birth",
+			"date": {
+				"edtf": "1809-02-12",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_shrewsbury",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles"
+				}
+			]
+		},
+		{
+			"id": "evt_death_charles",
+			"type": "death",
+			"date": {
+				"edtf": "1882-04-19",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_catherine",
+			"type": "birth",
+			"date": {
+				"edtf": "1810",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_catherine"
+				}
+			]
+		},
+		{
+			"id": "evt_death_catherine",
+			"type": "death",
+			"date": {
+				"edtf": "1866-02-02",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_catherine"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_charles_langton",
+			"type": "birth",
+			"date": {
+				"edtf": "1801",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_langton"
+				}
+			]
+		},
+		{
+			"id": "evt_death_charles_langton",
+			"type": "death",
+			"date": {
+				"edtf": "1886",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_langton"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_sophy_1838",
+			"type": "birth",
+			"date": {
+				"edtf": "1838-12",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sophy_1838"
+				}
+			]
+		},
+		{
+			"id": "evt_death_sophy_1838",
+			"type": "death",
+			"date": {
+				"edtf": "1839-01",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sophy_1838"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_sophy_1842",
+			"type": "birth",
+			"date": {
+				"edtf": "1842",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_sophy_1842"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_margaret_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1843",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_margaret_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_margaret_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1937",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_margaret_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_lucy_wedgwood",
+			"type": "birth",
+			"date": {
+				"edtf": "1846-12-21",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_lucy_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_lucy_wedgwood",
+			"type": "death",
+			"date": {
+				"edtf": "1919-06-25",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_lucy_wedgwood"
+				}
+			]
+		},
+		{
+			"id": "evt_death_arthur_vw",
+			"type": "death",
+			"date": {
+				"edtf": "1875-02",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_arthur_vw"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_ralph_vw",
+			"type": "birth",
+			"date": {
+				"edtf": "1872-10-12",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downampney",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ralph_vw"
+				}
+			]
+		},
+		{
+			"id": "evt_death_ralph_vw",
+			"type": "death",
+			"date": {
+				"edtf": "1958-08-26",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_london",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ralph_vw"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_william",
+			"type": "birth",
+			"date": {
+				"edtf": "1839-12-27",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_london",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_william"
+				}
+			]
+		},
+		{
+			"id": "evt_death_william",
+			"type": "death",
+			"date": {
+				"edtf": "1914-09-08",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_sedbergh",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_william"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_sara_sedgwick",
+			"type": "birth",
+			"date": {
+				"edtf": "1839",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sara_sedgwick"
+				}
+			]
+		},
+		{
+			"id": "evt_death_sara_sedgwick",
+			"type": "death",
+			"date": {
+				"edtf": "1902",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_sara_sedgwick"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_annie",
+			"type": "birth",
+			"date": {
+				"edtf": "1841-03-02",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_annie"
+				}
+			]
+		},
+		{
+			"id": "evt_death_annie",
+			"type": "death",
+			"date": {
+				"edtf": "1851-04-23",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_malvern",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_annie"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_mary_eleanor",
+			"type": "birth",
+			"date": {
+				"edtf": "1842-09-23",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_eleanor"
+				}
+			]
+		},
+		{
+			"id": "evt_death_mary_eleanor",
+			"type": "death",
+			"date": {
+				"edtf": "1842-10-16",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mary_eleanor"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_henrietta",
+			"type": "birth",
+			"date": {
+				"edtf": "1843",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_henrietta"
+				}
+			]
+		},
+		{
+			"id": "evt_death_henrietta",
+			"type": "death",
+			"date": {
+				"edtf": "1927",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_henrietta"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_richard_litchfield",
+			"type": "birth",
+			"date": {
+				"edtf": "1832",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_richard_litchfield"
+				}
+			]
+		},
+		{
+			"id": "evt_death_richard_litchfield",
+			"type": "death",
+			"date": {
+				"edtf": "1903",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_richard_litchfield"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_george",
+			"type": "birth",
+			"date": {
+				"edtf": "1845-07-09",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_george"
+				}
+			]
+		},
+		{
+			"id": "evt_death_george",
+			"type": "death",
+			"date": {
+				"edtf": "1912-12-07",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_cambridge",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_george"
+				}
+			]
+		},
+		{
+			"id": "evt_death_maud",
+			"type": "death",
+			"date": {
+				"edtf": "1947-02-06",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_maud"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_bessy",
+			"type": "birth",
+			"date": {
+				"edtf": "1847",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_bessy"
+				}
+			]
+		},
+		{
+			"id": "evt_death_bessy",
+			"type": "death",
+			"date": {
+				"edtf": "1926",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_bessy"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_francis",
+			"type": "birth",
+			"date": {
+				"edtf": "1848-08-16",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_francis"
+				}
+			]
+		},
+		{
+			"id": "evt_death_francis",
+			"type": "death",
+			"date": {
+				"edtf": "1925-09-19",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_cambridge",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_francis"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_amy_ruck",
+			"type": "birth",
+			"date": {
+				"edtf": "1850",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_amy_ruck"
+				}
+			]
+		},
+		{
+			"id": "evt_death_amy_ruck",
+			"type": "death",
+			"date": {
+				"edtf": "1876",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_amy_ruck"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_ellen_crofts",
+			"type": "birth",
+			"date": {
+				"edtf": "1856",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_ellen_crofts"
+				}
+			]
+		},
+		{
+			"id": "evt_death_ellen_crofts",
+			"type": "death",
+			"date": {
+				"edtf": "1903",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ellen_crofts"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_florence_fisher",
+			"type": "birth",
+			"date": {
+				"edtf": "1864",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_florence_fisher"
+				}
+			]
+		},
+		{
+			"id": "evt_death_florence_fisher",
+			"type": "death",
+			"date": {
+				"edtf": "1920",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_florence_fisher"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_maitland",
+			"type": "birth",
+			"date": {
+				"edtf": "1850",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_maitland"
+				}
+			]
+		},
+		{
+			"id": "evt_death_maitland",
+			"type": "death",
+			"date": {
+				"edtf": "1906-12",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_maitland"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_ermengard",
+			"type": "birth",
+			"date": {
+				"edtf": "1887",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ermengard"
+				}
+			]
+		},
+		{
+			"id": "evt_death_ermengard",
+			"type": "death",
+			"date": {
+				"edtf": "1968",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ermengard"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_fredegond",
+			"type": "birth",
+			"date": {
+				"edtf": "1889",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_fredegond"
+				}
+			]
+		},
+		{
+			"id": "evt_death_fredegond",
+			"type": "death",
+			"date": {
+				"edtf": "1949",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_fredegond"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_leonard",
+			"type": "birth",
+			"date": {
+				"edtf": "1850-01-15",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_leonard"
+				}
+			]
+		},
+		{
+			"id": "evt_death_leonard",
+			"type": "death",
+			"date": {
+				"edtf": "1943-03-26",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_forestrow",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_leonard"
+				}
+			]
+		},
+		{
+			"id": "evt_death_elizabeth_fraser",
+			"type": "death",
+			"date": {
+				"edtf": "1898-01-13",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_elizabeth_fraser"
+				}
+			]
+		},
+		{
+			"id": "evt_death_mildred_massingberd",
+			"type": "death",
+			"date": {
+				"edtf": "1940",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_mildred_massingberd"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_horace",
+			"type": "birth",
+			"date": {
+				"edtf": "1851-05-13",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_horace"
+				}
+			]
+		},
+		{
+			"id": "evt_death_horace",
+			"type": "death",
+			"date": {
+				"edtf": "1928-09-22",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_horace"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_ida_farrer",
+			"type": "birth",
+			"date": {
+				"edtf": "1854",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ida_farrer"
+				}
+			]
+		},
+		{
+			"id": "evt_death_ida_farrer",
+			"type": "death",
+			"date": {
+				"edtf": "1946",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ida_farrer"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_charles_waring",
+			"type": "birth",
+			"date": {
+				"edtf": "1856",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_waring"
+				}
+			]
+		},
+		{
+			"id": "evt_death_charles_waring",
+			"type": "death",
+			"date": {
+				"edtf": "1858-06-28",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_downe",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_waring"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_gwen",
+			"type": "birth",
+			"date": {
+				"edtf": "1885-08-26",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_cambridge",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_gwen"
+				}
+			]
+		},
+		{
+			"id": "evt_death_gwen",
+			"type": "death",
+			"date": {
+				"edtf": "1957-02-11",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_cambridge",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_gwen"
+				}
+			]
+		},
+		{
+			"id": "evt_death_jacques_raverat",
+			"type": "death",
+			"date": {
+				"edtf": "1925",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_jacques_raverat"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_charles_galton",
+			"type": "birth",
+			"date": {
+				"edtf": "1887",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_galton"
+				}
+			]
+		},
+		{
+			"id": "evt_death_charles_galton",
+			"type": "death",
+			"date": {
+				"edtf": "1962",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_charles_galton"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_margaret_darwin",
+			"type": "birth",
+			"date": {
+				"edtf": "1890",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_margaret_darwin"
+				}
+			]
+		},
+		{
+			"id": "evt_death_margaret_darwin",
+			"type": "death",
+			"date": {
+				"edtf": "1974",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_margaret_darwin"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_geoffrey_keynes",
+			"type": "birth",
+			"date": {
+				"edtf": "1887",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_geoffrey_keynes"
+				}
+			]
+		},
+		{
+			"id": "evt_death_geoffrey_keynes",
+			"type": "death",
+			"date": {
+				"edtf": "1982",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_geoffrey_keynes"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_william_robert",
+			"type": "birth",
+			"date": {
+				"edtf": "1894",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_william_robert"
+				}
+			]
+		},
+		{
+			"id": "evt_death_william_robert",
+			"type": "death",
+			"date": {
+				"edtf": "1970",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_william_robert"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_leonard_1899",
+			"type": "birth",
+			"date": {
+				"edtf": "1899",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_leonard_1899"
+				}
+			]
+		},
+		{
+			"id": "evt_death_leonard_1899",
+			"type": "death",
+			"date": {
+				"edtf": "1899",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_leonard_1899"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_bernard",
+			"type": "birth",
+			"date": {
+				"edtf": "1876",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_bernard"
+				}
+			]
+		},
+		{
+			"id": "evt_death_bernard",
+			"type": "death",
+			"date": {
+				"edtf": "1961",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_bernard"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_frances",
+			"type": "birth",
+			"date": {
+				"edtf": "1886-03-30",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_frances"
+				}
+			]
+		},
+		{
+			"id": "evt_death_frances",
+			"type": "death",
+			"date": {
+				"edtf": "1960-08",
+				"status": "conflicting"
+			},
+			"participants": [
+				{
+					"personId": "per_frances"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_francis_cornford",
+			"type": "birth",
+			"date": {
+				"edtf": "1874",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_francis_cornford"
+				}
+			]
+		},
+		{
+			"id": "evt_death_francis_cornford",
+			"type": "death",
+			"date": {
+				"edtf": "1943",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_francis_cornford"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_erasmus_iv",
+			"type": "birth",
+			"date": {
+				"edtf": "1881-12-07",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus_iv"
+				}
+			]
+		},
+		{
+			"id": "evt_death_erasmus_iv",
+			"type": "death",
+			"date": {
+				"edtf": "1915-04-24",
+				"status": "confirmed"
+			},
+			"place": {
+				"placeId": "plc_ypres",
+				"status": "likely"
+			},
+			"participants": [
+				{
+					"personId": "per_erasmus_iv"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_ruth",
+			"type": "birth",
+			"date": {
+				"edtf": "1883",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ruth"
+				}
+			]
+		},
+		{
+			"id": "evt_death_ruth",
+			"type": "death",
+			"date": {
+				"edtf": "1972",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_ruth"
+				}
+			]
+		},
+		{
+			"id": "evt_birth_nora",
+			"type": "birth",
+			"date": {
+				"edtf": "1885",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_nora"
+				}
+			]
+		},
+		{
+			"id": "evt_death_nora",
+			"type": "death",
+			"date": {
+				"edtf": "1989",
+				"status": "confirmed"
+			},
+			"participants": [
+				{
+					"personId": "per_nora"
+				}
+			]
+		}
+	],
+	"places": [
+		{
+			"id": "plc_elston",
+			"name": "Elston",
+			"context": "Nottinghamshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 53.0335,
+				"lon": -0.8713
+			}
+		},
+		{
+			"id": "plc_breadsall",
+			"name": "Breadsall",
+			"context": "Derbyshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 52.953,
+				"lon": -1.445
+			}
+		},
+		{
+			"id": "plc_lichfield",
+			"name": "Lichfield",
+			"context": "Staffordshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 52.6816,
+				"lon": -1.8317
+			}
+		},
+		{
+			"id": "plc_shrewsbury",
+			"name": "Shrewsbury",
+			"context": "Shropshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 52.7073,
+				"lon": -2.7553
+			}
+		},
+		{
+			"id": "plc_downe",
+			"name": "Downe",
+			"context": "Kent, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 51.3355,
+				"lon": 0.0527
+			}
+		},
+		{
+			"id": "plc_maer",
+			"name": "Maer",
+			"context": "Staffordshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 52.9446,
+				"lon": -2.3184
+			}
+		},
+		{
+			"id": "plc_burslem",
+			"name": "Burslem",
+			"context": "Staffordshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 53.0436,
+				"lon": -2.1965
+			}
+		},
+		{
+			"id": "plc_etruria",
+			"name": "Etruria",
+			"context": "Stoke-on-Trent, Staffordshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 53.0285,
+				"lon": -2.1984
+			}
+		},
+		{
+			"id": "plc_malvern",
+			"name": "Great Malvern",
+			"context": "Worcestershire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 52.1113,
+				"lon": -2.3253
+			}
+		},
+		{
+			"id": "plc_cambridge",
+			"name": "Cambridge",
+			"context": "Cambridgeshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 52.2053,
+				"lon": 0.1218
+			}
+		},
+		{
+			"id": "plc_edinburgh",
+			"name": "Edinburgh",
+			"context": "Scotland",
+			"type": "town",
+			"coordinates": {
+				"lat": 55.9533,
+				"lon": -3.1883
+			}
+		},
+		{
+			"id": "plc_birmingham",
+			"name": "Birmingham",
+			"context": "Warwickshire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 52.4862,
+				"lon": -1.8904
+			}
+		},
+		{
+			"id": "plc_forestrow",
+			"name": "Forest Row",
+			"context": "East Sussex, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 51.096,
+				"lon": 0.033
+			}
+		},
+		{
+			"id": "plc_ypres",
+			"name": "Ypres",
+			"context": "West Flanders, Belgium",
+			"type": "town",
+			"coordinates": {
+				"lat": 50.8503,
+				"lon": 2.8853
+			}
+		},
+		{
+			"id": "plc_downampney",
+			"name": "Down Ampney",
+			"context": "Gloucestershire, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 51.6726,
+				"lon": -1.8441
+			}
+		},
+		{
+			"id": "plc_london",
+			"name": "London",
+			"context": "England",
+			"type": "town",
+			"coordinates": {
+				"lat": 51.5072,
+				"lon": -0.1276
+			}
+		},
+		{
+			"id": "plc_haslemere",
+			"name": "Haslemere",
+			"context": "Surrey, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 51.0903,
+				"lon": -0.713
+			}
+		},
+		{
+			"id": "plc_sedbergh",
+			"name": "Sedbergh",
+			"context": "Cumbria, England",
+			"type": "town",
+			"coordinates": {
+				"lat": 54.3237,
+				"lon": -2.528
+			}
+		}
+	],
+	"sources": [],
+	"views": [
+		{
+			"id": "view_charles_family",
+			"name": "Charles Darwin's family",
+			"kind": "tree",
+			"scope": {
+				"root": "per_charles",
+				"up": 2,
+				"down": 1,
+				"width": "direct"
+			}
+		},
+		{
+			"id": "view_erasmus_desc",
+			"name": "Descendants of Erasmus Darwin",
+			"kind": "tree",
+			"scope": {
+				"root": "per_erasmus",
+				"up": 0,
+				"width": "direct"
+			}
+		},
+		{
+			"id": "view_wedgwoods",
+			"name": "Wedgwoods",
+			"kind": "tree",
+			"scope": {
+				"tags": [
+					"wedgwood"
+				]
+			}
+		}
+	],
+	"media": []
+}
