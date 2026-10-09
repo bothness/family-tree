@@ -5,17 +5,31 @@
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
-	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, layoutTree, type TreeLayout } from '#lib/layout/tree.ts';
+	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_W, cardSize, layoutTree, routeShown, type TreeLayout } from '#lib/layout/tree.ts';
+	import { DropdownMenu } from 'bits-ui';
 	import { SILHOUETTE, silhouetteKey } from './Silhouette.svelte';
 	import { photoOf } from '#lib/model/media.ts';
-	import { routeConnectors } from '#lib/layout/connectors.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
 
-	const layout = $derived(layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, app.showPhotos ? PHOTO_W : NODE_W));
-	/** Card width in use (wider with photos). */
-	const CW = $derived(layout.cardW);
+	/** Cards as drawn: compact without photos; with photos, the photo beside the name (wide) or above it (V13). */
+	const portrait = $derived(app.showPhotos && app.portrait);
+	const size = $derived(portrait ? cardSize(PORTRAIT_W, PORTRAIT_H) : cardSize(app.showPhotos ? PHOTO_W : NODE_W, NODE_H));
+	const layout = $derived(layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, size, app.across));
+	/** Card width and height as drawn, and the missing-children placeholders' (as big as a card left to right). */
+	const CW = $derived(size.w),
+		CH = $derived(size.h);
+	const GW = $derived(app.across ? size.w : GHOST_W);
+	/** A name over at most two lines of about `n` characters (portrait cards). */
+	function twoLines(name: string, n: number): string[] {
+		if (name.length <= n) return [name];
+		const words = name.split(' ');
+		let a = '';
+		while (words.length && (a + ' ' + words[0]).trim().length <= n) a = (a + ' ' + words.shift()).trim();
+		if (!a) a = words.shift()!;
+		return [trunc(a, n), trunc(words.join(' '), n)].filter(Boolean);
+	}
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe' } as const;
 
@@ -67,29 +81,34 @@
 		if (!animating) return { nodes: to.nodes.map((n) => ({ ...n, o: 1 })), ghosts: to.ghosts.map((g) => ({ ...g, o: 1 })), lines: to.lines, anchors: to.anchors };
 		const nodes = to.nodes.map((n) => ({ ...n, ...blend(from.nodes, n.id, n, k), o: from.nodes.has(n.id) ? 1 : k }));
 		const ghosts = to.ghosts.map((g) => ({ ...g, ...blend(from.ghosts, g.familyId, g, k), o: from.ghosts.has(g.familyId) ? 1 : k }));
-		return { nodes, ghosts, ...routeConnectors(app.data, nodes, ghosts, to.cardW) };
+		return { nodes, ghosts, ...routeShown(app.data, to, nodes, ghosts) };
 	});
 
 	// Focus edge markers: "↑ parents" above someone whose parents are just out of view, "+3 children" below a family.
 	// Clicking one shows one more generation that way.
 	const STUB = 12, PILL_H = 18;
+	// Each marker: a short line out of the card (up/down, or left/right in a left-to-right tree) and a pill at its end.
 	const markers = $derived.by(() => {
 		const at = new Map(anim.nodes.map((n) => [n.id, n]));
+		const across = !!to.across;
+		const pill = (text: string) => text.length * 6.6 + 18;
 		return (app.focusView?.edges ?? []).flatMap((e) => {
 			if (e.dir === 'up') {
 				const n = at.get(e.personId);
-				return n ? [{ key: `u:${e.personId}`, up: true, x: n.x + CW / 2, y0: n.y, y1: n.y - STUB, text: e.hidden === 1 ? '↑ parent' : '↑ parents' }] : [];
+				if (!n) return [];
+				const text = across ? (e.hidden === 1 ? '← parent' : '← parents') : e.hidden === 1 ? '↑ parent' : '↑ parents';
+				const w = pill(text);
+				return across
+					? [{ key: `u:${e.personId}`, up: true, x0: n.x, y0: n.y + CH / 2, x1: n.x - STUB, y1: n.y + CH / 2, px: n.x - STUB - w / 2, py: n.y + CH / 2, w, text }]
+					: [{ key: `u:${e.personId}`, up: true, x0: n.x + CW / 2, y0: n.y, x1: n.x + CW / 2, y1: n.y - STUB, px: n.x + CW / 2, py: n.y - STUB - PILL_H / 2, w, text }];
 			}
 			const a = anim.anchors[e.familyId];
 			if (!a) return [];
-			return [{
-				key: `d:${e.familyId}`,
-				up: false,
-				x: a.x,
-				y0: a.y,
-				y1: a.bottom + STUB,
-				text: `+${e.hidden} ${e.hidden === 1 ? 'child' : 'children'}`
-			}];
+			const text = `+${e.hidden} ${e.hidden === 1 ? 'child' : 'children'}`;
+			const w = pill(text);
+			return across
+				? [{ key: `d:${e.familyId}`, up: false, x0: a.x, y0: a.y, x1: a.bottom + STUB, y1: a.y, px: a.bottom + STUB + w / 2, py: a.y, w, text }]
+				: [{ key: `d:${e.familyId}`, up: false, x0: a.x, y0: a.y, x1: a.x, y1: a.bottom + STUB, px: a.x, py: a.bottom + STUB + PILL_H / 2, w, text }];
 		});
 	});
 	function extend(up: boolean) {
@@ -171,7 +190,7 @@
 			const n = layout.nodes.find((n) => n.id === id);
 			if (!n) return;
 			const t = target();
-			const next = ensureVisible(t, { x: n.x, y: n.y, w: CW, h: NODE_H }, vw, vh);
+			const next = ensureVisible(t, { x: n.x, y: n.y, w: CW, h: CH }, vw, vh);
 			if (next !== t) glide(next);
 		});
 	});
@@ -187,7 +206,7 @@
 			if (!fresh.length || fresh.length > 3 || app.centreTarget || !vw || !vh) return;
 			const t = target();
 			let c = t;
-			for (const n of fresh) c = ensureVisible(c, { x: n.x, y: n.y, w: CW, h: NODE_H }, vw, vh);
+			for (const n of fresh) c = ensureVisible(c, { x: n.x, y: n.y, w: CW, h: CH }, vw, vh);
 			if (c !== t) glide(c);
 		});
 	});
@@ -199,7 +218,7 @@
 		if (!id || !vw || !vh) return;
 		untrack(() => {
 			const n = layout.nodes.find((n) => n.id === id);
-			if (n) glide(centreOn(app.camera ?? fitAll(), n.x + CW / 2, n.y + NODE_H / 2, vw, vh));
+			if (n) glide(centreOn(app.camera ?? fitAll(), n.x + CW / 2, n.y + CH / 2, vw, vh));
 		});
 		requestAnimationFrame(() => requestAnimationFrame(() => app.centreTarget === id && (app.centreTarget = null)));
 	});
@@ -375,6 +394,7 @@
 			<defs>
 				<!-- avatars on cards (V10): photo clip and stand-in silhouettes -->
 				<clipPath id="avatar-clip" clipPathUnits="userSpaceOnUse"><rect x="6" y="6" width="46" height="46" rx="5" /></clipPath>
+				<clipPath id="avatar-clip-p" clipPathUnits="userSpaceOnUse"><rect x={(PORTRAIT_W - 64) / 2} y="10" width="64" height="64" rx="6" /></clipPath>
 				{#each ['M', 'F', 'U'] as const as k (k)}
 					<symbol id="sil-{k}" viewBox="0 0 36 36"><rect class="sil-bg" width="36" height="36" rx="5" />{#each SILHOUETTE[k] as d (d)}<path class="sil" {d} />{/each}</symbol>
 				{/each}
@@ -408,28 +428,41 @@
 						onclick={() => cardClick(n.id)}
 						onkeydown={(e) => key(e, () => cardClick(n.id))}
 					>
-						<rect class="nbox" width={CW} height={NODE_H} rx="6" />
-						{#if app.showPhotos}
+						<rect class="nbox" width={CW} height={CH} rx="6" />
+						{#if portrait}
+							<!-- V13: photo above the name; the name over up to two lines, centred -->
 							{@const ph = photoOf(app.data, n.id)}
+							{@const px = (CW - 64) / 2}
 							{#if ph?.thumb}
-								<image href={ph.thumb} x="6" y="6" width="46" height="46" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
+								<image href={ph.thumb} x={px} y="10" width="64" height="64" clip-path="url(#avatar-clip-p)" preserveAspectRatio="xMidYMid slice" />
 							{:else}
-								<use href="#sil-{silhouetteKey(p.sex?.value)}" x="6" y="6" width="46" height="46" />
+								<use href="#sil-{silhouetteKey(p.sex?.value)}" x={px} y="10" width="64" height="64" />
 							{/if}
+							{#each twoLines(displayName(p), guess ? 16 : 14) as line, i (i)}
+								<text class="nm" class:pencil={guess} x={CW / 2} y={94 + i * 15} text-anchor="middle">{line}</text>
+							{/each}
+							<text class="dt" class:pencil={dateGuess} x={CW / 2} y={CH - 9} text-anchor="middle">{dates}</text>
+						{:else}
+							{#if app.showPhotos}
+								{@const ph = photoOf(app.data, n.id)}
+								{#if ph?.thumb}
+									<image href={ph.thumb} x="6" y="6" width="46" height="46" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
+								{:else}
+									<use href="#sil-{silhouetteKey(p.sex?.value)}" x="6" y="6" width="46" height="46" />
+								{/if}
+							{/if}
+							<text class="nm" class:pencil={guess} x={tx} y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
+							<text class="dt" class:pencil={dateGuess} x={tx} y="45">{dates}</text>
 						{/if}
-						<text class="nm" class:pencil={guess} x={tx} y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
-						<text class="dt" class:pencil={dateGuess} x={tx} y="45">{dates}</text>
 						<circle class="stage {stage}" cx={CW - 12} cy="12" r="4"><title>Research: {stage === 'none' ? 'not set' : stage}</title></circle>
-						{#if app.picked?.includes(n.id)}<text class="tick" x={CW - 14} y={NODE_H - 9} text-anchor="middle">✓</text>{/if}
+						{#if app.picked?.includes(n.id)}<text class="tick" x={CW - 14} y={CH - 9} text-anchor="middle">✓</text>{/if}
 					</g>
 				{/each}
 				{#each markers as m (m.key)}
-					{@const w = m.text.length * 6.6 + 18}
-					{@const top = m.up ? m.y1 - PILL_H : m.y1}
-					<g class="edge" role="button" tabindex="0" aria-label="Show {m.up ? 'one more generation up' : 'one more generation down'}" onclick={() => extend(m.up)} onkeydown={(e) => key(e, () => extend(m.up))}>
-						<line x1={m.x} y1={m.y0} x2={m.x} y2={m.y1} />
-						<rect x={m.x - w / 2} y={top} width={w} height={PILL_H} rx={PILL_H / 2} />
-						<text x={m.x} y={top + 13} text-anchor="middle">{m.text}</text>
+					<g class="edge" role="button" tabindex="0" aria-label="Show {m.up ? 'one more generation of parents' : 'one more generation of children'}" onclick={() => extend(m.up)} onkeydown={(e) => key(e, () => extend(m.up))}>
+						<line x1={m.x0} y1={m.y0} x2={m.x1} y2={m.y1} />
+						<rect x={m.px - m.w / 2} y={m.py - PILL_H / 2} width={m.w} height={PILL_H} rx={PILL_H / 2} />
+						<text x={m.px} y={m.py + 4} text-anchor="middle">{m.text}</text>
 					</g>
 				{/each}
 				{#each anim.ghosts as g (g.familyId)}
@@ -443,8 +476,8 @@
 						onclick={() => onGhost(g.familyId)}
 						onkeydown={(e) => key(e, () => onGhost(g.familyId))}
 					>
-						<rect width={GHOST_W} height={NODE_H} rx="6" />
-						<text x={GHOST_W / 2} y={NODE_H / 2 + 4} text-anchor="middle">{g.missing ? `+${g.missing} more expected` : 'more children?'}</text>
+						<rect width={GW} height={CH} rx="6" />
+						<text x={GW / 2} y={CH / 2 + 4} text-anchor="middle">{g.missing ? `+${g.missing} more expected` : 'more children?'}</text>
 					</g>
 				{/each}
 			</g>
@@ -455,6 +488,21 @@
 			<button type="button" onclick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in (+)">+</button>
 			<button type="button" onclick={() => app.fitTree()} title="Show everyone (0)">Fit</button>
 			<button type="button" aria-pressed={app.showPhotos} onclick={() => app.setShowPhotos(!app.showPhotos)} title={app.showPhotos ? 'Compact cards, without photos' : 'Show photos on cards'}>Photos</button>
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger class="zoom-more" aria-label="Tree layout" title="Tree layout">Layout ▾</DropdownMenu.Trigger>
+				<DropdownMenu.Portal>
+					<DropdownMenu.Content class="menu" side="top" align="end" sideOffset={6}>
+						<div class="menu-note">Cards</div>
+						<DropdownMenu.Item class="menu-item" onSelect={() => (app.setShowPhotos(true), app.setPortrait(false))}>{app.showPhotos && !app.portrait ? '✓ ' : ''}Photo beside the name</DropdownMenu.Item>
+						<DropdownMenu.Item class="menu-item" onSelect={() => app.setPortrait(true)}>{portrait ? '✓ ' : ''}Photo above the name (narrower)</DropdownMenu.Item>
+						<DropdownMenu.Item class="menu-item" onSelect={() => app.setShowPhotos(false)}>{!app.showPhotos ? '✓ ' : ''}No photos (compact)</DropdownMenu.Item>
+						<DropdownMenu.Separator class="menu-sep" />
+						<div class="menu-note">Generations</div>
+						<DropdownMenu.Item class="menu-item" onSelect={() => app.setAcross(false)}>{!app.across ? '✓ ' : ''}Top to bottom</DropdownMenu.Item>
+						<DropdownMenu.Item class="menu-item" onSelect={() => app.setAcross(true)}>{app.across ? '✓ ' : ''}Left to right</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Portal>
+			</DropdownMenu.Root>
 		</div>
 	</div>
 {/if}

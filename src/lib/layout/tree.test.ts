@@ -6,7 +6,7 @@ import { migrate } from '../model/migrate.ts';
 import { components } from '../model/queries.ts';
 import { focusSet, type FocusOptions } from '../model/focus.ts';
 import { viewMembers } from '../model/views.ts';
-import { layoutTree } from './tree.ts';
+import { cardSize, layoutTree, sideways, turn, PORTRAIT_H, PORTRAIT_W, type CardSize } from './tree.ts';
 import { checkLayout } from './check.ts';
 import { isotonic, PHOTO_W } from './positions.ts';
 import { routeConnectors } from './connectors.ts';
@@ -191,4 +191,41 @@ describe('tree layout rules on the Darwin–Wedgwood demo', () => {
 			const { ids, L } = make();
 			expect(checkLayout(dd, L, ids)).toEqual([]);
 		});
+});
+
+// Wide trees: portrait cards (V13) and left-to-right trees (V14), checked against the same rules. A left-to-right
+// tree is worked out on its side and then flipped, so its rules are checked before the flip.
+describe('tree layout rules with portrait cards and left to right', () => {
+	const dd = migrate(structuredClone(demo) as unknown as Dataset);
+	const sizes: [string, CardSize][] = [
+		['portrait cards', cardSize(PORTRAIT_W, PORTRAIT_H)],
+		['left to right', turn(cardSize(PHOTO_W))],
+		['left to right, portrait', turn(cardSize(PORTRAIT_W, PORTRAIT_H))]
+	];
+	for (const [mode, S] of sizes)
+		for (const [data, name, root, o] of [
+			[d, 'Smiths, everyone', undefined, undefined],
+			[d, 'Thomas ±2/1 all relatives', 'per_thomas_smith', { up: 2, down: 1, width: 'all' }],
+			[dd, 'Darwins, everyone', undefined, undefined],
+			[dd, "Charles's family", 'per_charles', { up: 2, down: 1, width: 'direct' }],
+			[dd, 'Francis all relatives', 'per_francis', { up: 1, down: 1, width: 'all' }]
+		] as [Dataset, string, string | undefined, FocusOptions | undefined][])
+			it(`${mode}: ${name}`, () => {
+				const ids = root ? [...focusSet(data, root, o!).ids] : data.people.map((p) => p.id);
+				const branches = root ? [{ label: '', ids }] : components(data).map((c) => ({ label: 'x', ids: c }));
+				expect(checkLayout(data, sideways(data, branches, root, S), ids)).toEqual([]);
+			});
+
+	it('a left-to-right tree is the sideways layout flipped across the diagonal', () => {
+		const S = cardSize(PHOTO_W);
+		const across = layoutTree(dd, [{ label: '', ids: dd.people.map((p) => p.id) }], 'per_charles', S, true);
+		const side = sideways(dd, [{ label: '', ids: dd.people.map((p) => p.id) }], 'per_charles', turn(S));
+		const a = across.nodes.find((n) => n.id === 'per_charles')!,
+			b = side.nodes.find((n) => n.id === 'per_charles')!;
+		expect([a.x, a.y]).toEqual([b.y, b.x]);
+		// Generations run across: parents to the left of their children.
+		const robert = across.nodes.find((n) => n.id === 'per_robert')!;
+		expect(robert.x).toBeLessThan(a.x);
+		expect(across.lines.every((l) => l.seg.x1 === l.seg.x2 || l.seg.y1 === l.seg.y2)).toBe(true);
+	});
 });

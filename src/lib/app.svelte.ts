@@ -59,6 +59,9 @@ class AppState {
 	store: DataStore | null = null;
 	/** Show photos on tree cards (V10). Off = compact cards. A per-browser preference, not part of the data. */
 	showPhotos = $state(readPref('showPhotos', true));
+	/** Wide trees (V13, V14): photo above the name (narrower, taller cards), and generations left to right. */
+	portrait = $state(readPref('portrait', false));
+	across = $state(readPref('across', false));
 	tab = $state<Tab>('tree');
 	selected = $state<string | null>(null);
 	/** Which "add relative" form is open in the person panel. */
@@ -266,6 +269,15 @@ class AppState {
 	setShowPhotos(on: boolean) {
 		this.showPhotos = on;
 		writePref('showPhotos', on);
+	}
+	setPortrait(on: boolean) {
+		writePref('portrait', (this.portrait = on));
+		if (on) this.setShowPhotos(true);
+		this.fitTree();
+	}
+	setAcross(on: boolean) {
+		writePref('across', (this.across = on));
+		this.fitTree();
 	}
 
 	/** Give someone a photo from a picked file: only a resized copy is kept (see media/images.ts). */
