@@ -97,3 +97,5 @@ What this means for decisions made before then:
 - 9 Oct: photo cards are wider (196px) than compact cards (156px); the layout takes the card width as a parameter.
 - 9 Oct: place search is explicit ("Search OpenStreetMap for …"), never as you type: Nominatim's usage policy forbids client-side autocomplete. Places already in the tree are still suggested as you type.
 - 9 Oct: the browser-only edition must be deployable as static assets (SvelteKit static adapter) to a host such as GitHub Pages: base path from the build environment, 404.html fallback, .nojekyll, published by a GitHub Actions workflow.
+- 9 Oct: missing-children placeholders are no longer orange: both kinds are grey and dashed, told apart by their text ("+2 more expected" plain, "more children?" in pencil). Removed from the legend. (Supersedes the earlier orange/pencil split.)
+- 9 Oct: the middle mouse button also drags to pan the tree; Safari's mouse wheel zooms like Chrome's.

@@ -68,7 +68,10 @@ export function wheelAction(e: WheelLike): { zoom: number } | { pan: [number, nu
 	if (e.ctrlKey || e.metaKey) return { zoom: Math.exp(-dy * 0.01) };
 	// Trackpads report wheelDeltaY ≈ -3 × deltaY (an integer, so allow rounding when deltaY is fractional).
 	const trackpadLike = !!e.wheelDeltaY && Math.abs(e.wheelDeltaY + 3 * e.deltaY) <= 1;
-	const mouse = e.deltaX === 0 && e.deltaY !== 0 && (e.deltaMode !== 0 || (!!e.wheelDeltaY && !trackpadLike));
+	// A mouse wheel moves in notches of 120 (Safari also reports deltaY = -wheelDeltaY / 3 for these, which would
+	// otherwise look like a trackpad).
+	const notch = !!e.wheelDeltaY && e.wheelDeltaY % 120 === 0;
+	const mouse = e.deltaX === 0 && e.deltaY !== 0 && (e.deltaMode !== 0 || (!!e.wheelDeltaY && (notch || !trackpadLike)));
 	if (mouse) return { zoom: Math.exp(clamp(-dy * 0.002, -0.5, 0.5)) };
 	return { pan: [-dx, -dy] };
 }

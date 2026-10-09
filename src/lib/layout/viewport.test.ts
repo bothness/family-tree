@@ -83,6 +83,12 @@ describe('wheelAction', () => {
 		expect(isZoom(a) && a.zoom < 1).toBe(true);
 	});
 
+	it('treats a Safari mouse wheel notch (deltaY 40, wheelDeltaY -120) as zoom', () => {
+		const a = wheelAction({ ...base, deltaY: 40, wheelDeltaY: -120 });
+		expect(isZoom(a) && a.zoom < 1).toBe(true);
+		expect(isZoom(wheelAction({ ...base, deltaY: -80, wheelDeltaY: 240 }))).toBe(true);
+	});
+
 	it('treats Firefox line-mode wheel as zoom', () => {
 		expect(isZoom(wheelAction({ ...base, deltaY: 3, deltaMode: 1 }))).toBe(true);
 	});
