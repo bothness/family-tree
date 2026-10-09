@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { app } from '#lib/app.svelte.ts';
+	import BlankPrompt from './BlankPrompt.svelte';
 	import { cardDates, displayName, family, lifeEvent, nameIsGuess, partnerIds, person } from '#lib/model/queries.ts';
 	import { GHOST_W, NODE_H, NODE_W, layoutTree } from '#lib/layout/tree.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
@@ -260,6 +261,8 @@
 
 {#if !app.data.people.length}
 	<div class="empty">No one here yet. Use <b>+ New person</b> to start a tree.</div>
+{:else if app.blank && !app.picked}
+	<BlankPrompt />
 {:else}
 	<div
 		class="canvas"

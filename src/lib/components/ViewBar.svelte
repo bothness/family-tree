@@ -79,7 +79,7 @@
 {:else}
 	<div class="bar">
 		<div class="views" role="group" aria-label="Views">
-			<button class="chip" aria-pressed={!app.activeView && !app.activeFocus} onclick={() => app.showEveryone()}>Everyone</button>
+			<button class="chip" aria-pressed={!app.activeView && !app.activeFocus && !app.blank} onclick={() => app.showEveryone()}>Everyone</button>
 			{#each app.data.views as v (v.id)}
 				{#if renaming === v.id}
 					<form class="chip-rename" onsubmit={finishRename}>
@@ -136,6 +136,7 @@
 					</DropdownMenu.Content>
 				</DropdownMenu.Portal>
 			</DropdownMenu.Root>
+			<button class="linkish reset" onclick={() => app.reset()} disabled={app.blank} title="Clear the view and selection, and start again from a search">Reset</button>
 		</div>
 		<div class="legend">
 			<span><span class="ink">Ink</span> = confirmed</span><span><span class="pen">pencil</span> = guess</span>
@@ -173,6 +174,9 @@
 						</Popover.Content>
 					</Popover.Portal>
 			</Popover.Root>
+			{#if f.up !== 0 || f.down !== 0}
+				<button class="chip" onclick={() => app.collapseTo(f.id)} title="Show only {displayName(person(app.data, f.id))}">Collapse</button>
+			{/if}
 			<button class="chip" onclick={() => app.showEveryone()} title="Leave focus and show everyone">✕ Show everyone</button>
 		</div>
 	{/if}

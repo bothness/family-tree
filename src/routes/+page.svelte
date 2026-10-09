@@ -13,6 +13,7 @@
 	import DataDialog from '#lib/components/DataDialog.svelte';
 	import SearchBox from '#lib/components/SearchBox.svelte';
 	import ViewBar from '#lib/components/ViewBar.svelte';
+	import BlankPrompt from '#lib/components/BlankPrompt.svelte';
 
 	// Load once, then save on every change (JSON.stringify reads the whole dataset, so the effect tracks it deeply).
 	const saved = localStore.load();
@@ -26,6 +27,7 @@
 	interface Place {
 		focus: Focus | null;
 		view: string | null;
+		blank: boolean;
 	}
 	const WIDTH_KEYS: FocusWidth[] = ['direct', 'siblings', 'all'];
 	function readHash(): Place {
@@ -39,10 +41,11 @@
 		};
 		const w = h.get('w') as FocusWidth;
 		const focus = id ? { id, up: n('up', DEFAULT_FOCUS.up), down: n('down', DEFAULT_FOCUS.down), width: WIDTH_KEYS.includes(w) ? w : DEFAULT_FOCUS.width } : null;
-		return { focus, view: h.get('view') };
+		return { focus, view: h.get('view'), blank: h.has('start') };
 	}
-	function hashOf({ focus: f, view }: Place) {
+	function hashOf({ focus: f, view, blank }: Place) {
 		const h = new URLSearchParams();
+		if (blank) return '#start';
 		if (view) h.set('view', view);
 		if (f) {
 			h.set('focus', f.id);
@@ -52,9 +55,9 @@
 		}
 		return h.size ? `#${h}` : '';
 	}
-	const here = (): Place => ({ focus: app.focus, view: app.viewId });
+	const here = (): Place => ({ focus: app.focus, view: app.viewId, blank: app.blank });
 	const currentHash = () => (location.hash === '#' ? '' : location.hash);
-	({ focus: app.focus, view: app.viewId } = readHash());
+	({ focus: app.focus, view: app.viewId, blank: app.blank } = readHash());
 	$effect(() => {
 		if (app.focus && !app.activeFocus) app.focus = null; // focused person was deleted
 		if (app.viewId && !app.activeView) app.viewId = null; // view was deleted
@@ -64,7 +67,7 @@
 	function onHashChange() {
 		const p = readHash();
 		if (hashOf(p) !== hashOf(here())) {
-			({ focus: app.focus, view: app.viewId } = p);
+			({ focus: app.focus, view: app.viewId, blank: app.blank } = p);
 			app.fitTree();
 		}
 	}
@@ -92,6 +95,7 @@
 	function addNew() {
 		const p = newPerson(app.data);
 		// A new, unlinked person is outside any focus or view.
+		app.blank = false;
 		app.focus = null;
 		app.viewId = null;
 		app.select(p.id);
@@ -129,7 +133,9 @@
 			<TreeView {onGhost} />
 		{:else}
 			<div class="pad">
-				{#if app.tab === 'timeline'}
+				{#if app.blank && app.data.people.length}
+					<BlankPrompt />
+				{:else if app.tab === 'timeline'}
 					<TimelineView />
 				{:else}
 					<TodoView onOpen={openPerson} />

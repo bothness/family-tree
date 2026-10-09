@@ -57,10 +57,14 @@ class AppState {
 	/** The hand-picked view being edited, or null when picking for a new one. */
 	pickingFor = $state<string | null>(null);
 
+	/** Reset (V2): an empty canvas with nobody shown or selected, until you search, open a view or show everyone. */
+	blank = $state(false);
+
 	/** Everyone, as unconnected groups. */
 	branches = $derived(labelled(this.data, components(this.data)));
 	visibleBranches = $derived.by(() => {
 		if (this.picked) return this.branches;
+		if (this.blank) return [];
 		if (this.focusView) return [{ label: '', ids: [...this.focusView.ids] }];
 		if (this.activeView && viewKind(this.activeView) !== 'focus') return labelled(this.data, components(this.data, viewMembers(this.data, this.activeView)));
 		return this.branches;
@@ -76,6 +80,7 @@ class AppState {
 
 	/** Show everyone: no focus, no saved view. */
 	showEveryone() {
+		this.blank = false;
 		this.focus = null;
 		this.viewId = null;
 		this.picked = null;
@@ -86,6 +91,7 @@ class AppState {
 	openView(id: string) {
 		const v = this.data.views.find((v) => v.id === id);
 		if (!v) return;
+		this.blank = false;
 		this.viewId = id;
 		this.focus = viewFocus(v);
 		this.fitTree();
@@ -96,6 +102,7 @@ class AppState {
 	centreOn(id: string) {
 		this.tab = 'tree';
 		if (!this.inView(id)) {
+			this.blank = false;
 			this.focus = null;
 			this.viewId = null;
 		}
@@ -108,6 +115,7 @@ class AppState {
 		const { up, down, width } = { ...(this.activeFocus ?? DEFAULT_FOCUS), ...opts };
 		// A saved view stays open only while it's still about the same person.
 		if (this.activeView && viewFocus(this.activeView)?.id !== id) this.viewId = null;
+		this.blank = false;
 		this.focus = { id, up, down, width };
 		this.fitTree();
 	}
@@ -115,6 +123,22 @@ class AppState {
 	adjustFocus(patch: Partial<FocusOptions>) {
 		if (!this.focus) return;
 		this.focus = { ...this.focus, ...patch };
+		this.fitTree();
+	}
+
+	/** Just this person: no generations either way, so not even partners (V2). */
+	collapseTo(id: string) {
+		this.focusOn(id, { up: 0, down: 0 });
+	}
+
+	/** Reset (V2): clear focus, view and selection, leaving an empty canvas. */
+	reset() {
+		this.focus = null;
+		this.viewId = null;
+		this.picked = null;
+		this.pickingFor = null;
+		this.select(null);
+		this.blank = true;
 		this.fitTree();
 	}
 
@@ -135,6 +159,7 @@ class AppState {
 		this.picked = v ? viewMembers(this.data, v) : this.selected ? [this.selected] : [];
 		this.pickingFor = v?.id ?? null;
 		this.select(null);
+		this.blank = false;
 		this.tab = 'tree';
 		this.fitTree();
 	}

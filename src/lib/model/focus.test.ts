@@ -42,8 +42,17 @@ describe('focusSet: direct line', () => {
 		expect(shown({ up: 2, down: 2, width: 'direct' })).toEqual(['dad', 'gf', 'gkid', 'gm', 'kid', 'kspouse', 'me', 'mgf', 'mum', 'spouse'].sort());
 	});
 
-	it('with no generations either way shows the person and their partners', () => {
-		expect(shown({ up: 0, down: 0, width: 'direct' })).toEqual(['me', 'spouse']);
+	it('with no generations either way shows just the person, without partners (collapse)', () => {
+		for (const width of ['direct', 'siblings', 'all'] as const) expect(shown({ up: 0, down: 0, width })).toEqual(['me']);
+		expect(edges({ up: 0, down: 0, width: 'direct' })).toEqual([
+			{ dir: 'up', personId: 'me', hidden: 2 },
+			{ dir: 'down', familyId: 'f_me', hidden: 1 }
+		]);
+	});
+
+	it('shows partners again as soon as there is a generation either way', () => {
+		expect(shown({ up: 1, down: 0, width: 'direct' })).toContain('spouse');
+		expect(shown({ up: 0, down: 1, width: 'direct' })).toContain('spouse');
 	});
 
 	it("never follows a partner's other relationships (no step-children)", () => {

@@ -172,6 +172,7 @@
 					<DropdownMenu.Content class="menu" sideOffset={4} align="end">
 						<DropdownMenu.Item class="menu-item" onSelect={() => app.focusOn(pid, { up: 0, down: Infinity, width: 'direct' })}>Descendants of {displayName(p)}</DropdownMenu.Item>
 						<DropdownMenu.Item class="menu-item" onSelect={() => app.focusOn(pid, { up: Infinity, down: 0, width: 'direct' })}>Ancestors of {displayName(p)}</DropdownMenu.Item>
+						<DropdownMenu.Item class="menu-item" onSelect={() => app.collapseTo(pid)}>Only {displayName(p)}</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu.Portal>
 			</DropdownMenu.Root>

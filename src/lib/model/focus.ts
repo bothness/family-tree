@@ -76,7 +76,9 @@ export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResu
 		}
 		return seen;
 	};
-	const directLine = new Set([...ancestors, ...descend([rootId])]);
+	// No generations either way means "just this person" (V2 collapse): not even their partners.
+	const collapsed = o.up === 0 && o.down === 0;
+	const directLine = new Set(collapsed ? [rootId] : [...ancestors, ...descend([rootId])]);
 
 	// Siblings at every generation: the other children of each ancestor shown (so never without a visible parent).
 	const collateral: string[] = [];

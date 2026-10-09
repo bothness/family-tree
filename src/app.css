@@ -65,6 +65,12 @@ button{cursor:pointer}
 .chip .changed{margin-left:4px;color:var(--warn)}
 .chip[aria-pressed="true"] .changed{color:var(--warn-soft)}
 .chip.add{border-style:dashed}
+.views .reset{font-family:var(--f-ui);font-size:14px;font-weight:400;color:var(--ink-soft);margin-left:4px}
+.views .reset:disabled{opacity:.4;cursor:default;text-decoration:none}
+.blank{display:grid;justify-items:center;gap:6px;line-height:2}
+.blank p{margin:0}
+.blank-title{font-family:var(--f-name);font-size:20px;color:var(--ink)}
+kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--sheet)}
 .chip-rename input{border-radius:999px;padding:2px 11px;font-size:14px;width:14em}
 .focusbar{border-bottom:1px solid var(--rule)}
 .pickbar{background:var(--accent-soft);gap:8px 12px}
