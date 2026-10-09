@@ -27,6 +27,6 @@ export default defineConfig({
 	// default Node environment Svelte compiles for the server, where $state is a no-op and hides proxy bugs.
 	resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
 	test: {
-		include: ['src/**/*.test.ts']
+		include: ['src/**/*.test.ts', 'server/**/*.test.ts']
 	}
 });

@@ -1,0 +1,3 @@
+# Copy to .dev.vars (not committed) for `npm run dev:family`.
+# Local development only: act as this signed-in owner (ignored anywhere but localhost).
+DEV_USER=you@example.com
