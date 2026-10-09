@@ -224,7 +224,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 		if (rows.some((row) => row.length) && [...reach(r)].some((u) => u.placed)) deferred.push(r);
 		else emit(r);
 	}
-	const sweep = () => sweepX(rows, famsOf, parentFams, childLeft, childW);
+	const sweep = (iterations = 12) => sweepX(rows, famsOf, parentFams, childLeft, childW, iterations);
 	sweep();
 	for (const r of deferred) {
 		let fresh = [...reach(r)].filter((u) => !u.placed);
@@ -286,30 +286,219 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	// move (no parents of their own in view), move the smaller unit across the other; if both are fixed (e.g.
 	// cousins whose parents are brother and sister, in age order), swap the couple instead. Either way their
 	// parents' lines don't cross; a swapped couple outranks "father on the left".
-	let changed = false;
-	for (const u of units) {
-		if (u.members.length !== 2) continue;
-		const pu = (m: string) => {
-			const fm = childOf.get(m);
-			return fm?.parent?.placed ? { fm, u: fm.parent, x: fm.parent.x + fm.anchorOff } : undefined;
-		};
-		const [a, b] = u.members.map(pu);
-		if (!a || !b || a.u === b.u || a.x <= b.x) continue;
-		const free = [a.u, b.u].filter((v) => v.g === a.u.g && !parentFams.get(v)?.length).sort((p, q) => p.members.length - q.members.length);
-		if (a.u.g === b.u.g && free.length) {
-			const row = rows[a.u.g];
-			const mover = free[0];
-			row.splice(row.indexOf(mover), 1);
-			// a's parents belong on the left of b's.
-			if (mover === a.u) row.splice(row.indexOf(b.u), 0, mover);
-			else row.splice(row.indexOf(a.u) + 1, 0, mover);
-		} else {
-			u.members.reverse();
-			for (const fm of fams) if (fm.parent === u) setAnchor(fm);
+	function uncross(): boolean {
+		let changed = false;
+		for (const u of units) {
+			if (u.members.length !== 2) continue;
+			const pu = (m: string) => {
+				const fm = childOf.get(m);
+				return fm?.parent?.placed ? { fm, u: fm.parent, x: fm.parent.x + fm.anchorOff } : undefined;
+			};
+			const [a, b] = u.members.map(pu);
+			if (!a || !b || a.u === b.u || a.x <= b.x) continue;
+			const free = [a.u, b.u].filter((v) => v.g === a.u.g && !parentFams.get(v)?.length).sort((p, q) => p.members.length - q.members.length);
+			const swap = () => {
+				u.members.reverse();
+				for (const fm of fams) if (fm.parent === u) setAnchor(fm);
+			};
+			if (a.u.g === b.u.g && free.length) {
+				const row = rows[a.u.g];
+				const was = [...row];
+				const mover = free[0];
+				row.splice(row.indexOf(mover), 1);
+				// a's parents belong on the left of b's.
+				if (mover === a.u) row.splice(row.indexOf(b.u), 0, mover);
+				else row.splice(row.indexOf(a.u) + 1, 0, mover);
+				// Moving the parents can tangle other lines (they may have other children): swap the couple instead
+				// if that's better (keeping the rules first, then fewer crossings).
+				const moved = score();
+				row.splice(0, row.length, ...was);
+				swap();
+				if (!better(score(), moved, false)) {
+					swap();
+					row.splice(row.indexOf(mover), 1);
+					if (mover === a.u) row.splice(row.indexOf(b.u), 0, mover);
+					else row.splice(row.indexOf(a.u) + 1, 0, mover);
+				}
+			} else swap();
+			changed = true;
 		}
-		changed = true;
+		if (changed) sweep();
+		return changed;
 	}
-	if (changed) sweep();
+
+	// 3b. Fewer crossings. The order so far follows the rules one family at a time, so lines can still cross (an
+	// in-law family slotted in between half-siblings, say). Each row is split into blocks that must stay as they
+	// are (a family's children in age order, a spouse with their in-laws: units joined by a shared family), and
+	// the blocks are reordered by where their relatives are (the average position of their parents above, or of
+	// their children below), sweeping down and up the rows. A new order is kept only if fewer lines cross.
+	const related = (a: Unit, b: Unit) => (parentFams.get(a) ?? []).some((f) => (parentFams.get(b) ?? []).includes(f));
+	const blocksOf = (row: Unit[]) => {
+		const out: Unit[][] = [];
+		for (const u of row) {
+			const last = out.at(-1);
+			if (last && related(last.at(-1)!, u)) last.push(u);
+			else out.push([u]);
+		}
+		return out;
+	};
+	/** A point's place along its row: the unit's index plus how far across the unit it is. */
+	const at = (row: Map<Unit, number>, u: Unit, off: number) => row.get(u)! + off / (u.w + 1);
+	/** Units with a line that crosses another family's (where the search below tries its swaps). */
+	let tangled = new Set<Unit>();
+	function crossingCount(record = false): number {
+		let n = 0;
+		if (record) tangled = new Set();
+		for (let g = 0; g < rows.length - 1; g++) {
+			const P = new Map(rows[g].map((u, i) => [u, i])),
+				C = new Map(rows[g + 1].map((u, i) => [u, i]));
+			const links: [number, number, Fam, Unit][] = [];
+			for (const fm of fams) {
+				if (!fm.parent || !P.has(fm.parent)) continue;
+				const a = at(P, fm.parent, fm.anchorOff);
+				for (const k of fm.kids) if (C.has(k)) links.push([a, at(C, k, childLeft(k, fm) + childW(k) / 2), fm, k]);
+			}
+			// Two of one person's families crossing (their children by different partners) is the most confusing
+			// tangle, so it counts double.
+			for (let i = 0; i < links.length; i++)
+				for (let j = i + 1; j < links.length; j++)
+					if (links[i][2] !== links[j][2] && (links[i][0] - links[j][0]) * (links[i][1] - links[j][1]) < 0) {
+						n += links[i][2].parent === links[j][2].parent ? 2 : 1;
+						if (record) for (const l of [links[i], links[j]]) tangled.add(l[3]).add(l[2].parent!);
+					}
+		}
+		return n;
+	}
+	/** How long the lines are in all: from each family's anchor to its children (a tie-break between orders). */
+	const lineLength = () =>
+		fams.reduce((n, fm) => n + (fm.parent ? fm.kids.reduce((m, k) => m + Math.abs(fm.parent!.x + fm.anchorOff - (k.x + childLeft(k, fm) + childW(k) / 2)), 0) : 0), 0);
+	/** A row's blocks sorted by where their relatives in the row above (down) or below (up) are drawn. */
+	function reorder(g: number, dir: 'down' | 'up'): Unit[] {
+		const other = new Set(dir === 'down' ? rows[g - 1] : rows[g + 1]);
+		const pulls = (u: Unit): number[] =>
+			dir === 'down'
+				? (parentFams.get(u) ?? []).filter((fm) => fm.parent && other.has(fm.parent)).map((fm) => fm.parent!.x + fm.anchorOff)
+				: (famsOf.get(u) ?? []).flatMap((fm) => fm.kids.filter((k) => other.has(k)).map((k) => k.x + childLeft(k, fm) + childW(k) / 2));
+		const scored = blocksOf(rows[g]).map((b, i) => {
+			const ps = b.flatMap(pulls);
+			// Blocks with no relatives that way stay where they are.
+			const own = (b[0].x + b.at(-1)!.x + b.at(-1)!.w) / 2;
+			return { b, i, key: ps.length ? ps.reduce((x, y) => x + y, 0) / ps.length : own };
+		});
+		scored.sort((x, y) => x.key - y.key || x.i - y.i);
+		return scored.flatMap((x) => x.b);
+	}
+	/** Families sitting well away from their children (the layout check's "parents above their children"): a
+	 *  family whose parents have no other children in view, with its anchor beyond its children by more than a card. */
+	const strays = () =>
+		fams.filter((fm) => {
+			if (!fm.parent || !fm.kids.length || (famsOf.get(fm.parent)?.length ?? 0) > 1) return false;
+			const a = fm.parent.x + fm.anchorOff;
+			const xs = fm.kids.map((k) => k.x + childLeft(k, fm) + childW(k) / 2);
+			return a < Math.min(...xs) - W || a > Math.max(...xs) + W;
+		}).length;
+	/** Couples whose brothers and sisters are on both sides of them (the layout check's rule: with both partners'
+	 *  parents in view, one partner's siblings are all on their own side; if their families are linked by more
+	 *  than one marriage, on either side). */
+	// Couples with both partners' parents in view, and the families they link (fixed for the component).
+	const bridges = units
+		.filter((u) => u.members.length === 2)
+		.map((u) => ({ u, a: childOf.get(u.members[0]), b: childOf.get(u.members[1]) }))
+		.filter((x): x is { u: Unit; a: Fam; b: Fam } => !!x.a?.parent && !!x.b?.parent && x.a !== x.b);
+	const linkCount = new Map<string, number>();
+	const pairKey = (a: Fam, b: Fam) => [a.f.id, b.f.id].sort().join('|');
+	for (const x of bridges) linkCount.set(pairKey(x.a, x.b), (linkCount.get(pairKey(x.a, x.b)) ?? 0) + 1);
+	/** Someone sitting with a spouse whose own parents are in view: they don't count as "mixed" (they sit with that
+	 *  family by design). */
+	const married = new Set(
+		units.flatMap((u) => u.members.filter((c) => childOf.get(c) && u.members.some((o) => o !== c && childOf.get(o)?.parent && childOf.get(o) !== childOf.get(c))))
+	);
+	const mixed = () => {
+		let n = 0;
+		const at = new Map<string, number>();
+		for (const x of bridges) {
+			const row = rows[x.u.g];
+			if (!at.has(x.u.members[0])) row.forEach((v, i) => v.members.forEach((m, j) => at.set(m, i + j / (v.members.length + 1))));
+			// (In their current order: the couple may have been swapped since.)
+			const [l, r] = x.u.members,
+				[fl, fr] = [childOf.get(l)!, childOf.get(r)!];
+			const sibs = (m: string, fm: Fam) => fm.cs.filter((c) => c !== m && !married.has(c) && at.has(c)).map((c) => at.get(c)!);
+			const ls = sibs(l, fl),
+				rs = sibs(r, fr);
+			const ul = at.get(l)!,
+				ur = at.get(r)!;
+			if (ls.every((v) => v < ul) || rs.every((v) => v > ur)) continue;
+			const oneSide = (xs: number[], p: number) => xs.every((v) => v < p) || xs.every((v) => v > p);
+			if ((linkCount.get(pairKey(fl, fr)) ?? 0) > 1 && (oneSide(ls, ul) || oneSide(rs, ur))) continue;
+			n++;
+		}
+		return n;
+	};
+	const score = () => [strays() + mixed(), crossingCount(), lineLength()];
+	/** a is better than b: fewer strays, then fewer crossings, then (if `length`) clearly shorter lines. */
+	const better = (a: number[], b: number[], length = false) =>
+		a[0] < b[0] || (a[0] === b[0] && (a[1] < b[1] || (length && a[1] === b[1] && a[2] < b[2] - 1)));
+	let iterations = 12;
+	/** Sweep the rows, reordering blocks while that helps, then uncross couples; repeat while anything changes. */
+	function settle(rounds = 3, passes = 4) {
+		for (let round = 0; round < rounds; round++) {
+			let improved = false;
+			for (let pass = 0; pass < passes; pass++) {
+				const order = pass % 2 === 0 ? [...rows.keys()].slice(1) : [...rows.keys()].reverse().slice(1);
+				for (const g of order) {
+					const old = rows[g];
+					const next = reorder(g, pass % 2 === 0 ? 'down' : 'up');
+					if (next.every((u, i) => u === old[i])) continue;
+					const before = score();
+					rows[g] = next;
+					sweep(iterations);
+					// Fewer strays or crossings; or as few, with clearly shorter lines.
+					if (better(score(), before)) improved = true;
+					else {
+						rows[g] = old;
+						sweep(iterations);
+					}
+				}
+			}
+			if (!uncross() && !improved) break;
+		}
+	}
+	settle();
+	// Sometimes the better order needs two changes at once (an in-law family moved to the other side, and the couple
+	// swapped to face it), which no single step above finds. So also try swapping each pair of neighbouring blocks,
+	// letting the rest settle, and keep the swap if the whole layout is better. Bounded, as this runs on every edit.
+	const snapshot = () => ({ rows: rows.map((r) => [...r]), members: units.map((u) => [...u.members]), x: units.map((u) => u.x), anchor: fams.map((f) => f.anchorOff) });
+	const restore = (t: ReturnType<typeof snapshot>) => {
+		t.rows.forEach((r, g) => (rows[g] = [...r]));
+		units.forEach((u, i) => ((u.members = [...t.members[i]]), (u.x = t.x[i])));
+		fams.forEach((f, i) => (f.anchorOff = t.anchor[i]));
+	};
+	let budget = crossingCount() ? 40 : 0;
+	// While searching, positions are worked out roughly (the order is what matters); a full sweep follows.
+	iterations = 4;
+	search: for (let round = 0; round < 4 && budget > 0; round++) {
+		const best = score();
+		crossingCount(true);
+		for (let g = 0; g < rows.length; g++) {
+			const blocks = blocksOf(rows[g]);
+			for (let b = 0; b + 1 < blocks.length; b++) {
+				// Only where a line crosses: swapping two blocks with no crossing lines can't untangle anything.
+				if (!blocks[b].some((u) => tangled.has(u)) && !blocks[b + 1].some((u) => tangled.has(u))) continue;
+				if (budget-- <= 0) break search;
+				const t = snapshot();
+				rows[g] = [...blocks.slice(0, b), blocks[b + 1], blocks[b], ...blocks.slice(b + 2)].flat();
+				sweep(iterations);
+				settle(1, 2);
+				// Only for strictly fewer strays or crossings: a mirror image that's merely as good mustn't override
+				// the rules' own choice of sides.
+				if (better(score(), best, false)) continue search;
+				restore(t);
+			}
+		}
+		break;
+	}
+	iterations = 12;
+	sweep();
 
 	// 4. Read off positions; the focus person (if any) sits at x = 0.
 	const nodes: NodeBox[] = [],
@@ -370,7 +559,8 @@ function sweepX(
 	famsOf: Map<Unit, Fam[]>,
 	parentFams: Map<Unit, Fam[]>,
 	childLeft: (k: Unit, fm: Fam) => number,
-	childW: (k: Unit) => number
+	childW: (k: Unit) => number,
+	iterations = 12
 ) {
 	const gapAfter = (a: Unit, b: Unit) => {
 		const pa = parentFams.get(a) ?? [],
@@ -404,7 +594,7 @@ function sweepX(
 				return ws.length ? { x: ws.reduce((a, b) => a + b, 0) / ws.length, wt: 1 } : { x: u.x, wt: 0.3 };
 			})
 		);
-	for (let it = 0; it < 12; it++) {
+	for (let it = 0; it < iterations; it++) {
 		for (let g = 1; g < rows.length; g++) down(rows[g]);
 		for (let g = rows.length - 2; g >= 0; g--) up(rows[g]);
 	}

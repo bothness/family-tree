@@ -48,7 +48,7 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 	const ghostOf = new Map(ghosts.map((g) => [g.familyId, g]));
 	const lines: Line[] = [];
 	const anchors: Record<string, Anchor> = {};
-	interface Bus { f: Family; lo: number; hi: number; top: number; ax: number | null; ay: number; targets: { key: string; x: number; y: number; style: LineStyle }[]; lane: number }
+	interface Bus { f: Family; lo: number; hi: number; top: number; ax: number | null; ay: number; targets: { key: string; x: number; y: number; style: LineStyle; left: number; w: number }[]; lane: number }
 	const buses: Bus[] = [];
 	const h = (key: string, f: Family, kind: Line['kind'], x1: number, x2: number, y: number, style: LineStyle) =>
 		lines.push({ key, familyId: f.id, kind, d: '', style, seg: { x1, y1: y, x2, y2: y }, hops: [] });
@@ -108,11 +108,30 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 			anchors[f.id] = { x: ax, y: ay, couple: false, bottom: ay };
 		}
 
-		const targets = cs.map(({ id, n }) => ({ key: `${f.id}:c:${id}`, x: n.x + W / 2, y: n.y, style: styleOf(f.children.find((c) => c.personId === id)!.status) }));
-		if (gh) targets.push({ key: `${f.id}:ghost`, x: gh.x + GHOST_W / 2, y: gh.y, style: missingCount(f) ? 'ghost' : 'maybe' });
+		const targets = cs.map(({ id, n }) => ({ key: `${f.id}:c:${id}`, x: n.x + W / 2, y: n.y, style: styleOf(f.children.find((c) => c.personId === id)!.status), left: n.x, w: W }));
+		if (gh) targets.push({ key: `${f.id}:ghost`, x: gh.x + GHOST_W / 2, y: gh.y, style: missingCount(f) ? 'ghost' : 'maybe', left: gh.x, w: GHOST_W });
 		if (!targets.length) continue;
 		const xs = targets.map((t) => t.x).concat(ax != null ? [ax] : []);
 		buses.push({ f, lo: Math.min(...xs), hi: Math.max(...xs), top: Math.min(...targets.map((t) => t.y)), ax, ay, targets, lane: 0 });
+	}
+
+	// A child's line that would run along another family's line down to its own children (the two happen to line
+	// up) is moved along the child's card, clear of it, so the lines can't merge or hop on top of each other.
+	const CLEAR = HOP_R * 2.5;
+	for (const b of buses) {
+		const drops = buses.filter((o) => o !== b && o.top === b.top && o.ax != null).map((o) => o.ax!);
+		if (!drops.length) continue;
+		for (const t of b.targets) {
+			const near = drops.filter((x) => Math.abs(x - t.x) < CLEAR);
+			if (!near.length) continue;
+			const lo = t.left + 12,
+				hi = t.left + t.w - 12;
+			const tries = [1, -1, 2, -2].map((k) => t.x + k * CLEAR * 1.2).filter((x) => x >= lo && x <= hi && drops.every((d) => Math.abs(d - x) >= CLEAR));
+			if (tries.length) t.x = tries[0];
+		}
+		const xs = b.targets.map((t) => t.x).concat(b.ax != null ? [b.ax] : []);
+		b.lo = Math.min(...xs);
+		b.hi = Math.max(...xs);
 	}
 
 	// V8: in each gap between rows, buses whose spans overlap get different heights (greedy interval colouring).

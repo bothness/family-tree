@@ -138,6 +138,17 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 		const [a, b] = ps.sort((p, q) => pos.get(p)!.x - pos.get(q)!.x).map((p) => L.anchors[parentFam.get(p)!]);
 		if (a && b && a.x > b.x + 1) out.push(`${f.id}: the couple sits crossed under their parents`);
 	}
+	// No two families' vertical lines run along each other (they'd look like one line, and hop on top of each other).
+	const verticals = L.lines.filter((l) => (l.kind === 'drop' || l.kind === 'stub') && l.seg.x1 === l.seg.x2);
+	for (let i = 0; i < verticals.length; i++)
+		for (let j = i + 1; j < verticals.length; j++) {
+			const p = verticals[i],
+				q = verticals[j];
+			if (p.familyId === q.familyId || Math.abs(p.seg.x1 - q.seg.x1) >= 4) continue;
+			const [p0, p1] = [Math.min(p.seg.y1, p.seg.y2), Math.max(p.seg.y1, p.seg.y2)],
+				[q0, q1] = [Math.min(q.seg.y1, q.seg.y2), Math.max(q.seg.y1, q.seg.y2)];
+			if (Math.min(p1, q1) - Math.max(p0, q0) > 2) out.push(`lines of ${p.familyId} and ${q.familyId} run along each other`);
+		}
 	// No vertical line runs through a card.
 	for (const l of L.lines)
 		if (l.kind === 'drop' || l.kind === 'stub') {
@@ -167,4 +178,25 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 	// Card rows don't overlap the lines' space: every bus sits between its parents' row and its children's.
 	for (const b of buses) if (L.lines.some((l) => l.familyId === b.familyId && l.kind === 'drop' && l.seg.y1 > b.seg.y1)) out.push(`${b.familyId}'s bus is above its parents`);
 	return out;
+}
+
+/** How tangled a layout is: hops drawn (a family's line crossing another's), and parent–child lines that cross
+ *  (two families' lines to their children, between the same two rows, going opposite ways). Lower is better. */
+export function crossings(L: TreeLayout): { hops: number; crossed: number } {
+	const hops = L.lines.reduce((n, l) => n + l.hops.length, 0);
+	// Each parent–child connection, as (row, anchor x, child x).
+	const links: { f: string; y: number; a: number; c: number }[] = [];
+	for (const l of L.lines)
+		if (l.kind === 'stub') {
+			const a = L.anchors[l.familyId];
+			if (a) links.push({ f: l.familyId, y: Math.max(l.seg.y1, l.seg.y2), a: a.x, c: l.seg.x1 });
+		}
+	let crossed = 0;
+	for (let i = 0; i < links.length; i++)
+		for (let j = i + 1; j < links.length; j++) {
+			const p = links[i],
+				q = links[j];
+			if (p.f !== q.f && p.y === q.y && (p.a - q.a) * (p.c - q.c) < 0) crossed++;
+		}
+	return { hops, crossed };
 }
