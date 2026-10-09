@@ -1,7 +1,7 @@
 # On every push to main (or by hand from the Actions tab), after the tests and type check pass:
 # - the public, browser-only edition goes to GitHub Pages
 #   (one-time setup: repository Settings → Pages → Build and deployment → Source: "GitHub Actions")
-# - the private family edition (shared data, Phase F) goes to Cloudflare Pages, https://ourfamilytree.pages.dev
+# - the private family edition (shared data, Phase F) goes to Cloudflare Pages, https://mbfamilytree.pages.dev
 #   (one-time setup: repository secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID; skipped until they exist)
 name: Deploy
 
