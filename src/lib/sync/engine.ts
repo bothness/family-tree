@@ -34,13 +34,15 @@ export interface Remote {
 export class RemoteError extends Error {
 	constructor(
 		public kind: 'offline' | 'signed-out' | 'forbidden',
-		message: string = kind
+		message: string = kind,
+		/** For 'forbidden': the address that's signed in but not invited. */
+		public email?: string
 	) {
 		super(message);
 	}
 }
 
-export type SyncStatus = 'starting' | 'saving' | 'saved' | 'offline' | 'signed-out' | 'forbidden';
+export type SyncStatus = 'starting' | 'saving' | 'saved' | 'offline' | 'signed-out' | 'forbidden' | 'view-only';
 
 interface State {
 	synced: Snapshot | null;
@@ -57,6 +59,8 @@ export interface SyncOptions {
 	 *  keeping any edits made since it last saved (see `applyIncoming`). */
 	onData: (next: Dataset, appHad: Dataset) => void;
 	onStatus?: (s: SyncStatus) => void;
+	/** A viewer: others' changes arrive, this device's are never sent. */
+	readOnly?: boolean;
 }
 
 const STATE_KEY = 'sync';
@@ -101,6 +105,7 @@ export function createSync(o: SyncOptions) {
 	async function pushNow() {
 		let base = state.synced;
 		if (!base) return;
+		if (o.readOnly) return setStatus('view-only');
 		let mine = normalise(appHas);
 		stampChanges(base.data, mine, o.who());
 		for (let attempt = 0; attempt < 5; attempt++) {
@@ -128,6 +133,7 @@ export function createSync(o: SyncOptions) {
 	}
 
 	async function sendMedia() {
+		if (o.readOnly) return;
 		for (const id of [...state.unsentMedia]) {
 			const b = await o.local.getMedia(id);
 			if (b) await o.remote.putMedia(id, b);
@@ -178,7 +184,8 @@ export function createSync(o: SyncOptions) {
 		deleteMedia: (id) => o.local.deleteMedia(id),
 		listMedia: () => o.local.listMedia(),
 		getExtra: (k) => o.local.getExtra(k),
-		putExtra: (k, v) => o.local.putExtra(k, v)
+		putExtra: (k, v) => o.local.putExtra(k, v),
+		wipe: () => o.local.wipe()
 	};
 
 	return {

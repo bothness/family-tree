@@ -375,9 +375,14 @@
 {#if !app.data.people.length}
 	<div class="empty blank">
 		<p class="blank-title">No one here yet.</p>
-		<p>Use <b>+ New person</b> to start your tree, or <button class="btn small" onclick={() => app.loadDemo()}>Load the demo family</button> to look around first.</p>
-		<p class="hint">The demo is the Darwins and Wedgwoods: Charles Darwin, his grandfather Erasmus, the potter Josiah Wedgwood and their families, with gaps and guesses as in a real tree.</p>
-		<p class="hint">Your tree is kept in this browser, on this device, and isn't uploaded anywhere. Use <b>Data</b> to download a backup.</p>
+		{#if __SYNC__}
+			<!-- Family edition: one shared tree (no demo here: it would go to everyone) -->
+			<p>Use <b>+ New person</b> to start the family's tree. Everyone invited sees and edits the same tree.</p>
+		{:else}
+			<p>Use <b>+ New person</b> to start your tree, or <button class="btn small" onclick={() => app.loadDemo()}>Load the demo family</button> to look around first.</p>
+			<p class="hint">The demo is the Darwins and Wedgwoods: Charles Darwin, his grandfather Erasmus, the potter Josiah Wedgwood and their families, with gaps and guesses as in a real tree.</p>
+			<p class="hint">Your tree is kept in this browser, on this device, and isn't uploaded anywhere. Use <b>Data</b> to download a backup.</p>
+		{/if}
 	</div>
 {:else if app.blank && !app.picked}
 	<BlankPrompt />

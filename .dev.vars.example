@@ -1,3 +1,7 @@
 # Copy to .dev.vars (not committed) for `npm run dev:family`.
-# Local development only: act as this signed-in owner (ignored anywhere but localhost).
+# The first owner (on Cloudflare, set OWNER_EMAIL in the project's settings).
+OWNER_EMAIL=you@example.com
+# Local development only: act as this person, signed in, without Google (ignored anywhere but localhost).
+# Leave it out to try real Google sign-in locally (needs GOOGLE_CLIENT_ID, with http://localhost:8788 allowed).
 DEV_USER=you@example.com
+# GOOGLE_CLIENT_ID=1234567890-abc.apps.googleusercontent.com

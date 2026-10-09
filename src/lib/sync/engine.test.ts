@@ -76,6 +76,11 @@ function memoryStore(initial: Dataset | null = null): DataStore & { data: Datase
 		},
 		async putExtra(k, v) {
 			extras.set(k, structuredClone(v));
+		},
+		async wipe() {
+			this.data = null;
+			media.clear();
+			extras.clear();
 		}
 	};
 }
@@ -245,3 +250,21 @@ function diff(x: unknown, y: unknown, path = ''): string[] {
 	const keys = new Set([...Object.keys(x), ...Object.keys(y)]);
 	return [...keys].flatMap((k) => diff((x as Record<string, unknown>)[k], (y as Record<string, unknown>)[k], `${path}/${k}`));
 }
+
+describe('viewers', () => {
+	it('get others\u2019 changes but never send their own', async () => {
+		const server = fakeServer();
+		const owner = await device(server, 'owner@example.com', DARWINS);
+		const store = memoryStore();
+		const app = { data: null as unknown as Dataset };
+		const viewer = createSync({ local: store, remote: server.remote, who: () => 'viewer@example.com', readOnly: true, onData: (n, h) => (app.data = applyIncoming(n, h, app.data)) });
+		app.data = await viewer.start();
+		await owner.edit((d) => (p(d, 'per_annie').notes = 'from the owner'));
+		p(app.data, 'per_george').notes = 'typed by the viewer';
+		await viewer.store.save(app.data);
+		await viewer.sync();
+		expect(viewer.status).toBe('view-only');
+		expect(p(app.data, 'per_annie').notes).toBe('from the owner');
+		expect(p(server.latest()!, 'per_george').notes).not.toBe('typed by the viewer');
+	});
+});

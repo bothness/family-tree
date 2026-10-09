@@ -80,9 +80,13 @@ class AppState {
 	/** Family edition (shared data): who's signed in, and how syncing is going. Null in the browser-only edition. */
 	user = $state<Me | null>(null);
 	syncStatus = $state<SyncStatus | null>(null);
+	/** Signed in with Google, but this address isn't on the invite list. */
+	notInvited = $state<string | null>(null);
 	/** The next data change is a replacement (a backup, the demo, or an empty start), not an edit. */
 	replacing = false;
 	get backupDue() {
+		// Family edition: the server holds the tree, so no reminder.
+		if (__SYNC__) return false;
 		return backupDue({ unbackedSince: this.unbackedSince, snoozedUntil: this.backupSnoozedUntil }, Date.now());
 	}
 	/** Tree pan/zoom. null = fit everything next time the tree is drawn. Kept here so it survives tab switches. */

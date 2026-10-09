@@ -17,6 +17,7 @@
 	import ViewBar from '#lib/components/ViewBar.svelte';
 	import BlankPrompt from '#lib/components/BlankPrompt.svelte';
 	import SyncStatus from '#lib/components/SyncStatus.svelte';
+	import SignIn from '#lib/components/SignIn.svelte';
 
 	// Load once (nothing is shown until then, so the sample never flashes up or overwrites saved data), then save
 	// shortly after each change. JSON.stringify reads the whole dataset, so the effect tracks it deeply.
@@ -205,6 +206,10 @@
 		</aside>
 	{/if}
 </div>
+
+{#if __SYNC__ && app.ready && (app.syncStatus === 'signed-out' || app.syncStatus === 'forbidden')}
+	<SignIn />
+{/if}
 
 {#if app.showData}
 	<DataDialog onClose={() => (app.showData = false)} />

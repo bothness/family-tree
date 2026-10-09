@@ -17,6 +17,8 @@ export interface DataStore {
 	/** Small values kept beside the data on this device (e.g. sync's record of the last synced version). */
 	getExtra<T>(key: string): Promise<T | null>;
 	putExtra(key: string, value: unknown): Promise<void>;
+	/** Remove everything kept on this device (the family edition's "Sign out"). */
+	wipe(): Promise<void>;
 }
 
 /** Where data lived before IndexedDB. Read once to move data across; left in place as a fallback copy. */
@@ -74,6 +76,10 @@ export function indexedDbStore(name = DB_NAME): DataStore {
 		async getExtra<T>(key: string) {
 			return ((await req((await tx('data', 'readonly')).get(`extra:${key}`))) as T | undefined) ?? null;
 		},
+		async wipe() {
+			await req((await tx('data', 'readwrite')).clear());
+			await req((await tx('media', 'readwrite')).clear());
+		},
 		async putExtra(key, value) {
 			const store = await tx('data', 'readwrite');
 			if (value === null || value === undefined) await req(store.delete(`extra:${key}`));
@@ -112,6 +118,13 @@ export const localStore: DataStore = {
 	async deleteMedia() {},
 	async listMedia() {
 		return [];
+	},
+	async wipe() {
+		try {
+			for (const k of Object.keys(localStorage)) if (k.startsWith('family-tree:')) localStorage.removeItem(k);
+		} catch {
+			/* ignore */
+		}
 	},
 	async getExtra<T>(key: string) {
 		try {

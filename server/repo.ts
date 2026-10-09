@@ -8,6 +8,8 @@ export interface Env {
 	DEV_USER?: string;
 	/** The first owner, who can then invite others (F4). */
 	OWNER_EMAIL?: string;
+	/** The Google OAuth client id ("Sign in with Google"); also sent to the app. */
+	GOOGLE_CLIENT_ID?: string;
 }
 
 export type Role = 'owner' | 'editor' | 'viewer';
@@ -31,6 +33,13 @@ export interface Repo {
 	getMedia(id: string): Promise<{ body: ReadableStream | ArrayBuffer; type: string } | null>;
 	putMedia(id: string, body: ArrayBuffer, type: string): Promise<void>;
 	user(email: string): Promise<User | null>;
+	users(): Promise<(User & { invitedBy?: string; addedAt: string })[]>;
+	putUser(u: User, by: string): Promise<void>;
+	deleteUser(email: string): Promise<void>;
+	/** Sessions are stored by a hash of their token. */
+	createSession(email: string, tokenHash: string, expiresAt: string): Promise<void>;
+	sessionEmail(tokenHash: string, now: string): Promise<string | null>;
+	deleteSession(tokenHash: string): Promise<void>;
 }
 
 /** How many recent versions to keep in full; older ones are thinned to one a day. */
@@ -76,6 +85,30 @@ export function cloudflareRepo(env: Env, now = () => new Date().toISOString()): 
 		async user(email) {
 			const r = await db.prepare('SELECT email, role, name FROM users WHERE email = ?').bind(email.toLowerCase()).first<{ email: string; role: Role; name: string | null }>();
 			return r ? { email: r.email, role: r.role, ...(r.name ? { name: r.name } : {}) } : null;
+		},
+		async users() {
+			const r = await db.prepare('SELECT email, role, name, invited_by, added_at FROM users ORDER BY added_at, email').all<{ email: string; role: Role; name: string | null; invited_by: string | null; added_at: string }>();
+			return r.results.map((u) => ({ email: u.email, role: u.role, ...(u.name ? { name: u.name } : {}), ...(u.invited_by ? { invitedBy: u.invited_by } : {}), addedAt: u.added_at }));
+		},
+		async putUser(u, by) {
+			await db
+				.prepare('INSERT INTO users (email, role, name, invited_by, added_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (email) DO UPDATE SET role = excluded.role, name = COALESCE(excluded.name, users.name)')
+				.bind(u.email.toLowerCase(), u.role, u.name ?? null, by, now())
+				.run();
+		},
+		async deleteUser(email) {
+			const e = email.toLowerCase();
+			await db.batch([db.prepare('DELETE FROM users WHERE email = ?').bind(e), db.prepare('DELETE FROM sessions WHERE email = ?').bind(e)]);
+		},
+		async createSession(email, tokenHash, expiresAt) {
+			await db.prepare('INSERT INTO sessions (token_hash, email, created_at, expires_at) VALUES (?, ?, ?, ?)').bind(tokenHash, email.toLowerCase(), now(), expiresAt).run();
+		},
+		async sessionEmail(tokenHash, at) {
+			const r = await db.prepare('SELECT email FROM sessions WHERE token_hash = ? AND expires_at > ?').bind(tokenHash, at).first<{ email: string }>();
+			return r?.email ?? null;
+		},
+		async deleteSession(tokenHash) {
+			await db.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(tokenHash).run();
 		}
 	};
 

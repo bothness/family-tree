@@ -16,12 +16,14 @@ export async function startFamilySync(local: DataStore): Promise<{ store: DataSt
 		app.user = await remote.me();
 	} catch (e) {
 		app.syncStatus = e instanceof RemoteError ? e.kind : 'offline';
+		if (e instanceof RemoteError && e.kind === 'forbidden') app.notInvited = e.email ?? null;
 	}
 	const sync = createSync({
 		local,
 		remote,
 		who: () => app.user?.email ?? 'unknown',
 		onStatus: (s) => (app.syncStatus = s),
+		readOnly: app.user?.role === 'viewer',
 		onData: (next, had) => {
 			// What's on screen may include edits not yet saved: keep them on top of the incoming changes, and update
 			// the live data in place so open panels and fields aren't rebuilt.
