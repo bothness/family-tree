@@ -12,8 +12,12 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 
-			// Static SPA: deploys to Netlify or Cloudflare Pages as plain files.
-			adapter: adapter({ fallback: '200.html' })
+			// Static SPA: plain files for any static host (GitHub Pages, Netlify, Cloudflare Pages). All app state is in
+			// the address's #fragment, so only the root page is ever requested; the fallback is named 404.html because
+			// that's the one GitHub Pages serves for unknown paths.
+			adapter: adapter({ fallback: '404.html' }),
+			// Served from a sub-path on GitHub Pages (e.g. /family-tree): set BASE_PATH when building.
+			paths: { base: (process.env.BASE_PATH ?? '') as '' | `/${string}` }
 		})
 	],
 	// Tests that need real `$state` proxies (as in the app) start with `// @vitest-environment happy-dom`; in the

@@ -8,7 +8,7 @@ Read `docs/ROADMAP.md` (phases, item codes G1–G11 / V1–V12, D1, decisions lo
 - `npm run dev`: dev server
 - `npm test`: Vitest unit tests (`src/**/*.test.ts`)
 - `npm run check`: svelte-check (TypeScript)
-- `npm run build`: static build to `build/` (adapter-static, SPA fallback `200.html`)
+- `npm run build`: static build to `build/` (adapter-static, SPA fallback `404.html`, `.nojekyll`); `BASE_PATH=/family-tree npm run build` for a sub-path. `.github/workflows/deploy.yml` publishes `main` to GitHub Pages
 - `npm run validate [file.json]`: validate a dataset against the JSON Schema and print a research-gaps report
 
 Run `npm test` and `npm run check` before finishing any change.
