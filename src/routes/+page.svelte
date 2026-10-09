@@ -146,7 +146,7 @@
 <svelte:window onkeydown={onKey} onhashchange={onHashChange} />
 
 <header class="top">
-	<div class="brand">Family Tree <span>sketchbook</span></div>
+	<div class="brand">Family Tree Builder</div>
 	<nav class="tabs">
 		{#each tabs as [k, l] (k)}
 			<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{l}{#if k === 'todo'}<span class="count">{todoCount}</span>{/if}</button>
@@ -154,7 +154,7 @@
 	</nav>
 	<SearchBox />
 	<div class="actions">
-		<button class="btn" onclick={addNew}>+ New person</button>
+		<button class="btn primary" onclick={addNew}>+ New person</button>
 		{#if app.backupDue}
 			<span class="remind">
 				<button class="btn small" onclick={() => (app.showData = true)} title="Some changes aren't in a backup yet">Back up your tree</button>

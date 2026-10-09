@@ -1,4 +1,4 @@
-# Family Tree Sketchbook
+# Family Tree Builder
 
 A family tree app for one person and close family: sketch trees quickly from patchy information, mark how sure each fact is, and fill in researched detail later. It may later support several editors.
 
