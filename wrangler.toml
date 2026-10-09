@@ -8,8 +8,8 @@ pages_build_output_dir = "build"
 [[d1_databases]]
 binding = "DB"
 database_name = "family-tree"
-# Set to the real database's id when it's created (F5); this placeholder is fine for local development.
-database_id = "00000000-0000-0000-0000-000000000000"
+# The real database (created 9 Oct 2026). Local development uses a local copy (npm run dev:family).
+database_id = "037c9f6c-429e-4fec-a4b1-457983138a11"
 migrations_dir = "server/migrations"
 
 [[r2_buckets]]
