@@ -77,7 +77,7 @@ describe('merge3 basics', () => {
 			b = base();
 		p(a, 'per_annie').meta = { updatedAt: '2026-10-09T10:00:00Z', updatedBy: 'me' };
 		p(b, 'per_annie').meta = { updatedAt: '2026-10-09T11:00:00Z', updatedBy: 'cousin' };
-		for (const d of [o, a, b]) d.media.push({ id: 'media_1', kind: 'image', thumb: 'data:old' });
+		for (const d of [o, a, b]) d.media.push({ id: 'media_1', kind: 'image', mime: 'image/jpeg', thumb: 'data:old' });
 		a.media[0].thumb = 'data:remade-here';
 		b.media[0].thumb = 'data:remade-there';
 		const { data, conflicts } = merge3(o, a, b);
