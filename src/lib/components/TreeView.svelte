@@ -2,13 +2,13 @@
 	import { untrack } from 'svelte';
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
-	import { cardDates, displayName, family, lifeEvent, nameIsGuess, partnerIds, person } from '#lib/model/queries.ts';
+	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
 	import { GHOST_W, NODE_H, NODE_W, layoutTree } from '#lib/layout/tree.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
 
-	const layout = $derived(layoutTree(app.data, app.visibleBranches));
+	const layout = $derived(layoutTree(app.data, app.visibleBranches, app.activeFocus?.id));
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe' } as const;
 
@@ -22,15 +22,14 @@
 				const n = at.get(e.personId);
 				return n ? [{ key: `u:${e.personId}`, up: true, x: n.x + NODE_W / 2, y0: n.y, y1: n.y - STUB, text: e.hidden === 1 ? '↑ parent' : '↑ parents' }] : [];
 			}
-			const ns = partnerIds(family(app.data, e.familyId)!).flatMap((id) => at.get(id) ?? []).sort((a, b) => a.x - b.x);
-			if (!ns.length) return [];
-			const couple = ns.length === 2;
+			const a = layout.anchors[e.familyId];
+			if (!a) return [];
 			return [{
 				key: `d:${e.familyId}`,
 				up: false,
-				x: couple ? (ns[0].x + NODE_W + ns[1].x) / 2 : ns[0].x + NODE_W / 2,
-				y0: ns[0].y + (couple ? NODE_H / 2 : NODE_H),
-				y1: ns[0].y + NODE_H + STUB,
+				x: a.x,
+				y0: a.y,
+				y1: a.bottom + STUB,
 				text: `+${e.hidden} ${e.hidden === 1 ? 'child' : 'children'}`
 			}];
 		});
@@ -44,7 +43,7 @@
 	let box: HTMLDivElement | undefined = $state();
 	let vw = $state(0),
 		vh = $state(0);
-	const fitAll = () => fit({ x: 0, y: 0, w: layout.width, h: layout.height }, vw, vh);
+	const fitAll = () => fit(layout.bounds, vw, vh);
 	const cam: Camera = $derived(app.camera ?? { x: 0, y: 0, k: 1 });
 	// `autoFitted`: the camera came from a fit and hasn't been moved since, so a resize (e.g. the person panel
 	// closing at the same moment) should fit again rather than leave the tree off-centre.
@@ -56,7 +55,7 @@
 
 	// Fit once when asked (camera reset to null), then hold still: edits re-run the layout but don't move the view.
 	$effect(() => {
-		if (app.camera === null && vw && vh && layout.width)
+		if (app.camera === null && vw && vh && layout.bounds.w)
 			untrack(() => {
 				app.camera = fitAll();
 				// Only a resize arriving straight after the fit (e.g. the person panel closing at the same moment)
@@ -68,7 +67,7 @@
 	$effect(() => {
 		void [vw, vh];
 		untrack(() => {
-			if (autoFitted && vw && vh && layout.width) app.camera = fitAll();
+			if (autoFitted && vw && vh && layout.bounds.w) app.camera = fitAll();
 		});
 	});
 
@@ -280,9 +279,9 @@
 		<svg width="100%" height="100%" role="img" aria-label="Family tree">
 			<g transform="translate({cam.x},{cam.y}) scale({cam.k})">
 				{#each layout.labels as l (l.x)}
-					<text class="brlabel" x={l.x} y="18">{l.text}</text>
+					<text class="brlabel" x={l.x} y={l.y}>{l.text}</text>
 				{/each}
-				{#each layout.lines as l, i (i)}
+				{#each layout.lines as l (l.key)}
 					<path class={lineClass[l.style]} d={l.d} />
 				{/each}
 				{#each layout.nodes as n (n.id)}
