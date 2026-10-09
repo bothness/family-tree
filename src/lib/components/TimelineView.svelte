@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { app } from '#lib/app.svelte.ts';
 	import { fmtDate } from '#lib/model/edtf.ts';
-	import { displayName, lifeEvent, nameIsGuess, NOW, partnerIds, person, placeName } from '#lib/model/queries.ts';
-	import { edtfRange } from '#lib/model/edtf.ts';
+	import { cardDates, displayName, lifeEvent, nameIsGuess, NOW, partnerIds, person } from '#lib/model/queries.ts';
 	import type { EdtfDate } from '#lib/model/types.ts';
 	import { timelineRows, UNKNOWN_END_FADE } from '#lib/layout/timeline.ts';
 
@@ -18,7 +17,7 @@
 	const decades = $derived(Array.from({ length: (hi - lo) / 10 + 1 }, (_, i) => lo + i * 10));
 	const anyLiving = $derived(tl.rows.some((r) => r.living));
 
-	// Hover (or keyboard focus) tooltips: a heading and a few lines, drawn above the thing pointed at.
+	// Tooltips for events (marriages and partnerships), on hover or keyboard focus, drawn above the circle.
 	let box: HTMLDivElement | undefined = $state();
 	let tip = $state<{ x: number; y: number; head: string; lines: string[] } | null>(null);
 	function show(e: Event, head: string, lines: string[]) {
@@ -49,25 +48,6 @@
 			]
 		];
 	}
-
-	/** A life: born and died (with places), and roughly how long. */
-	function lifeTip(pid: string, living: boolean): [string, string[]] {
-		const p = person(app.data, pid);
-		const b = lifeEvent(app.data, pid, 'birth'),
-			d = lifeEvent(app.data, pid, 'death');
-		const at = (e?: typeof b) => (e?.place ? ', ' + placeName(app.data, e.place.placeId) : '');
-		const bs = edtfRange(b?.date?.edtf),
-			ds = edtfRange(d?.date?.edtf);
-		// Whole years from birth to death (from the start of each date, so 12 Jul 1730 to 3 Jan 1795 is 64).
-		const age = bs && ds ? Math.floor(ds.start - bs.start + 1e-9) : null;
-		return [
-			displayName(p),
-			[
-				b?.date?.edtf ? `Born ${when(b.date)}${at(b)}` : 'Birth not recorded',
-				d?.date?.edtf ? `Died ${when(d.date)}${at(d)}${age !== null && age >= 0 ? `, aged about ${age}` : ''}` : living ? 'Living' : 'Death not recorded'
-			]
-		];
-	}
 </script>
 
 <div class="tl" bind:clientWidth={width} bind:this={box}>
@@ -90,11 +70,12 @@
 					{@const p = person(app.data, r.id)!}
 					{@const y = 30 + i * ROW}
 					{@const by = y + 22}
+					{@const dates = cardDates(app.data, r.id)}
+					<!-- the name, then the years in grey as on the tree cards -->
 					<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-					<text class="tlname" class:pencil={nameIsGuess(p)} x={X(r.start)} y={y + 14} onclick={() => app.select(r.id)}>{displayName(p)}</text>
-					{@const life = lifeTip(r.id, r.living)}
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<g class="tl-life" onpointerenter={(e) => show(e, ...life)} onpointerleave={hide}>
+					<text class="tlname" class:pencil={nameIsGuess(p)} x={X(r.start)} y={y + 14} onclick={() => app.select(r.id)}
+						>{displayName(p)}<tspan class="dt" class:pencil={lifeEvent(app.data, r.id, 'birth')?.date?.status === 'guess'} dx="8">{dates}</tspan></text
+					>
 					{#if r.birth && r.birth.end - r.birth.start > 0.2}
 						<rect x={X(r.birth.start)} y={by} width={(r.birth.end - r.birth.start) * px} height="8" fill="url(#fin)" />
 					{/if}
@@ -111,7 +92,6 @@
 					{:else if !r.living}
 						<rect x={X(r.solidEnd)} y={by} width={UNKNOWN_END_FADE * px} height="8" fill="url(#foutp)" />
 					{/if}
-					</g>
 					{#each r.partnerships as m (m.family.id)}
 						{@const t = partnershipTip(m.family.id, r.id)}
 						<!-- svelte-ignore a11y_no_noninteractive_tabindex (focusable so the tooltip can be read from the keyboard) -->
