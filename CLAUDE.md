@@ -20,6 +20,7 @@ Run `npm test` and `npm run check` before finishing any change.
   - `types.ts`: mirrors `schema/family-tree.schema.json`. Keep both in step, and update `src/lib/data/example-data.json` and `docs/MODEL.md` when the model changes.
   - `queries.ts`: read-only lookups. `mutations.ts`: in-place changes (these work directly on the Svelte `$state` proxy). `edtf.ts`: dates. `gaps.ts`: research to-do. `migrate.ts`: upgrades older data. `focus.ts`: who a focus view shows, and its edges.
 - `src/lib/layout/`: pure layout functions for the tree and timeline, which return positions and lines. Components only render them. `viewport.ts` holds the pan/zoom camera maths.
+  - The tree layout is two steps: `positions.ts` (where cards go) then `connectors.ts` (lines, bus heights, hops, family anchors), which works from card positions alone so `TreeView` can re-route lines on in-between positions while animating. `tree.ts` combines them. `check.ts` checks a layout against the layout rules; `tree.test.ts` runs it on the sample in several modes. Run it after any layout change.
 - UI widgets with complex keyboard/accessibility behaviour use Bits UI (headless, unstyled), styled only with our tokens in `app.css`. No styled UI kits.
 - `src/lib/app.svelte.ts`: the shared app state (one `AppState` instance holding `data`, `tab`, `selected`, etc.).
 - `src/lib/storage/`: the `DataStore` interface. It currently uses localStorage; GitHub or Cloudflare can be added behind it later.
@@ -49,11 +50,11 @@ Run `npm test` and `npm run check` before finishing any change.
   - done: zoom, pan and fit (V1); search and centre (V3); focus mode with separate up/down depths and a direct / + siblings / all relatives width switch (V3, V4). Focus is kept in the page address (`#focus=…&up=…&down=…&w=…`) and filters every tab.
   - done: saved views (V5/V6), shown as chips under the header (`ViewBar.svelte`, `model/views.ts`). One rule per view: a focus (`scope.root` + `up`/`down`/`width`, absent depth = all generations), a tag, or a hand-picked `people` list. Opening a focus view fills the focus bar; changes show "Update view". The open view is in the page address too (`#view=…`).
   - done: collapse to one person (a 0/0 focus shows only that person, no partners) and Reset to an empty canvas (`app.blank`, `#start`) (V2).
-- **Next is Phase C:** our own tree layout, replacing `src/lib/layout/tree.ts`. The current layout is an interim port: it's left-aligned, has one connector level per generation and no line hops. Layout rules:
-  - centred
-  - father consistently on one side
-  - siblings grouped and ordered by age
-  - separate connector levels for half-sibling groups
-  - hops where lines cross
-  - animated transitions between states when the selection, focus or view changes (V11), so keep layouts stable between states
+- **Phase C (tree layout) is done** on branch `phase-c-layout` (not yet merged to `main`): our own layout (V8), line hops (V9) and animated transitions (V11). Layout rules:
+  - centred; in a focus view the focus person is at x = 0, so the view grows around them
+  - father on the left for a couple; someone with several partners sits between them, earliest partnership on the left
+  - siblings grouped and ordered by age; each family's children hang under their own couple
+  - a partner's parents are placed above them (e.g. the Murphys above Bridget)
+  - families whose children's lines would overlap get separate heights; lines hop where they cross
+  - nothing ordered by when it was added (the layout is the same whatever order people and families were stored in)
 - Then Phase D: place lookup (Nominatim or Wikidata) and photos.

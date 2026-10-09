@@ -26,7 +26,7 @@ Also added: "Known as" name shown on the tree; biography/notes and free-text sou
 | V5 + V6 | Branches are named **saved views**, created either from a filter (e.g. descendants of John Smith, ancestors of Bridget, a tag) or by hand-picking people. No auto-naming of unconnected groups |
 | V2 | Two controls: collapse the view to one person, and reset to a blank view with nobody selected |
 
-## Phase C – Tree layout
+## Phase C – Tree layout ✅ done 9 Oct 2026
 | # | Change |
 |---|---|
 | V8 | Correct grouping of sibling sets either side of a couple; separate connector levels so half-sibling groups are clearly bracketed |
@@ -64,3 +64,5 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 - 9 Oct: V2 "collapse to one person" = focus with 0 generations up and down, which shows only that person (no partners); the ↑/↓ markers expand from there. Available from the focus bar (Collapse) and the person panel (Focus ▾ → Only …).
 - 9 Oct: V2 "reset" leaves an empty canvas with nobody selected (`#start` in the address) and a prompt to search, open a saved view or show everyone. Choosing someone in search from the empty canvas focuses on them (elsewhere search only centres).
 - 9 Oct: added V11 (animated transitions between tree states) to Phase C, since it depends on how the new layout positions people.
+- 9 Oct: someone with several partners sits between them, earliest partnership on the left (Albert – Margaret – George), so each set of children hangs under its own couple; this overrides "father on the left" for them only. A partner's parents are placed above them on the grandparents' row (the Murphys above Bridget), not as a separate group.
+- 9 Oct: layout method: rows by generation; units (a person and their partners) ordered by walking down families, in-laws' parents inserted above them; x positions by alternating sweeps (children under parents, parents over children) with order and gaps kept by isotonic regression. Lines are computed from card positions alone, which is what lets V11 animate cards and re-route lines each frame.
