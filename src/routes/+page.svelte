@@ -9,6 +9,7 @@
 	import type { Focus } from '#lib/app.svelte.ts';
 	import TreeView from '#lib/components/TreeView.svelte';
 	import TimelineView from '#lib/components/TimelineView.svelte';
+	import MapView from '#lib/components/MapView.svelte';
 	import TodoView from '#lib/components/TodoView.svelte';
 	import PersonSheet from '#lib/components/PersonSheet.svelte';
 	import DataDialog from '#lib/components/DataDialog.svelte';
@@ -93,7 +94,7 @@
 		if (sheet) sheet.scrollTop = 0;
 	});
 
-	const tabs: [Tab, string][] = [['tree', 'Tree'], ['timeline', 'Timeline'], ['todo', 'Research to-do']];
+	const tabs: [Tab, string][] = [['tree', 'Tree'], ['timeline', 'Timeline'], ['map', 'Map'], ['todo', 'Research to-do']];
 
 	function openPerson(id: string) {
 		app.tab = 'tree';
@@ -139,11 +140,13 @@
 <ViewBar />
 
 <div class="work">
-	<main class="main" class:tree={app.tab === 'tree'}>
+	<main class="main" class:tree={app.tab === 'tree' || app.tab === 'map'}>
 		{#if !app.ready}
 			<div class="empty">Loading…</div>
 		{:else if app.tab === 'tree'}
 			<TreeView {onGhost} />
+		{:else if app.tab === 'map' && !(app.blank && app.data.people.length)}
+			<MapView />
 		{:else}
 			<div class="pad">
 				{#if app.blank && app.data.people.length}

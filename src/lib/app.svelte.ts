@@ -12,7 +12,7 @@ import { addView, focusScope, sameFocus, setViewScope, viewFocus, viewKind, view
 import { migrate } from './model/migrate.ts';
 import sample from './data/example-data.json';
 
-export type Tab = 'tree' | 'timeline' | 'todo';
+export type Tab = 'tree' | 'timeline' | 'map' | 'todo';
 export type Focus = FocusRule;
 
 export const sampleData = (): Dataset => migrate(structuredClone(sample));

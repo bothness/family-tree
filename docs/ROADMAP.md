@@ -39,7 +39,7 @@ Decision: **build our own layout**, borrowing ideas from existing libraries. Rul
 
 Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch. Neither service tries to draw everyone at once; both centre on one person and expand from there. A tree around one person lays out cleanly, which avoids most crossings. The "everyone" view then needs a proper layered-graph layout (build our own, or use ELK.js or the family-chart library), with separate connector levels per family and hops at crossings.
 
-## Phase D – Places, images and map
+## Phase D – Places, images and map ✅ done 9 Oct 2026
 Order: D1 browser store on IndexedDB → D2 place lookup (G6) → D3 photos (V10) → D4 map (V12).
 
 | # | Change | Notes |
@@ -86,3 +86,5 @@ What this means for decisions made before then:
 - 9 Oct: brothers and sisters recorded with no parents at all show with the "+ Siblings" (or "All relatives") setting, whatever the generations, except when collapsed.
 - 9 Oct: added "Later – a public, browser-only edition": storage stays behind `DataStore` with the browser as a first-class store (IndexedDB once photos arrive); back-end sync is a layer on top; no server-only features.
 - 9 Oct: Phase D: place lookup via Nominatim with Wikidata ids attached from OSM's tags; photos kept only as resized copies; a MapLibre globe map with OpenFreeMap tiles added as V12, last in Phase D since it needs place coordinates. The browser store moves to IndexedDB first (D1).
+- 9 Oct: map (V12): a Map tab with a MapLibre globe and OpenFreeMap tiles (positron, or dark in dark mode); a dot per place sized by its births and deaths (count inside), filtered by the current focus or view; clicking a dot lists who was born or died there; places written by hand are listed as "not shown" with a pointer to "Find on the map". MapLibre loads only when the tab opens.
+- 9 Oct: photo cards are wider (196px) than compact cards (156px); the layout takes the card width as a parameter.

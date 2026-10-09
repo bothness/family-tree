@@ -58,4 +58,8 @@ Run `npm test` and `npm run check` before finishing any change.
   - a partner's parents are placed above them (e.g. the Murphys above Bridget)
   - families whose children's lines would overlap get separate heights; lines hop where they cross
   - nothing ordered by when it was added (the layout is the same whatever order people and families were stored in)
-- **Next is Phase D** (branch `phase-d-places`): D1 browser store on IndexedDB, G6 place lookup (Nominatim + Wikidata ids), V10 photos (resized copies only), V12 MapLibre globe map with OpenFreeMap tiles.
+- **Phase D (places, photos, map) is done** on branch `phase-d-places` (not yet merged to `main`):
+  - D1: browser store on IndexedDB (`storage/index.ts`), with backups that include photos.
+  - G6: place lookup with Nominatim (`places/nominatim.ts`, one request a second, cached), keeping coordinates, OSM and Wikidata ids; `model/places.ts`; place field `PlaceInput.svelte` and editor `PlaceDetails.svelte`.
+  - V10: photos (`media/images.ts` resizes to 800px plus a 96px thumbnail; `model/media.ts`); silhouettes; a Photos toggle for compact cards.
+  - V12: Map tab (`MapView.svelte`, `layout/map.ts`): MapLibre globe with OpenFreeMap tiles. MapLibre's worker URL is set explicitly (`setWorkerUrl`), which the Vite dev server needs.
