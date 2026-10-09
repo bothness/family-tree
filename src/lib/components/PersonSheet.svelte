@@ -148,7 +148,7 @@
 
 {#snippet lifeRow(kind: 'birth' | 'death', label: string)}
 	{@const e = kind === 'birth' ? birth : death}
-	<div class="row">
+	<div class="row life-row">
 		<label class="fld"><span>{label}</span>
 			<input type="text" class:pencil={e?.date?.status === 'guess'} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 1858, c.1858, 1880s"
 				onchange={(ev) => { setLife(d, pid, kind, val(ev), null); if (kind === 'death') p.deceased = true; }} />

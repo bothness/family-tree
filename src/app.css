@@ -76,6 +76,8 @@ button{cursor:pointer}
 .lightbox img{max-width:min(90vw,800px);max-height:85vh;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
 .warn{color:var(--warn)}
 /* place field (G6) */
+/* date and place side by side: top-aligned, so the place's details below it don't push the date down */
+.row.life-row{align-items:flex-start}
 .place-field{display:grid;gap:3px;min-width:0}
 .place-input{width:100%;background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:6px 8px}
 .place-input:focus{border-color:var(--ink-soft);outline:none}
