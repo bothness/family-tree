@@ -2,7 +2,7 @@
 
 A family tree app for one person and close family: sketch trees quickly from patchy information, mark how sure each fact is, and fill in researched detail later. It may later support several editors.
 
-Read `docs/ROADMAP.md` (phases, item codes G1–G11 / V1–V10, decisions log) and `docs/MODEL.md` (data model) before larger changes. `docs/prototype/family-tree-sketchbook.html` is the original single-file prototype. It is the reference for intended behaviour, not code to edit.
+Read `docs/ROADMAP.md` (phases, item codes G1–G11 / V1–V11, decisions log) and `docs/MODEL.md` (data model) before larger changes. `docs/prototype/family-tree-sketchbook.html` is the original single-file prototype. It is the reference for intended behaviour, not code to edit.
 
 ## Commands
 - `npm run dev`: dev server
@@ -55,4 +55,5 @@ Run `npm test` and `npm run check` before finishing any change.
   - siblings grouped and ordered by age
   - separate connector levels for half-sibling groups
   - hops where lines cross
+  - animated transitions between states when the selection, focus or view changes (V11), so keep layouts stable between states
 - Then Phase D: place lookup (Nominatim or Wikidata) and photos.

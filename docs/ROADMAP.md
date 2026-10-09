@@ -31,6 +31,9 @@ Also added: "Known as" name shown on the tree; biography/notes and free-text sou
 |---|---|
 | V8 | Correct grouping of sibling sets either side of a couple; separate connector levels so half-sibling groups are clearly bracketed |
 | V9 | Line "hops" where connectors cross (circuit-diagram style) |
+| V11 | Animate the tree from one state to the next when the selection, focus or view changes: cards that stay glide to their new positions, people entering or leaving fade in and out, and the camera eases to its new framing. Probably Svelte's motion tools (`Tween`/`Spring` for positions, `fade` transitions for entering and leaving cards), keyed by person so each card keeps its identity. Respect "reduce motion" settings |
+
+Note for V11: a layout that is stable between states (the same person lands in a similar place when the focus widens) makes animation read well, so design the layout with V11 in mind.
 
 Decision: **build our own layout**, borrowing ideas from existing libraries. Rules to follow: centred rather than left-aligned; father consistently on one side and mother on the other; siblings grouped together and ordered by age; nothing ordered by when it was added.
 
@@ -60,3 +63,4 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 - 9 Oct: missing-children placeholders are orange only when an expected count was recorded; otherwise a pencilled "more children?".
 - 9 Oct: V2 "collapse to one person" = focus with 0 generations up and down, which shows only that person (no partners); the ↑/↓ markers expand from there. Available from the focus bar (Collapse) and the person panel (Focus ▾ → Only …).
 - 9 Oct: V2 "reset" leaves an empty canvas with nobody selected (`#start` in the address) and a prompt to search, open a saved view or show everyone. Choosing someone in search from the empty canvas focuses on them (elsewhere search only centres).
+- 9 Oct: added V11 (animated transitions between tree states) to Phase C, since it depends on how the new layout positions people.
