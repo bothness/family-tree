@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import { Tween, prefersReducedMotion } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
-	import { GHOST_W, NODE_H, NODE_W, layoutTree } from '#lib/layout/tree.ts';
+	import { GHOST_W, NODE_H, NODE_W, layoutTree, type GhostBox, type NodeBox, type TreeLayout } from '#lib/layout/tree.ts';
+	import { routeConnectors } from '#lib/layout/connectors.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
@@ -12,17 +15,73 @@
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe' } as const;
 
+	// ---- animation between layouts (V11) ----
+	// Cards that stay glide from where they're drawn to their new place; people entering fade in, people leaving
+	// fade out where they were. Lines and markers are re-routed from the moving cards every frame.
+	const DURATION = 420;
+	const dur = () => (prefersReducedMotion.current ? 0 : DURATION);
+	type Pt = { x: number; y: number };
+	const progress = new Tween(1, { easing: cubicOut });
+	let from = $state.raw({ nodes: new Map<string, Pt>(), ghosts: new Map<string, Pt>() });
+	let to = $state.raw<TreeLayout>(untrack(() => layout));
+	let leaving = $state.raw<{ nodes: NodeBox[]; ghosts: GhostBox[] }>({ nodes: [], ghosts: [] });
+	const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
+	const blend = (m: Map<string, Pt>, id: string, p: Pt, k: number) => {
+		const f = m.get(id);
+		return f ? { x: lerp(f.x, p.x, k), y: lerp(f.y, p.y, k) } : { x: p.x, y: p.y };
+	};
+	$effect.pre(() => {
+		const L = layout;
+		untrack(() => {
+			// Where everything is drawn right now (possibly mid-animation): the starting point for the next one.
+			const k = progress.current;
+			const now = {
+				nodes: new Map(to.nodes.map((n) => [n.id, blend(from.nodes, n.id, n, k)])),
+				ghosts: new Map(to.ghosts.map((g) => [g.familyId, blend(from.ghosts, g.familyId, g, k)]))
+			};
+			const same = (p: Pt | undefined, q: Pt) => !!p && p.x === q.x && p.y === q.y;
+			const moved =
+				L.nodes.length !== to.nodes.length ||
+				L.ghosts.length !== to.ghosts.length ||
+				L.nodes.some((n) => !same(now.nodes.get(n.id), n)) ||
+				L.ghosts.some((g) => !same(now.ghosts.get(g.familyId), g));
+			if (moved && dur()) {
+				leaving = {
+					nodes: to.nodes.filter((n) => !L.nodes.some((m) => m.id === n.id)).map((n) => ({ ...n, ...now.nodes.get(n.id)! })),
+					ghosts: to.ghosts.filter((g) => !L.ghosts.some((h) => h.familyId === g.familyId)).map((g) => ({ ...g, ...now.ghosts.get(g.familyId)! }))
+				};
+				from = now;
+				progress.set(0, { duration: 0 });
+				progress.set(1, { duration: dur() });
+			} else {
+				// Nothing moved (e.g. typing a name): no animation, nothing to re-route.
+				from = { nodes: new Map(), ghosts: new Map() };
+				leaving = { nodes: [], ghosts: [] };
+				progress.set(1, { duration: 0 });
+			}
+			to = L;
+		});
+	});
+	const anim = $derived.by(() => {
+		const k = progress.current;
+		const animating = k < 1 && (from.nodes.size > 0 || from.ghosts.size > 0);
+		if (!animating) return { nodes: to.nodes.map((n) => ({ ...n, o: 1 })), ghosts: to.ghosts.map((g) => ({ ...g, o: 1 })), lines: to.lines, anchors: to.anchors, gone: [], goneGhosts: [], goneO: 0 };
+		const nodes = to.nodes.map((n) => ({ ...n, ...blend(from.nodes, n.id, n, k), o: from.nodes.has(n.id) ? 1 : k }));
+		const ghosts = to.ghosts.map((g) => ({ ...g, ...blend(from.ghosts, g.familyId, g, k), o: from.ghosts.has(g.familyId) ? 1 : k }));
+		return { nodes, ghosts, ...routeConnectors(app.data, nodes, ghosts), gone: leaving.nodes, goneGhosts: leaving.ghosts, goneO: 1 - k };
+	});
+
 	// Focus edge markers: "↑ parents" above someone whose parents are just out of view, "+3 children" below a family.
 	// Clicking one shows one more generation that way.
 	const STUB = 12, PILL_H = 18;
 	const markers = $derived.by(() => {
-		const at = new Map(layout.nodes.map((n) => [n.id, n]));
+		const at = new Map(anim.nodes.map((n) => [n.id, n]));
 		return (app.focusView?.edges ?? []).flatMap((e) => {
 			if (e.dir === 'up') {
 				const n = at.get(e.personId);
 				return n ? [{ key: `u:${e.personId}`, up: true, x: n.x + NODE_W / 2, y0: n.y, y1: n.y - STUB, text: e.hidden === 1 ? '↑ parent' : '↑ parents' }] : [];
 			}
-			const a = layout.anchors[e.familyId];
+			const a = anim.anchors[e.familyId];
 			if (!a) return [];
 			return [{
 				key: `d:${e.familyId}`,
@@ -44,19 +103,42 @@
 	let vw = $state(0),
 		vh = $state(0);
 	const fitAll = () => fit(layout.bounds, vw, vh);
-	const cam: Camera = $derived(app.camera ?? { x: 0, y: 0, k: 1 });
+	// The camera drawn (`cam`) follows `app.camera`: instantly for your own drags, wheel and pinch (which also
+	// cancels any glide), gliding for automatic moves (fit, centring on someone, keeping the selection in view).
+	const shown = new Tween<Camera>(untrack(() => app.camera) ?? { x: 0, y: 0, k: 1 }, { easing: cubicOut });
+	const cam: Camera = $derived(shown.current);
+	let instant = true;
+	$effect(() => {
+		const c = app.camera;
+		if (!c) return;
+		untrack(() => shown.set(c, { duration: instant ? 0 : dur() }));
+		instant = false;
+	});
 	// `autoFitted`: the camera came from a fit and hasn't been moved since, so a resize (e.g. the person panel
 	// closing at the same moment) should fit again rather than leave the tree off-centre.
 	let autoFitted = false;
+	/** Move the camera now (your own pan, zoom or pinch). */
 	const set = (c: Camera) => {
+		autoFitted = false;
+		instant = true;
+		app.camera = c;
+	};
+	/** Move the camera smoothly (automatic moves). */
+	const glide = (c: Camera) => {
 		autoFitted = false;
 		app.camera = c;
 	};
+	/** Where the camera is heading (automatic moves made mid-glide aim from there). */
+	const target = () => app.camera ?? cam;
 
 	// Fit once when asked (camera reset to null), then hold still: edits re-run the layout but don't move the view.
+	// The very first fit (opening the tree) jumps; later ones glide.
+	let shownOnce = false;
 	$effect(() => {
 		if (app.camera === null && vw && vh && layout.bounds.w)
 			untrack(() => {
+				instant = !shownOnce;
+				shownOnce = true;
 				app.camera = fitAll();
 				// Only a resize arriving straight after the fit (e.g. the person panel closing at the same moment)
 				// re-fits; after that the view holds still, as usual.
@@ -89,8 +171,9 @@
 		untrack(() => {
 			const n = layout.nodes.find((n) => n.id === id);
 			if (!n) return;
-			const next = ensureVisible(cam, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
-			if (next !== cam) set(next);
+			const t = target();
+			const next = ensureVisible(t, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
+			if (next !== t) glide(next);
 		});
 	});
 
@@ -103,9 +186,10 @@
 			seen = new Set(ids);
 			// More than a few at once means a branch switch or data load, not someone just added.
 			if (!fresh.length || fresh.length > 3 || app.centreTarget || !vw || !vh) return;
-			let c = cam;
+			const t = target();
+			let c = t;
 			for (const n of fresh) c = ensureVisible(c, { x: n.x, y: n.y, w: NODE_W, h: NODE_H }, vw, vh);
-			if (c !== cam) set(c);
+			if (c !== t) glide(c);
 		});
 	});
 
@@ -116,12 +200,12 @@
 		if (!id || !vw || !vh) return;
 		untrack(() => {
 			const n = layout.nodes.find((n) => n.id === id);
-			if (n) set(centreOn(app.camera ?? fitAll(), n.x + NODE_W / 2, n.y + NODE_H / 2, vw, vh));
+			if (n) glide(centreOn(app.camera ?? fitAll(), n.x + NODE_W / 2, n.y + NODE_H / 2, vw, vh));
 		});
 		requestAnimationFrame(() => requestAnimationFrame(() => app.centreTarget === id && (app.centreTarget = null)));
 	});
 
-	const zoomBy = (f: number) => set(zoomAt(cam, f, vw / 2, vh / 2));
+	const zoomBy = (f: number) => glide(zoomAt(target(), f, vw / 2, vh / 2));
 
 	// Wheel needs a non-passive listener so it can stop the page scrolling.
 	$effect(() => {
@@ -281,10 +365,23 @@
 				{#each layout.labels as l (l.x)}
 					<text class="brlabel" x={l.x} y={l.y}>{l.text}</text>
 				{/each}
-				{#each layout.lines as l (l.key)}
+				{#each anim.lines as l (l.key)}
 					<path class={lineClass[l.style]} d={l.d} />
 				{/each}
-				{#each layout.nodes as n (n.id)}
+				{#each anim.gone as n (n.id)}
+					<!-- leaving: fades out where it was -->
+					{@const p = person(app.data, n.id)}
+					<g class="node leaving" transform="translate({n.x},{n.y})" opacity={anim.goneO} aria-hidden="true">
+						<rect class="nbox" width={NODE_W} height={NODE_H} rx="6" />
+						{#if p}<text class="nm" class:pencil={nameIsGuess(p)} x="11" y="25">{trunc(displayName(p), 18)}</text>{/if}
+					</g>
+				{/each}
+				{#each anim.goneGhosts as g (g.familyId)}
+					<g class="ghost leaving" class:maybe={!g.missing} transform="translate({g.x},{g.y})" opacity={anim.goneO} aria-hidden="true">
+						<rect width={GHOST_W} height={NODE_H} rx="6" />
+					</g>
+				{/each}
+				{#each anim.nodes as n (n.id)}
 					{@const p = person(app.data, n.id)!}
 					{@const guess = nameIsGuess(p)}
 					{@const dates = cardDates(app.data, n.id)}
@@ -297,6 +394,7 @@
 						class:picked={app.picked?.includes(n.id)}
 						class:ph={p.placeholder}
 						transform="translate({n.x},{n.y})"
+						opacity={n.o < 1 ? n.o : undefined}
 						tabindex="0"
 						role="button"
 						aria-label={displayName(p)}
@@ -320,11 +418,12 @@
 						<text x={m.x} y={top + 13} text-anchor="middle">{m.text}</text>
 					</g>
 				{/each}
-				{#each layout.ghosts as g (g.familyId)}
+				{#each anim.ghosts as g (g.familyId)}
 					<g
 						class="ghost"
 						class:maybe={!g.missing}
 						transform="translate({g.x},{g.y})"
+						opacity={g.o < 1 ? g.o : undefined}
 						tabindex="0"
 						role="button"
 						onclick={() => onGhost(g.familyId)}

@@ -117,6 +117,7 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 svg text{font-family:var(--f-ui)}
 .nbox{fill:var(--sheet);stroke:var(--ink-soft);stroke-width:1}
 .node{cursor:pointer}
+.leaving{pointer-events:none}
 .node:hover .nbox{stroke:var(--ink)}
 .node.sel .nbox{stroke:var(--accent);stroke-width:2.5}
 .node.ph .nbox{stroke-dasharray:4 3;fill:transparent}
