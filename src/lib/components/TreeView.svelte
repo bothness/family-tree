@@ -377,7 +377,11 @@
 		<p class="blank-title">No one here yet.</p>
 		{#if __SYNC__}
 			<!-- Family edition: one shared tree (no demo here: it would go to everyone) -->
-			<p>Use <b>+ New person</b> to start the family's tree. Everyone invited sees and edits the same tree.</p>
+			{#if app.canEdit}
+				<p>Use <b>+ New person</b> to start the family's tree. Everyone invited sees and edits the same tree.</p>
+			{:else}
+				<p>Nobody has been added to the family's tree yet.</p>
+			{/if}
 		{:else}
 			<p>Use <b>+ New person</b> to start your tree, or <button class="btn small" onclick={() => app.loadDemo()}>Load the demo family</button> to look around first.</p>
 			<p class="hint">The demo is the Darwins and Wedgwoods: Charles Darwin, his grandfather Erasmus, the potter Josiah Wedgwood and their families, with gaps and guesses as in a real tree.</p>
@@ -479,13 +483,16 @@
 					</g>
 				{/each}
 				{#each anim.ghosts as g (g.familyId)}
+					<!-- svelte-ignore a11y_no_noninteractive_tabindex (a button for editors; just a picture for viewers) -->
 					<g
 						class="ghost"
 						class:maybe={!g.missing}
 						transform="translate({g.x},{g.y})"
 						opacity={g.o < 1 ? g.o : undefined}
-						tabindex="0"
-						role="button"
+						tabindex={app.canEdit ? 0 : undefined}
+						role={app.canEdit ? 'button' : 'img'}
+						aria-label={g.missing ? `${g.missing} more children expected` : 'There may be more children'}
+						class:inert={!app.canEdit}
 						onclick={() => onGhost(g.familyId)}
 						onkeydown={(e) => key(e, () => onGhost(g.familyId))}
 					>

@@ -5,7 +5,8 @@
 	import { person } from '#lib/model/queries.ts';
 	import Silhouette from './Silhouette.svelte';
 
-	let { pid }: { pid: string } = $props();
+	/** readonly: view the photo only (viewers in the family edition); nothing shown if there's no photo. */
+	let { pid, readonly = false }: { pid: string; readonly?: boolean } = $props();
 
 	const photo = $derived(photoOf(app.data, pid));
 	const sex = $derived(person(app.data, pid)?.sex?.value ?? 'U');
@@ -46,7 +47,7 @@
 		}
 	}
 	async function view() {
-		if (!photo) return input?.click();
+		if (!photo) return readonly ? undefined : input?.click();
 		const b = await app.store?.getMedia(photo.id);
 		big = b ? URL.createObjectURL(b) : (photo.thumb ?? null);
 	}
@@ -56,18 +57,22 @@
 	}
 </script>
 
+{#if !readonly || photo}
 <div class="photo-pick" class:has={!!photo}>
 	<button class="avatar" type="button" onclick={view} title={photo ? 'View photo' : 'Add a photo'} aria-label={photo ? 'View photo' : 'Add a photo'}>
 		{#if photo?.thumb || full}<img src={full ?? photo?.thumb} alt="" />{:else}<Silhouette {sex} />{/if}
 		{#if busy}<span class="busy">…</span>{/if}
 	</button>
+	{#if !readonly}
 	<div class="photo-acts">
 		<button class="linkish" type="button" onclick={() => input?.click()}>{photo ? 'Change' : 'Add photo'}</button>
 		{#if photo}<button class="linkish" type="button" onclick={() => app.removePhoto(pid)}>Remove</button>{/if}
 	</div>
+	{/if}
 	<input bind:this={input} type="file" accept="image/*" hidden onchange={picked} />
 	{#if err}<p class="hint warn">{err}</p>{/if}
 </div>
+{/if}
 
 {#if big}
 	<div class="overlay lightbox" role="presentation" onclick={close} onkeydown={(e) => e.key === 'Escape' && close()}>

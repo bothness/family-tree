@@ -84,6 +84,11 @@ class AppState {
 	notInvited = $state<string | null>(null);
 	/** The next data change is a replacement (a backup, the demo, or an empty start), not an edit. */
 	replacing = false;
+	/** Whether this person may change the tree: always in the browser-only edition; in the family edition, not
+	 *  for viewers (they get read-only screens; their device never sends changes either). */
+	get canEdit() {
+		return !(__SYNC__ && this.user?.role === 'viewer');
+	}
 	get backupDue() {
 		// Family edition: the server holds the tree, so no reminder.
 		if (__SYNC__) return false;

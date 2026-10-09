@@ -4,6 +4,7 @@
 	import AddRelative from './AddRelative.svelte';
 	import PlaceInput from './PlaceInput.svelte';
 	import PhotoPicker from './PhotoPicker.svelte';
+	import PersonView from './PersonView.svelte';
 	import { edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
 	import {
 		birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, fullName, halfSiblings,
@@ -186,6 +187,9 @@
 		<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
 	</div>
 </div>
+{#if !app.canEdit}
+	<PersonView {pid} />
+{:else}
 <PhotoPicker {pid} />
 {#snippet outOfView(id: string, msg: string, primary: { label: string; run: () => void } | null = null)}
 	<div class="outofview" role="status" use:reveal>
@@ -384,3 +388,4 @@
 <div class="del-row">
 	<button class="btn danger small" onclick={remove}>{confirmDel ? `Tap again to delete ${displayName(p)}` : 'Delete this person'}</button>
 </div>
+{/if}

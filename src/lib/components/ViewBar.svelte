@@ -90,7 +90,7 @@
 						<button class="chip" aria-pressed={app.viewId === v.id} title={describeView(app.data, v)} onclick={() => app.openView(v.id)}>
 							{v.name}{#if app.viewId === v.id && app.viewChanged}<span class="changed" title="Changed since saved">•</span>{/if}
 						</button>
-						<DropdownMenu.Root onOpenChange={(o) => !o && (armed = null)}>
+						{#if app.canEdit}<DropdownMenu.Root onOpenChange={(o) => !o && (armed = null)}>
 							<DropdownMenu.Trigger class="chip-more" aria-label="View options for {v.name}">⋯</DropdownMenu.Trigger>
 							<DropdownMenu.Portal>
 								<DropdownMenu.Content class="menu" sideOffset={4} align="start">
@@ -115,11 +115,11 @@
 									</DropdownMenu.Item>
 								</DropdownMenu.Content>
 							</DropdownMenu.Portal>
-						</DropdownMenu.Root>
+						</DropdownMenu.Root>{/if}
 					</span>
 				{/if}
 			{/each}
-			<DropdownMenu.Root>
+			{#if app.canEdit}<DropdownMenu.Root>
 				<DropdownMenu.Trigger class="chip add">+ New view</DropdownMenu.Trigger>
 				<DropdownMenu.Portal>
 					<DropdownMenu.Content class="menu" sideOffset={4} align="start">
@@ -135,7 +135,7 @@
 						<DropdownMenu.Item class="menu-item" onSelect={() => app.startPicking()}>Pick people by hand…</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu.Portal>
-			</DropdownMenu.Root>
+			</DropdownMenu.Root>{/if}
 			<button class="linkish reset" onclick={() => app.reset()} disabled={app.blank} title="Clear the view and selection, and start again from a search">Reset</button>
 		</div>
 		<div class="legend">
@@ -162,11 +162,11 @@
 					<button aria-pressed={f.width === w} title={hint} onclick={() => app.adjustFocus({ width: w })}>{label}</button>
 				{/each}
 			</span>
-			{#if app.activeView && app.viewChanged}
+			{#if app.canEdit && app.activeView && app.viewChanged}
 				<button class="btn small primary" onclick={() => app.updateView()}>Update “{app.activeView.name}”</button>
 			{/if}
 			<!-- Always present while focused, so "+ New view → Save the current focus" can open it too. -->
-			<Popover.Root open={saveOpen} onOpenChange={openSave}>
+			{#if app.canEdit}<Popover.Root open={saveOpen} onOpenChange={openSave}>
 					<Popover.Trigger class="btn small">{app.activeView ? 'Save as new view' : 'Save view'}</Popover.Trigger>
 					<Popover.Portal>
 						<Popover.Content class="pop" sideOffset={6} align="start">
@@ -176,7 +176,7 @@
 							</form>
 						</Popover.Content>
 					</Popover.Portal>
-			</Popover.Root>
+			</Popover.Root>{/if}
 			{#if f.up !== 0 || f.down !== 0}
 				<button class="chip" onclick={() => app.collapseTo(f.id)} title="Show only {displayName(person(app.data, f.id))}">Collapse</button>
 			{/if}

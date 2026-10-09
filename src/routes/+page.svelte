@@ -133,6 +133,7 @@
 		app.select(id);
 	}
 	function onGhost(fid: string) {
+		if (!app.canEdit) return;
 		const f = family(app.data, fid)!;
 		app.select(partnerIds(f)[0] ?? childIds(f)[0], 'child');
 	}
@@ -164,7 +165,7 @@
 	</nav>
 	<SearchBox />
 	<div class="actions">
-		<button class="btn primary" onclick={addNew}>+ New person</button>
+		{#if app.canEdit}<button class="btn primary" onclick={addNew}>+ New person</button>{/if}
 		{#if app.backupDue}
 			<span class="remind">
 				<button class="btn small" onclick={() => (app.showData = true)} title="Some changes aren't in a backup yet">Back up your tree</button>
