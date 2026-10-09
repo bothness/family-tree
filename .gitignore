@@ -25,3 +25,6 @@ vite.config.ts.timestamp-*
 # Cloudflare local development (wrangler): local data and secrets
 /.wrangler
 .dev.vars
+
+# Private working files (e.g. a real family tree backup used to test the layout): never committed
+/scratch/
