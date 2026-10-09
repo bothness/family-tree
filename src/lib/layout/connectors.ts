@@ -9,7 +9,7 @@
 // "outer" partner (the one with fewer partners), so it never runs through a card.
 import type { Dataset, Family, Status } from '../model/types.ts';
 import { childIds, partnerIds } from '../model/queries.ts';
-import { GHOST_W, NODE_H, NODE_W, anchorOffset, missingCount, type GhostBox, type NodeBox } from './positions.ts';
+import { anchorOffset, cardSize, missingCount, type CardSize, type GhostBox, type NodeBox } from './positions.ts';
 
 /** ghost = to a placeholder for children known to be missing; maybe = to a "more children?" one. */
 export type LineStyle = 'solid' | 'likely' | 'guess' | 'ghost' | 'maybe';
@@ -40,7 +40,10 @@ export const RAISE_BASE = 9,
 
 const styleOf = (st?: Status | ''): LineStyle => (st === 'guess' ? 'guess' : st === 'likely' ? 'likely' : 'solid');
 
-export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[], W = NODE_W): { lines: Line[]; anchors: Record<string, Anchor> } {
+export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[], S: CardSize = cardSize()): { lines: Line[]; anchors: Record<string, Anchor> } {
+	const W = S.w,
+		NODE_H = S.h,
+		GHOST_W = S.ghost;
 	const pos = new Map(nodes.map((n) => [n.id, n]));
 	const ghostOf = new Map(ghosts.map((g) => [g.familyId, g]));
 	const lines: Line[] = [];
@@ -148,11 +151,16 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 	return { lines, anchors };
 }
 
-/** SVG path for a line; horizontal lines bump up in a small semicircle at each hop. */
-function pathOf(l: Line): string {
+/** SVG path for a line; a line with hops bumps out in a small semicircle at each (upwards on a horizontal line,
+ *  sideways on a vertical one, as in a left-to-right tree). */
+export function pathOf(l: Line): string {
 	const { x1, y1, x2, y2 } = l.seg;
 	if (!l.hops.length) return `M${x1} ${y1}${y1 === y2 ? `H${x2}` : `V${y2}`}`;
 	let p = `M${x1} ${y1}`;
-	for (const x of l.hops) p += `H${x - HOP_R}A${HOP_R} ${HOP_R} 0 0 1 ${x + HOP_R} ${y1}`;
-	return p + `H${x2}`;
+	if (y1 === y2) {
+		for (const x of l.hops) p += `H${x - HOP_R}A${HOP_R} ${HOP_R} 0 0 1 ${x + HOP_R} ${y1}`;
+		return p + `H${x2}`;
+	}
+	for (const y of l.hops) p += `V${y - HOP_R}A${HOP_R} ${HOP_R} 0 0 0 ${x1} ${y + HOP_R}`;
+	return p + `V${y2}`;
 }

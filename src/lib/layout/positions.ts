@@ -16,11 +16,21 @@ import type { Dataset, Family } from '../model/types.ts';
 import { birthStart, childIds, partnerIds, sexRank } from '../model/queries.ts';
 import { edtfRange } from '../model/edtf.ts';
 
-/** Card width without photos (compact) and with them (V10); the layout takes the width to use. */
+/** Card width without photos (compact) and with them (V10); the layout takes the card size to use. */
 export const NODE_W = 156,
 	PHOTO_W = 204,
 	NODE_H = 58,
 	GHOST_W = 104;
+/** Vertical trees (V13): narrower cards with the photo above the name (or just the name, wrapped, without
+ *  photos); horizontal trees (V14) use the wide cards. */
+export const PORTRAIT_W = 112,
+	PORTRAIT_H = 170,
+	PORTRAIT_NOPHOTO_H = 72;
+/** The size of the boxes the layout places: cards (w × h) and missing-children placeholders (ghost × h). */
+export interface CardSize { w: number; h: number; ghost: number }
+export const cardSize = (w = NODE_W, h = NODE_H, ghost = GHOST_W): CardSize => ({ w, h, ghost });
+/** Space between one generation's cards and the next (for the lines). */
+export const ROW_GAP = 84;
 /** Gap between partners' cards. */
 export const CARD_GAP = 14;
 /** Gap between siblings (units with the same parents). */
@@ -28,7 +38,7 @@ export const SIB_GAP = 22;
 /** Gap between units from different families on the same row. */
 export const FAM_GAP = 44;
 /** Vertical distance from one row's top to the next. */
-export const ROW_H = NODE_H + 84;
+export const ROW_H = NODE_H + ROW_GAP;
 /** Gap between unconnected groups. */
 export const COMP_GAP = 90;
 /** Branch labels sit this far above the top row. */
@@ -38,7 +48,7 @@ export interface NodeBox { id: string; x: number; y: number }
 export interface GhostBox { familyId: string; x: number; y: number; missing: number | null }
 export interface BranchLabel { text: string; x: number; y: number }
 export interface Box { x: number; y: number; w: number; h: number }
-export interface Positions { nodes: NodeBox[]; ghosts: GhostBox[]; labels: BranchLabel[]; bounds: Box; /** Card width used. */ cardW: number }
+export interface Positions { nodes: NodeBox[]; ghosts: GhostBox[]; labels: BranchLabel[]; bounds: Box; /** Card width used. */ cardW: number; /** Box sizes used. */ size: CardSize }
 
 interface Unit {
 	key: string;
@@ -74,7 +84,9 @@ export function missingCount(f: Family): number | null {
 const relStart = (f: Family) => edtfRange(f.relationship?.start?.edtf)?.start ?? Infinity;
 const byBirth = (d: Dataset) => (a: string, b: string) => birthStart(d, a) - birthStart(d, b) || a.localeCompare(b);
 
-function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W: number) {
+function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S: CardSize) {
+	const W = S.w,
+		GHOST = S.ghost;
 	const inC = new Set(ids);
 	const birth = byBirth(d);
 	const fams: Fam[] = d.families
@@ -139,7 +151,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 		const { f, ps, cs } = fm;
 		if (f.childrenComplete !== 'no' || (!ps.length && partnerIds(f).length) || cs.length < childIds(f).length) continue;
 		const g = cs.length ? gen.get(cs[0])! : gen.get(ps[0])! + 1;
-		const u: Unit = { key: `ghost:${f.id}`, g, members: [], ghost: f, w: GHOST_W, x: 0, placed: false };
+		const u: Unit = { key: `ghost:${f.id}`, g, members: [], ghost: f, w: GHOST, x: 0, placed: false };
 		units.push(u);
 		fm.kids.push(u);
 	}
@@ -183,7 +195,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 	for (const fm of fams) if (fm.parent) for (const k of fm.kids) (parentFams.get(k) ?? parentFams.set(k, []).get(k)!).push(fm);
 	/** The person in a unit who is the child of `fm` (where the unit hangs from), or the placeholder itself. */
 	const childLeft = (k: Unit, fm: Fam) => (k.ghost ? 0 : cardLeft(k, k.members.find((m) => fm.cs.includes(m))!));
-	const childW = (k: Unit) => (k.ghost ? GHOST_W : W);
+	const childW = (k: Unit) => (k.ghost ? GHOST : W);
 
 	// 3. Order units within rows: walk down from the earliest roots; a group that only joins in below (a partner's
 	// parents) is inserted above the person it joins, once there are positions to aim for.
@@ -303,7 +315,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 	const nodes: NodeBox[] = [],
 		ghosts: GhostBox[] = [];
 	for (const u of units) {
-		const y = u.g * ROW_H;
+		const y = u.g * (S.h + ROW_GAP);
 		if (u.ghost) ghosts.push({ familyId: u.ghost.id, x: u.x, y, missing: missingCount(u.ghost) });
 		else u.members.forEach((m) => nodes.push({ id: m, x: u.x + cardLeft(u, m), y }));
 	}
@@ -418,25 +430,26 @@ export function isotonic(want: { x: number; wt: number }[], gaps: number[]): num
 }
 
 /** Lay out each group of people (focus view: one group, with the focus person at x = 0), side by side. */
-export function layoutPositions(d: Dataset, branches: { label: string; ids: string[] }[], root?: string, W = NODE_W): Positions {
-	const out: Positions = { nodes: [], ghosts: [], labels: [], bounds: { x: 0, y: 0, w: 0, h: 0 }, cardW: W };
+export function layoutPositions(d: Dataset, branches: { label: string; ids: string[] }[], root?: string, S: CardSize = cardSize()): Positions {
+	const W = S.w;
+	const out: Positions = { nodes: [], ghosts: [], labels: [], bounds: { x: 0, y: 0, w: 0, h: 0 }, cardW: W, size: S };
 	let right = -Infinity;
 	for (const b of branches) {
 		if (!b.ids.length) continue;
-		const L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined, W);
+		const L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined, S);
 		const lefts = [...L.nodes.map((n) => n.x), ...L.ghosts.map((g) => g.x)];
 		const dx = right === -Infinity ? 0 : right + COMP_GAP - Math.min(...lefts);
 		for (const n of L.nodes) out.nodes.push({ ...n, x: n.x + dx });
 		for (const g of L.ghosts) out.ghosts.push({ ...g, x: g.x + dx });
 		if (branches.length > 1) out.labels.push({ text: b.label, x: Math.min(...lefts) + dx, y: -LABEL_DY });
-		right = Math.max(...L.nodes.map((n) => n.x + W), ...L.ghosts.map((g) => g.x + GHOST_W)) + dx;
+		right = Math.max(...L.nodes.map((n) => n.x + W), ...L.ghosts.map((g) => g.x + S.ghost)) + dx;
 	}
-	const boxes = [...out.nodes.map((n) => ({ ...n, w: W })), ...out.ghosts.map((g) => ({ ...g, w: GHOST_W }))];
+	const boxes = [...out.nodes.map((n) => ({ ...n, w: W })), ...out.ghosts.map((g) => ({ ...g, w: S.ghost }))];
 	if (boxes.length) {
 		const x0 = Math.min(...boxes.map((b) => b.x)),
 			y0 = Math.min(...boxes.map((b) => b.y), ...out.labels.map((l) => l.y - 14)),
 			x1 = Math.max(...boxes.map((b) => b.x + b.w)),
-			y1 = Math.max(...boxes.map((b) => b.y + NODE_H));
+			y1 = Math.max(...boxes.map((b) => b.y + S.h));
 		out.bounds = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 	}
 	return out;
