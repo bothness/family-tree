@@ -1,6 +1,7 @@
 // Place lookup with Nominatim (OpenStreetMap's search), called straight from the browser so it also works in the
 // planned browser-only edition. Nominatim's usage policy allows this at low volume: at most one request a second,
-// no autocomplete-on-every-keystroke (callers wait for a pause in typing), results cached, OSM credited.
+// results cached, OSM credited, and **no search-as-you-type**: callers only search when the user asks (a "Search
+// OpenStreetMap" choice or button), never while typing.
 // https://operations.osmfoundation.org/policies/nominatim/
 
 export interface PlaceHit {

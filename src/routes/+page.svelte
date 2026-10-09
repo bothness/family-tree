@@ -26,11 +26,27 @@
 		app.ready = true;
 	});
 	let saveTimer: ReturnType<typeof setTimeout> | undefined;
+	let pending: typeof app.data | null = null;
+	const flush = () => {
+		clearTimeout(saveTimer);
+		if (pending) app.store?.save(pending);
+		pending = null;
+	};
 	$effect(() => {
 		if (!app.ready) return;
-		const snapshot = JSON.parse(JSON.stringify(app.data));
+		pending = JSON.parse(JSON.stringify(app.data));
 		clearTimeout(saveTimer);
-		saveTimer = setTimeout(() => app.store?.save(snapshot), 250);
+		saveTimer = setTimeout(flush, 250);
+	});
+	// Don't lose the last edit if the tab is hidden or closed within the save delay.
+	onMount(() => {
+		const onHide = () => document.visibilityState === 'hidden' && flush();
+		document.addEventListener('visibilitychange', onHide);
+		addEventListener('pagehide', flush);
+		return () => {
+			document.removeEventListener('visibilitychange', onHide);
+			removeEventListener('pagehide', flush);
+		};
 	});
 
 	// The open view lives in the page address (#view=…&focus=…&up=…&down=…&w=…), so Back undoes a change,

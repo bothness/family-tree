@@ -6,13 +6,13 @@ import { uid } from './mutations.ts';
 export const mediaOf = (d: Dataset, id: string | undefined) => (id ? d.media.find((m) => m.id === id) : undefined);
 export const photoOf = (d: Dataset, pid: string) => mediaOf(d, person(d, pid)?.photo);
 
-/** Give someone a photo. Returns the new Media id, and the id of the photo it replaced (whose file can go). */
-export function setPhoto(d: Dataset, pid: string, m: Omit<Media, 'id' | 'kind'>): { id: string; replaced?: string } {
+/** Give someone a photo (with `id` if its file is already stored under one). Returns the Media id, and the id of
+ *  the photo it replaced (whose file can go). */
+export function setPhoto(d: Dataset, pid: string, m: Omit<Media, 'id' | 'kind'>, id = uid('media')): { id: string; replaced?: string } {
 	const p = person(d, pid);
 	if (!p) throw new Error('No such person');
 	const replaced = removePhoto(d, pid);
-	d.media.push({ id: uid('media'), kind: 'image', ...m });
-	const id = d.media.at(-1)!.id;
+	d.media.push({ id, kind: 'image', ...m });
 	p.photo = id;
 	return { id, ...(replaced ? { replaced } : {}) };
 }

@@ -107,7 +107,8 @@
 			}
 		})();
 		const mq = matchMedia('(prefers-color-scheme: dark)');
-		const onTheme = () => map?.setStyle(dark() ? STYLE.dark : STYLE.light);
+		// A full style reload (not a diff), so 'style.load' fires and our layers are added again.
+		const onTheme = () => map?.setStyle(dark() ? STYLE.dark : STYLE.light, { diff: false });
 		mq.addEventListener('change', onTheme);
 		return () => {
 			gone = true;

@@ -57,6 +57,7 @@ What this means for decisions made before then:
 - **Browser storage needs more room:** localStorage holds about 5 MB, which photos (V10) would quickly fill. Move the browser store to IndexedDB, with images kept as blobs there.
 - **Export and import are the backup:** with no server, the Data dialog's JSON download and upload is how people keep and move their tree. Consider a single-file export that includes photos, and a gentle reminder to back up.
 - **No server-only features:** place lookup (G6) must be able to call Nominatim or Wikidata directly from the browser (both allow it, within usage limits), not only through our own proxy.
+- **Place lookup at scale:** Nominatim's public service allows moderate use only, at most one request a second in total across all of an app's users, and forbids search-as-you-type. That's fine for one family, but a public edition with many users may need another geocoding service (e.g. Photon, or a commercial one) or our own proxy with caching. Keep the lookup behind `places/` so it can be swapped.
 - **Multi-editor features stay optional:** `meta` provenance and IDs already work for a single user; anything needing accounts goes behind the sync layer.
 - **Privacy wording:** say plainly that data stays on this device, and that clearing browser data deletes it unless exported.
 
@@ -88,3 +89,4 @@ What this means for decisions made before then:
 - 9 Oct: Phase D: place lookup via Nominatim with Wikidata ids attached from OSM's tags; photos kept only as resized copies; a MapLibre globe map with OpenFreeMap tiles added as V12, last in Phase D since it needs place coordinates. The browser store moves to IndexedDB first (D1).
 - 9 Oct: map (V12): a Map tab with a MapLibre globe and OpenFreeMap tiles (positron, or dark in dark mode); a dot per place sized by its births and deaths (count inside), filtered by the current focus or view; clicking a dot lists who was born or died there; places written by hand are listed as "not shown" with a pointer to "Find on the map". MapLibre loads only when the tab opens.
 - 9 Oct: photo cards are wider (196px) than compact cards (156px); the layout takes the card width as a parameter.
+- 9 Oct: place search is explicit ("Search OpenStreetMap for …"), never as you type: Nominatim's usage policy forbids client-side autocomplete. Places already in the tree are still suggested as you type.

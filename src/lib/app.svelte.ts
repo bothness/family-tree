@@ -6,6 +6,7 @@ import type { Camera } from './layout/viewport.ts';
 import type { DataStore } from './storage/index.ts';
 import { prepareImage } from './media/images.ts';
 import { removePhoto, setPhoto } from './model/media.ts';
+import { uid } from './model/mutations.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
 import { components, displayName, person, primaryName } from './model/queries.ts';
 import { addView, focusScope, sameFocus, setViewScope, viewFocus, viewKind, viewMembers, type FocusRule } from './model/views.ts';
@@ -221,8 +222,10 @@ class AppState {
 	async addPhoto(pid: string, file: Blob) {
 		if (!this.store) throw new Error('Storage is not ready yet.');
 		const img = await prepareImage(file);
-		const { id, replaced } = setPhoto(this.data, pid, { mime: img.mime, width: img.width, height: img.height, thumb: img.thumb });
+		// Store the file first, so a failed write never leaves someone pointing at a photo that isn't there.
+		const id = uid('media');
 		await this.store.putMedia(id, img.image);
+		const { replaced } = setPhoto(this.data, pid, { mime: img.mime, width: img.width, height: img.height, thumb: img.thumb }, id);
 		if (replaced) await this.store.deleteMedia(replaced);
 	}
 
