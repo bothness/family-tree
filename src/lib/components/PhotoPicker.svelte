@@ -14,6 +14,23 @@
 	let err = $state('');
 	let big = $state<string | null>(null);
 
+	// The panel shows the kept copy (the thumbnail is sized for tree cards), once it has loaded.
+	let full = $state<string | null>(null);
+	$effect(() => {
+		const id = photo?.id;
+		let url: string | null = null,
+			gone = false;
+		if (id)
+			app.store?.getMedia(id).then((b) => {
+				if (b && !gone) full = url = URL.createObjectURL(b);
+			});
+		return () => {
+			gone = true;
+			full = null;
+			if (url) URL.revokeObjectURL(url);
+		};
+	});
+
 	async function picked(e: Event) {
 		const f = (e.currentTarget as HTMLInputElement).files?.[0];
 		(e.currentTarget as HTMLInputElement).value = '';
@@ -39,9 +56,9 @@
 	}
 </script>
 
-<div class="photo-pick">
+<div class="photo-pick" class:has={!!photo}>
 	<button class="avatar" type="button" onclick={view} title={photo ? 'View photo' : 'Add a photo'} aria-label={photo ? 'View photo' : 'Add a photo'}>
-		{#if photo?.thumb}<img src={photo.thumb} alt="" />{:else}<Silhouette {sex} />{/if}
+		{#if photo?.thumb || full}<img src={full ?? photo?.thumb} alt="" />{:else}<Silhouette {sex} />{/if}
 		{#if busy}<span class="busy">…</span>{/if}
 	</button>
 	<div class="photo-acts">

@@ -65,8 +65,10 @@ button{cursor:pointer}
 /* photos (V10) */
 .sil-bg{fill:var(--paper)}
 .sil{fill:var(--rule)}
-.photo-pick{display:grid;justify-items:center;gap:2px;flex:none}
-.avatar{width:56px;height:56px;padding:0;border:1px solid var(--rule);border-radius:7px;background:var(--paper);overflow:hidden;position:relative;display:grid;place-items:center}
+.photo-pick{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.photo-pick.has{flex-direction:column;align-items:flex-start;gap:4px}
+.avatar{width:40px;height:40px;padding:0;border:1px solid var(--rule);border-radius:7px;background:var(--paper);overflow:hidden;position:relative;display:grid;place-items:center}
+.photo-pick.has .avatar{width:140px;height:140px;border-radius:9px;cursor:zoom-in}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .avatar svg{width:100%;height:100%}
 .avatar .busy{position:absolute;inset:0;display:grid;place-items:center;background:color-mix(in srgb,var(--sheet) 70%,transparent);font-weight:700}

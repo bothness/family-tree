@@ -61,5 +61,5 @@ Run `npm test` and `npm run check` before finishing any change.
 - **Phase D (places, photos, map) is done** (merged to `main` 9 Oct 2026):
   - D1: browser store on IndexedDB (`storage/index.ts`), with backups that include photos.
   - G6: place lookup with Nominatim (`places/nominatim.ts`, one request a second, cached), keeping coordinates, OSM and Wikidata ids; `model/places.ts`; place field `PlaceInput.svelte` and editor `PlaceDetails.svelte`.
-  - V10: photos (`media/images.ts` resizes to 800px plus a 96px thumbnail; `model/media.ts`); silhouettes; a Photos toggle for compact cards.
+  - V10: photos (`media/images.ts` resizes to 800px, shrinking by halves so it stays smooth, plus a 192px thumbnail (older small ones are remade on load); `model/media.ts`); silhouettes; a Photos toggle for compact cards.
   - V12: Map tab (`MapView.svelte`, `layout/map.ts`): MapLibre globe with OpenFreeMap tiles. MapLibre's worker URL is set explicitly (`setWorkerUrl`), which the Vite dev server needs.

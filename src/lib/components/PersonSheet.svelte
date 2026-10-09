@@ -161,7 +161,6 @@
 {/snippet}
 
 <div class="sheet-head">
-	<PhotoPicker {pid} />
 	<div>
 		<h2 class:pencil={nameIsGuess(p)}>{displayName(p)}</h2>
 		{#if p.knownAs}<div class="sub">{fullName(p)}</div>{/if}
@@ -183,6 +182,7 @@
 		<button class="x" onclick={() => app.select(null)} aria-label="Close">×</button>
 	</div>
 </div>
+<PhotoPicker {pid} />
 {#snippet outOfView(id: string, msg: string, primary: { label: string; run: () => void } | null = null)}
 	<div class="outofview" role="status" use:reveal>
 		<p><b>Not in this view.</b> {msg}</p>

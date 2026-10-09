@@ -24,6 +24,7 @@
 		const saved = await app.store.load().catch(() => null);
 		if (saved) app.data = saved;
 		app.ready = true;
+		app.refreshThumbs();
 	});
 	let saveTimer: ReturnType<typeof setTimeout> | undefined;
 	let pending: typeof app.data | null = null;
