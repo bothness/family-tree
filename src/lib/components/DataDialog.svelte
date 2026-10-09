@@ -3,6 +3,8 @@
 	import { emptyDataset } from '#lib/model/mutations.ts';
 	import { makeBackup, pruneMedia, readBackup } from '#lib/storage/index.ts';
 	import { ago } from '#lib/storage/safety.ts';
+	import { toGedcom } from '#lib/export/gedcom.ts';
+	import { isZip, makeZip, readZip } from '#lib/export/zip.ts';
 
 	let { onClose }: { onClose: () => void } = $props();
 
@@ -43,27 +45,45 @@
 		useData(kind === 'reset' ? demoData() : emptyDataset());
 	}
 
-	// Backups (one file with everything, photos included).
-	let saving = $state(false);
-	async function download() {
-		if (!app.store) return;
-		saving = true;
+	// Downloads: the backup (one JSON file with everything, photos included), a GEDCOM file for other apps, and a
+	// ZIP with all of it (the data, GEDCOM and the photos as files). The backup and the ZIP count as backups.
+	let saving = $state<'' | 'json' | 'ged' | 'zip'>('');
+	function save(blob: Blob, ext: string) {
+		const a = document.createElement('a');
+		a.href = URL.createObjectURL(blob);
+		a.download = `family-tree-${new Date().toISOString().slice(0, 10)}.${ext}`;
+		a.click();
+		setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+	}
+	async function download(kind: 'json' | 'ged' | 'zip') {
+		if (!app.store || saving) return;
+		saving = kind;
+		err = '';
 		try {
-			const blob = new Blob([await makeBackup(app.store, $state.snapshot(app.data))], { type: 'application/json' });
-			const a = document.createElement('a');
-			a.href = URL.createObjectURL(blob);
-			a.download = `family-tree-${new Date().toISOString().slice(0, 10)}.json`;
-			a.click();
-			setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-			app.noteBackup();
+			const d = $state.snapshot(app.data);
+			if (kind === 'json') save(new Blob([await makeBackup(app.store, d)], { type: 'application/json' }), 'json');
+			else if (kind === 'ged') save(new Blob([toGedcom(d)], { type: 'text/plain;charset=utf-8' }), 'ged');
+			else save(new Blob([(await makeZip(app.store, d)).slice()], { type: 'application/zip' }), 'zip');
+			if (kind !== 'ged') app.noteBackup();
+		} catch (e) {
+			err = "Couldn't make that file: " + (e as Error).message;
 		} finally {
-			saving = false;
+			saving = '';
 		}
 	}
 	let fileInput: HTMLInputElement | undefined = $state();
 	async function openFile(e: Event) {
 		const f = (e.currentTarget as HTMLInputElement).files?.[0];
-		if (f) await load(await f.text());
+		(e.currentTarget as HTMLInputElement).value = '';
+		if (!f) return;
+		const bytes = new Uint8Array(await f.arrayBuffer());
+		if (!isZip(bytes)) return load(new TextDecoder().decode(bytes));
+		try {
+			if (!app.store) throw new Error('storage is not ready yet.');
+			useData(await readZip(app.store, bytes));
+		} catch (e) {
+			err = "Couldn't open that: " + (e as Error).message;
+		}
 	}
 </script>
 
@@ -86,10 +106,21 @@
 			{/if}
 		</p>
 		<div class="row">
-			<button class="btn small primary" onclick={download} disabled={saving}>{saving ? 'Preparing…' : 'Download backup'}</button>
+			<button class="btn small primary" onclick={() => download('json')} disabled={!!saving}>{saving === 'json' ? 'Preparing…' : 'Download backup'}</button>
 			<button class="btn small" onclick={() => fileInput?.click()}>Open backup file…</button>
-			<input bind:this={fileInput} type="file" accept="application/json,.json" hidden onchange={openFile} />
+			<input bind:this={fileInput} type="file" accept="application/json,.json,application/zip,.zip" hidden onchange={openFile} />
 		</div>
+		<div class="lbl">For other family tree apps</div>
+		<div class="row">
+			<button class="btn small" onclick={() => download('ged')} disabled={!!saving}>{saving === 'ged' ? 'Preparing…' : 'Export GEDCOM (.ged)'}</button>
+			<button class="btn small" onclick={() => download('zip')} disabled={!!saving}>{saving === 'zip' ? 'Preparing…' : 'Export ZIP, with photos'}</button>
+		</div>
+		<p class="hint" style="margin:0">
+			GEDCOM is the format other family tree apps and sites (Ancestry, FamilySearch, Gramps, MacFamilyTree…) import.
+			Names, dates, places, families, notes and sources carry over. How sure each fact is, research notes, to-dos and
+			tags become notes; saved views don't carry over. The ZIP holds the GEDCOM file, the photos, and your full data
+			(which this app can open again, so it counts as a backup).
+		</p>
 		<textarea spellcheck="false" bind:value={text}></textarea>
 		<div class="row">
 			<button class="btn small" onclick={copy}>{copied ? 'Copied' : 'Copy'}</button>

@@ -43,7 +43,7 @@ Run: `npm i ajv ajv-formats && node validate.mjs example-data.json`
 ## Photos (added within v0.2, 9 Oct 2026)
 - `media[]`: `Media { id, kind: 'image', mime, width, height, thumb, caption? }`; `person.photo` is a Media id.
 - Only a resized copy is kept (longest side 800px, JPEG), never the original. The image itself is stored apart from the dataset (IndexedDB in the browser) under its id; `thumb` is a small square data: URL for tree cards, so cards show without loading files.
-- Backups (Data → Download backup) are the dataset plus `mediaFiles` (each image as a data: URL), so one file holds everything. `mediaFiles` isn't part of the schema; it's removed when a backup is loaded.
+- Backups (Data → Download backup) are the dataset plus `mediaFiles` (each image as a data: URL), so one file holds everything. In a ZIP export (`family-tree.json` inside it) `mediaFiles` maps each id to a path in the ZIP (`photos/…jpg`) instead. `mediaFiles` isn't part of the schema; it's removed when a backup is loaded.
 
 ## Derived (computed, not stored)
 Sortable date ranges, generations, connected branches, and the gaps report (guesses, unsourced events, open families, placeholders, missing births).

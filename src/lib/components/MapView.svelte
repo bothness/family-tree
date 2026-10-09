@@ -3,7 +3,7 @@
 	// died. Filtered by the current focus or saved view, like every other tab. MapLibre loads only when the map
 	// tab is opened.
 	import { onMount, untrack } from 'svelte';
-	import type { Map as MlMap, Popup, GeoJSONSource, MapMouseEvent, MapGeoJSONFeature } from 'maplibre-gl';
+	import type { Map as MlMap, Popup, GeoJSONSource, MapMouseEvent, MapGeoJSONFeature, ExpressionSpecification } from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	// MapLibre draws tiles in a web worker; tell it where Vite put the worker file (needed in dev and build).
 	import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
@@ -27,10 +27,17 @@
 	};
 	const token = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#2c6b5b';
 
+	/** A dot's radius for its number of events, scaled by `k`. */
+	const dotSize = (k: number): ExpressionSpecification => ['interpolate', ['linear'], ['get', 'count'], 1, 6 * k, 2, 9 * k, 20, 16 * k];
+
 	/** Our layers, added again whenever the style (light/dark) loads. */
 	function addLayers() {
 		if (!map) return;
 		map.setProjection({ type: 'globe' });
+		// No national or state borders or names: they've changed a lot over the years a tree covers. Towns and
+		// cities stay named.
+		for (const l of map.getStyle().layers)
+			if ('source-layer' in l && (l['source-layer'] === 'boundary' || (l['source-layer'] === 'place' && /country|state/.test(l.id)))) map.removeLayer(l.id);
 		map.addSource('places', { type: 'geojson', data: toGeoJSON(data) });
 		map.addLayer({
 			id: 'place-dots',
@@ -41,7 +48,8 @@
 				'circle-opacity': 0.85,
 				'circle-stroke-color': token('--sheet'),
 				'circle-stroke-width': 1.5,
-				'circle-radius': ['interpolate', ['linear'], ['get', 'count'], 1, 6, 2, 9, 20, 16]
+				// Bigger with more events, and as you zoom in (about twice the size at street level).
+				'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, dotSize(1), 9, dotSize(1.5), 14, dotSize(2.2)]
 			}
 		});
 		// How many births and deaths, inside the dot (the base map already names the towns).
@@ -50,7 +58,7 @@
 			type: 'symbol',
 			source: 'places',
 			filter: ['>', ['get', 'count'], 1],
-			layout: { 'text-field': ['to-string', ['get', 'count']], 'text-font': ['Noto Sans Bold'], 'text-size': 11, 'text-allow-overlap': true, 'text-ignore-placement': true },
+			layout: { 'text-field': ['to-string', ['get', 'count']], 'text-font': ['Noto Sans Bold'], 'text-size': ['interpolate', ['linear'], ['zoom'], 4, 11, 9, 14, 14, 18], 'text-allow-overlap': true, 'text-ignore-placement': true },
 			paint: { 'text-color': token('--sheet') }
 		});
 		ready = true;

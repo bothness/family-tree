@@ -1,4 +1,4 @@
-# Family Tree Sketchbook
+# Family Tree Builder
 
 A family tree app for one person and close family: sketch trees quickly from patchy information, mark how sure each fact is, and fill in researched detail later. It may later support several editors.
 
@@ -63,4 +63,4 @@ Run `npm test` and `npm run check` before finishing any change.
   - G6: place lookup with Nominatim (`places/nominatim.ts`, one request a second, cached), keeping coordinates, OSM and Wikidata ids; `model/places.ts`; place field `PlaceInput.svelte` and editor `PlaceDetails.svelte`.
   - V10: photos (`media/images.ts` resizes to 800px, shrinking by halves so it stays smooth, plus a 192px thumbnail (older small ones are remade on load); `model/media.ts`); silhouettes; a Photos toggle for compact cards.
   - V12: Map tab (`MapView.svelte`, `layout/map.ts`): MapLibre globe with OpenFreeMap tiles. MapLibre's worker URL is set explicitly (`setWorkerUrl`), which the Vite dev server needs.
-- **Phase E** in progress: E3 blank first run with "Load the demo family" and E4 the Darwin–Wedgwood demo (`src/lib/data/demo-darwin.json`, built by `scripts/data/make-demo-darwin.py`; the Smith sample `example-data.json` stays as the test fixture) are done. E5 (persistent storage, backup reminder: `storage/safety.ts`) and E6 (GitHub Pages) are done: live at https://bothness.github.io/family-tree/, deployed by `.github/workflows/deploy.yml` on every push to `main`. Still to do: E1 GEDCOM export, E2 ZIP export with photos.
+- **Phase E** in progress: E3 blank first run with "Load the demo family" and E4 the Darwin–Wedgwood demo (`src/lib/data/demo-darwin.json`, built by `scripts/data/make-demo-darwin.py`; the Smith sample `example-data.json` stays as the test fixture) are done. E5 (persistent storage, backup reminder: `storage/safety.ts`) and E6 (GitHub Pages) are done: live at https://bothness.github.io/family-tree/, deployed by `.github/workflows/deploy.yml` on every push to `main`. E1 GEDCOM export (`export/gedcom.ts`) and E2 ZIP export (`export/zip.ts`, which "Open backup file" also reads) are done. Next: the wide-tree options (V13 portrait cards, V14 left-to-right), then shared data.

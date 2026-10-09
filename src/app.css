@@ -27,7 +27,6 @@ button{cursor:pointer}
 
 .top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:10px 16px;background:var(--sheet);border-bottom:1px solid var(--rule)}
 .brand{font-family:var(--f-name);font-weight:600;font-size:21px;letter-spacing:.01em}
-.brand span{font-family:var(--f-pencil);font-weight:500;color:var(--pencil);font-size:20px;margin-left:4px}
 .tabs{display:flex;gap:2px;background:var(--paper);border-radius:8px;padding:3px}
 .tabs button{border:0;background:none;padding:5px 12px;border-radius:6px;color:var(--ink-soft);font-weight:500}
 .tabs button[aria-pressed="true"]{background:var(--sheet);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
@@ -42,7 +41,6 @@ button{cursor:pointer}
 /* search (Bits UI combobox; unstyled, so all looks come from here) */
 .search{flex:0 1 260px;min-width:160px}
 .search-input{width:100%;background:var(--paper);border:1px solid var(--rule);border-radius:7px;padding:5px 10px}
-.search-input:focus{border-color:var(--ink-soft);outline:none}
 .search-pop{z-index:20;min-width:var(--bits-floating-anchor-width,240px);max-width:min(420px,calc(100vw - 32px));max-height:min(360px,60vh);overflow:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:4px}
 .search-item{display:flex;align-items:baseline;gap:6px;padding:6px 9px;border-radius:6px;cursor:pointer}
 .search-item[data-highlighted]{background:var(--accent-soft)}
@@ -82,7 +80,6 @@ button{cursor:pointer}
 .row.life-row{align-items:flex-start}
 .place-field{display:grid;gap:3px;min-width:0}
 .place-input{width:100%;background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:6px 8px}
-.place-input:focus{border-color:var(--ink-soft);outline:none}
 .place-pop{min-width:max(var(--bits-floating-anchor-width,240px),300px)}
 .pop-head{padding:6px 9px 2px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
 .pop-foot{padding:6px 9px 2px;font-size:11px;color:var(--ink-soft);border-top:1px solid var(--rule);margin-top:4px}
@@ -299,7 +296,6 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
      controls scroll sideways in one row instead of wrapping onto several. */
   .top{padding:8px 12px;gap:6px 8px}
   .brand{font-size:18px}
-  .brand span{font-size:17px}
   .actions{order:1;margin-left:auto}
   .tabs{order:2}
   .search{order:3;flex:1 1 100%}

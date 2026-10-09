@@ -1,4 +1,4 @@
-# Family Tree Sketchbook
+# Family Tree Builder
 
 Sketch family trees quickly from patchy information, record how sure each fact is (confirmed / likely / guess), and see what's still missing.
 

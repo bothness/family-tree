@@ -175,6 +175,10 @@
 						<DropdownMenu.Item class="menu-item" onSelect={() => app.focusOn(pid, { up: 0, down: Infinity, width: 'direct' })}>Descendants of {displayName(p)}</DropdownMenu.Item>
 						<DropdownMenu.Item class="menu-item" onSelect={() => app.focusOn(pid, { up: Infinity, down: 0, width: 'direct' })}>Ancestors of {displayName(p)}</DropdownMenu.Item>
 						<DropdownMenu.Item class="menu-item" onSelect={() => app.collapseTo(pid)}>Only {displayName(p)}</DropdownMenu.Item>
+						{#if app.activeFocus}
+							<DropdownMenu.Separator class="menu-sep" />
+							<DropdownMenu.Item class="menu-item" onSelect={() => app.showEveryone()}>Remove focus (show everyone)</DropdownMenu.Item>
+						{/if}
 					</DropdownMenu.Content>
 				</DropdownMenu.Portal>
 			</DropdownMenu.Root>

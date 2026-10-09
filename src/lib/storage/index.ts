@@ -132,11 +132,19 @@ export async function makeBackup(store: DataStore, d: Dataset): Promise<string> 
 
 /** Read a backup (or plain data): puts any photo files into the store and returns the dataset. */
 export async function readBackup(store: DataStore, text: string): Promise<Dataset> {
-	const raw = JSON.parse(text);
-	if (!Array.isArray(raw.people) || !Array.isArray(raw.families) || !Array.isArray(raw.events)) throw new Error('it needs people, families and events lists.');
+	return readBackupData(store, JSON.parse(text));
+}
+
+/** Read parsed backup data. `mediaFiles` values are data: URLs (a JSON backup) or, in a ZIP export, paths that
+ *  `file` turns into the photo. */
+export async function readBackupData(store: DataStore, raw: any, file?: (path: string) => Promise<Blob | null>): Promise<Dataset> {
+	if (!Array.isArray(raw?.people) || !Array.isArray(raw.families) || !Array.isArray(raw.events)) throw new Error('it needs people, families and events lists.');
 	const files: Record<string, string> = raw.mediaFiles ?? {};
 	delete raw.mediaFiles;
-	for (const [id, url] of Object.entries(files)) await store.putMedia(id, await dataUrlToBlob(url));
+	for (const [id, ref] of Object.entries(files)) {
+		const b = ref.startsWith('data:') ? await dataUrlToBlob(ref) : await file?.(ref);
+		if (b) await store.putMedia(id, b);
+	}
 	return migrate(raw);
 }
 
