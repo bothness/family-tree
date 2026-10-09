@@ -34,7 +34,7 @@ export interface Remote {
 export class RemoteError extends Error {
 	constructor(
 		public kind: 'offline' | 'signed-out' | 'forbidden',
-		message = kind
+		message: string = kind
 	) {
 		super(message);
 	}

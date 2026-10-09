@@ -332,3 +332,10 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 /* legend: research progress dot */
 .legend .stage-key{display:inline-flex;align-items:baseline;gap:5px}
 .legend .stage-key svg{width:11px;height:11px;align-self:center}
+/* family edition: sync status (F2) */
+.sync-status{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);white-space:nowrap;cursor:default}
+.sync-status .dot{width:8px;height:8px;border-radius:50%;background:var(--rule)}
+.sync-status.saved .dot{background:var(--accent)}
+.sync-status.saving .dot,.sync-status.starting .dot{background:var(--accent-soft);box-shadow:0 0 0 1.5px var(--accent) inset}
+.sync-status.offline .dot,.sync-status.signed-out .dot,.sync-status.forbidden .dot{background:var(--warn)}
+.sync-status.offline,.sync-status.signed-out,.sync-status.forbidden{color:var(--warn)}

@@ -6,6 +6,8 @@ import type { Camera } from './layout/viewport.ts';
 import type { DataStore } from './storage/index.ts';
 import { betterThumb, prepareImage } from './media/images.ts';
 import { SNOOZE, backupDue, requestPersistence, type Kept } from './storage/safety.ts';
+import type { SyncStatus } from './sync/engine.ts';
+import type { Me } from './sync/http.ts';
 import { removePhoto, setPhoto } from './model/media.ts';
 import { emptyDataset, uid } from './model/mutations.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
@@ -75,6 +77,9 @@ class AppState {
 	/** When the first change not in a backup was made. */
 	unbackedSince = $state<number | null>(readPref('unbackedSince', null));
 	backupSnoozedUntil = $state<number | null>(readPref('backupSnoozedUntil', null));
+	/** Family edition (shared data): who's signed in, and how syncing is going. Null in the browser-only edition. */
+	user = $state<Me | null>(null);
+	syncStatus = $state<SyncStatus | null>(null);
 	/** The next data change is a replacement (a backup, the demo, or an empty start), not an edit. */
 	replacing = false;
 	get backupDue() {
