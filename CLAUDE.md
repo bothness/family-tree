@@ -58,7 +58,7 @@ Run `npm test` and `npm run check` before finishing any change.
   - a partner's parents are placed above them (e.g. the Murphys above Bridget)
   - families whose children's lines would overlap get separate heights; lines hop where they cross
   - nothing ordered by when it was added (the layout is the same whatever order people and families were stored in)
-- **Phase D (places, photos, map) is done** on branch `phase-d-places` (not yet merged to `main`):
+- **Phase D (places, photos, map) is done** (merged to `main` 9 Oct 2026):
   - D1: browser store on IndexedDB (`storage/index.ts`), with backups that include photos.
   - G6: place lookup with Nominatim (`places/nominatim.ts`, one request a second, cached), keeping coordinates, OSM and Wikidata ids; `model/places.ts`; place field `PlaceInput.svelte` and editor `PlaceDetails.svelte`.
   - V10: photos (`media/images.ts` resizes to 800px plus a 96px thumbnail; `model/media.ts`); silhouettes; a Photos toggle for compact cards.
