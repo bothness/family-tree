@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { app, type Tab } from '#lib/app.svelte.ts';
-	import { localStore } from '#lib/storage/index.ts';
+	import { onMount } from 'svelte';
+	import { browserStore } from '#lib/storage/index.ts';
 	import { gaps } from '#lib/model/gaps.ts';
 	import { childIds, family, partnerIds } from '#lib/model/queries.ts';
 	import { newPerson } from '#lib/model/mutations.ts';
@@ -15,11 +16,20 @@
 	import ViewBar from '#lib/components/ViewBar.svelte';
 	import BlankPrompt from '#lib/components/BlankPrompt.svelte';
 
-	// Load once, then save on every change (JSON.stringify reads the whole dataset, so the effect tracks it deeply).
-	const saved = localStore.load();
-	if (saved) app.data = saved;
+	// Load once (nothing is shown until then, so the sample never flashes up or overwrites saved data), then save
+	// shortly after each change. JSON.stringify reads the whole dataset, so the effect tracks it deeply.
+	onMount(async () => {
+		app.store = await browserStore();
+		const saved = await app.store.load().catch(() => null);
+		if (saved) app.data = saved;
+		app.ready = true;
+	});
+	let saveTimer: ReturnType<typeof setTimeout> | undefined;
 	$effect(() => {
-		localStore.save(JSON.parse(JSON.stringify(app.data)));
+		if (!app.ready) return;
+		const snapshot = JSON.parse(JSON.stringify(app.data));
+		clearTimeout(saveTimer);
+		saveTimer = setTimeout(() => app.store?.save(snapshot), 250);
 	});
 
 	// The open view lives in the page address (#view=…&focus=…&up=…&down=…&w=…), so Back undoes a change,
@@ -59,6 +69,7 @@
 	const currentHash = () => (location.hash === '#' ? '' : location.hash);
 	({ focus: app.focus, view: app.viewId, blank: app.blank } = readHash());
 	$effect(() => {
+		if (!app.ready) return; // saved data not loaded yet: the focus or view may refer to people in it
 		if (app.focus && !app.activeFocus) app.focus = null; // focused person was deleted
 		if (app.viewId && !app.activeView) app.viewId = null; // view was deleted
 		const h = hashOf(here());
@@ -129,7 +140,9 @@
 
 <div class="work">
 	<main class="main" class:tree={app.tab === 'tree'}>
-		{#if app.tab === 'tree'}
+		{#if !app.ready}
+			<div class="empty">Loading…</div>
+		{:else if app.tab === 'tree'}
 			<TreeView {onGhost} />
 		{:else}
 			<div class="pad">

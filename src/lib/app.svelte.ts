@@ -3,6 +3,7 @@
 import type { Dataset } from './model/types.ts';
 import type { RelativeKind } from './model/mutations.ts';
 import type { Camera } from './layout/viewport.ts';
+import type { DataStore } from './storage/index.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
 import { components, displayName, person, primaryName } from './model/queries.ts';
 import { addView, focusScope, sameFocus, setViewScope, viewFocus, viewKind, viewMembers, type FocusRule } from './model/views.ts';
@@ -30,6 +31,10 @@ const labelled = (d: Dataset, comps: string[][]) => comps.map((ids) => ({ label:
 
 class AppState {
 	data = $state<Dataset>(sampleData());
+	/** Saved data has been loaded (until then nothing is shown or saved). */
+	ready = $state(false);
+	/** Where data and photos are kept (set on start-up). */
+	store: DataStore | null = null;
 	tab = $state<Tab>('tree');
 	selected = $state<string | null>(null);
 	/** Which "add relative" form is open in the person panel. */
