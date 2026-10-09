@@ -20,7 +20,11 @@
 	let failed = $state('');
 	let ready = $state(false);
 
-	const dark = () => matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme !== 'light';
+	// Same rule as the colour tokens in app.css: data-theme="dark"/"light" wins, else the system setting.
+	const dark = () => {
+		const t = document.documentElement.dataset.theme;
+		return t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+	};
 	const token = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#2c6b5b';
 
 	/** Our layers, added again whenever the style (light/dark) loads. */

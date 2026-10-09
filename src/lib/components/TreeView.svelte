@@ -255,11 +255,18 @@
 		return { x: e.clientX - r.left, y: e.clientY - r.top };
 	}
 	function down(e: PointerEvent) {
-		if (e.pointerType === 'mouse' && e.button !== 0) return;
+		// Primary button (or touch/pen) drags after a few pixels; the middle button pans straight away.
+		const middle = e.pointerType === 'mouse' && e.button === 1;
+		if (e.pointerType === 'mouse' && e.button !== 0 && !middle) return;
+		if (middle) e.preventDefault(); // no browser autoscroll
 		pointers.set(e.pointerId, local(e));
 		if (pointers.size === 1) {
 			start = local(e);
 			swallowClick = false;
+			if (middle) {
+				startPan(e);
+				swallowClick = false; // a middle-button drag isn't followed by a click to swallow
+			}
 		}
 	}
 	function move(e: PointerEvent) {

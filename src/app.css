@@ -87,6 +87,9 @@ button{cursor:pointer}
 .place-meta{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:12.5px;color:var(--ink-soft);align-items:baseline}
 .place-meta .on-map{color:var(--accent)}
 .place-meta .place-edit{font-family:var(--f-ui);font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-left:auto}
+.place-meta .dup-flag{font-family:var(--f-ui);font-size:12.5px;font-weight:500;color:var(--warn)}
+.dups{display:grid;gap:6px;background:var(--warn-soft);border-radius:7px;padding:8px 10px}
+.dups .grow{flex:1 1 160px;font-size:13.5px}
 .place-details{width:min(360px,calc(100vw - 32px));max-height:min(var(--bits-floating-available-height,70vh),560px);overflow:auto}
 .place-details .del{border:0;background:none;color:var(--ink-soft);padding:0 4px;font-size:18px}
 .place-details a{color:var(--accent)}
@@ -135,7 +138,7 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 .stepper button{border:0;background:none;padding:2px 8px;color:var(--ink-soft)}
 .stepper button:hover:not(:disabled){background:var(--paper);color:var(--ink)}
 .stepper button:disabled{opacity:.35;cursor:default}
-.legend{margin-left:auto;display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
+.legend{margin-left:auto;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
 .legend .pen{font-family:var(--f-pencil);font-size:17px;color:var(--pencil)}
 .legend .ink{font-family:var(--f-name);color:var(--ink)}
 
@@ -171,13 +174,14 @@ svg text{font-family:var(--f-ui)}
 .ln{stroke:var(--ink-soft);stroke-width:1.4;fill:none}
 .ln.probable{stroke-dasharray:6 4}
 .ln.guess{stroke:var(--pencil);stroke-dasharray:2 4}
-.ln.ghost{stroke:var(--warn);stroke-dasharray:2 4}
-.ghost rect{fill:var(--warn-soft);stroke:var(--warn);stroke-dasharray:3 3}
-.ghost text{fill:var(--warn);font-size:13px;font-weight:500}
+/* missing-children placeholders: grey and dashed; "+2 more expected" (a recorded count) in plain text,
+   "more children?" (no count) in pencil */
+.ln.ghost{stroke:var(--pencil);stroke-dasharray:2 4}
+.ghost rect{fill:none;stroke:var(--pencil);stroke-dasharray:3 3}
+.ghost text{fill:var(--ink-soft);font-size:13px;font-weight:500}
 .ghost{cursor:pointer}
 /* "more children?" with no recorded count: a pencilled query rather than a known gap */
 .ln.maybe{stroke:var(--pencil);stroke-dasharray:2 4}
-.ghost.maybe rect{fill:none;stroke:var(--pencil)}
 .ghost.maybe text{fill:var(--pencil);font-family:var(--f-pencil);font-size:16px;font-weight:500}
 .edge{cursor:pointer}
 .edge line{stroke:var(--ink-soft);stroke-width:1.2;stroke-dasharray:2 3}

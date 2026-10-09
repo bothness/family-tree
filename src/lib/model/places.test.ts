@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { Dataset } from './types.ts';
 import { emptyDataset, newPerson, setLife } from './mutations.ts';
 import { lifeEvent } from './queries.ts';
-import { isLinked, knownPlaces, linkPlace, placeFromLookup, placeUses, setLifePlace, unlinkPlace, type FoundPlace } from './places.ts';
+import { duplicatesOf, isLinked, knownPlaces, linkPlace, mergePlaces, mergeTarget, placeFromLookup, placeUses, setLifePlace, unlinkPlace, type FoundPlace } from './places.ts';
 
 const leeds: FoundPlace = { name: 'Leeds', context: 'West Yorkshire, England, United Kingdom', type: 'city', lat: 53.7974, lon: -1.5438, osm: 'relation/118362', wikidata: 'Q39121' };
 let d: Dataset;
@@ -81,5 +81,44 @@ describe('places', () => {
 		unlinkPlace(p);
 		expect(isLinked(p)).toBe(false);
 		expect(p).toEqual({ id: p.id, name: 'Leeds', type: 'city' });
+	});
+});
+
+describe('merging duplicate places', () => {
+	it('finds places with the same name (ignoring case and accents) or the same OSM place', () => {
+		setLife(d, ann, 'birth', null, 'Wakefield');
+		const linked = placeFromLookup(d, { ...leeds, name: 'Wakefield', osm: 'node/1' });
+		d.places.push({ id: 'plc_x', name: 'Wâkefield ' }, { id: 'plc_other', name: 'York' });
+		const hand = d.places[0].id;
+		expect(duplicatesOf(d, hand).map((p) => p.id).sort()).toEqual([linked, 'plc_x'].sort());
+		expect(duplicatesOf(d, 'plc_other')).toEqual([]);
+	});
+
+	it('keeps the one on the map, moving every event across', () => {
+		setLife(d, ann, 'birth', null, 'Wakefield');
+		const bob = newPerson(d, 'Bob').id;
+		setLife(d, bob, 'death', null, 'Wakefield');
+		const hand = d.places[0].id;
+		const linked = placeFromLookup(d, { ...leeds, name: 'Wakefield', osm: 'node/1' });
+		expect(mergeTarget(d, hand, linked)).toBe(linked);
+		mergePlaces(d, linked, hand);
+		expect(d.places.map((p) => p.id)).toEqual([linked]);
+		expect(lifeEvent(d, ann, 'birth')?.place?.placeId).toBe(linked);
+		expect(lifeEvent(d, bob, 'death')?.place?.placeId).toBe(linked);
+		expect(placeUses(d, linked)).toBe(2);
+	});
+
+	it('keeps a different spelling as a former name and fills in missing details', () => {
+		d.places.push({ id: 'plc_a', name: 'Kingstown', notes: 'Renamed 1920' }, { id: 'plc_b', name: 'Dún Laoghaire', context: 'Dublin, Ireland', coordinates: { lat: 53.29, lon: -6.13 } });
+		mergePlaces(d, 'plc_b', 'plc_a');
+		expect(d.places).toEqual([
+			{ id: 'plc_b', name: 'Dún Laoghaire', context: 'Dublin, Ireland', coordinates: { lat: 53.29, lon: -6.13 }, altNames: [{ name: 'Kingstown' }], notes: 'Renamed 1920' }
+		]);
+	});
+
+	it('prefers the more used place when neither is on the map', () => {
+		setLife(d, ann, 'birth', null, 'Leeds');
+		d.places.push({ id: 'plc_unused', name: 'leeds' });
+		expect(mergeTarget(d, 'plc_unused', d.places[0].id)).toBe(d.places[0].id);
 	});
 });

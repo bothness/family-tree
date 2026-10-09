@@ -86,3 +86,47 @@ export function unlinkPlace(p: Place) {
 		if (!Object.keys(p.links).length) delete p.links;
 	}
 }
+
+const foldName = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').trim().toLowerCase();
+
+/** Other places that may be the same as this one: the same name (or former name), or the same OSM place. */
+export function duplicatesOf(d: Dataset, id: string): Place[] {
+	const p = d.places.find((x) => x.id === id);
+	if (!p) return [];
+	const names = new Set([p.name, ...(p.altNames ?? []).map((a) => a.name)].map(foldName));
+	return d.places.filter(
+		(q) => q.id !== id && ((p.links?.osm && q.links?.osm === p.links.osm) || [q.name, ...(q.altNames ?? []).map((a) => a.name)].some((n) => names.has(foldName(n))))
+	);
+}
+
+/** Which of two places to keep when merging: the one on the map, else the more used, else `a`. */
+export function mergeTarget(d: Dataset, a: string, b: string): string {
+	const pa = d.places.find((x) => x.id === a),
+		pb = d.places.find((x) => x.id === b);
+	if (isLinked(pa) !== isLinked(pb)) return isLinked(pa) ? a : b;
+	return placeUses(d, b) > placeUses(d, a) ? b : a;
+}
+
+/** Merge place `goneId` into `keepId`: its events move across, its name becomes a former name if different, and
+ *  anything the kept place lacks (map position, links, wider area) is filled in from it. Then it's removed. */
+export function mergePlaces(d: Dataset, keepId: string, goneId: string) {
+	const keep = d.places.find((p) => p.id === keepId),
+		gone = d.places.find((p) => p.id === goneId);
+	if (!keep || !gone || keep === gone) return;
+	for (const e of d.events) if (e.place?.placeId === goneId) e.place.placeId = keepId;
+	const known = new Set([keep.name, ...(keep.altNames ?? []).map((a) => a.name)].map(foldName));
+	for (const a of [{ name: gone.name }, ...(gone.altNames ?? [])])
+		if (!known.has(foldName(a.name))) {
+			if (!keep.altNames) keep.altNames = [];
+			keep.altNames.push({ ...a });
+			known.add(foldName(a.name));
+		}
+	if (!keep.coordinates && gone.coordinates) keep.coordinates = { ...gone.coordinates };
+	if (!keep.context && gone.context) keep.context = gone.context;
+	if (!keep.type && gone.type) keep.type = gone.type;
+	if (gone.links) keep.links = { ...gone.links, ...(keep.links ?? {}) };
+	if (!keep.notes && gone.notes) keep.notes = gone.notes;
+	d.places = d.places.filter((p) => p.id !== goneId);
+	// Anything else pointing at the removed place (a parent place) now points at the kept one.
+	for (const p of d.places) if (p.parentId === goneId) p.parentId = keepId;
+}

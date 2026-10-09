@@ -83,6 +83,12 @@ describe('wheelAction', () => {
 		expect(isZoom(a) && a.zoom < 1).toBe(true);
 	});
 
+	it('leaves Safari (whose mouse wheel looks like a trackpad) scrolling, with ⌘ to zoom', () => {
+		expect(isZoom(wheelAction({ ...base, deltaY: 4.000244140625, wheelDeltaY: -12 }))).toBe(false);
+		expect(isZoom(wheelAction({ ...base, deltaY: 40, wheelDeltaY: -120 }))).toBe(false);
+		expect(isZoom(wheelAction({ ...base, deltaY: 4.000244140625, wheelDeltaY: -12, metaKey: true }))).toBe(true);
+	});
+
 	it('treats Firefox line-mode wheel as zoom', () => {
 		expect(isZoom(wheelAction({ ...base, deltaY: 3, deltaMode: 1 }))).toBe(true);
 	});

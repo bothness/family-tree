@@ -140,7 +140,7 @@
 		</div>
 		<div class="legend">
 			<span><span class="ink">Ink</span> = confirmed</span><span><span class="pen">pencil</span> = guess</span>
-			<span>dashed line = likely or guessed link</span><span style="color:var(--warn)">orange = children known to be missing</span>
+			<span>dashed line = likely or guessed link</span>
 		</div>
 	</div>
 

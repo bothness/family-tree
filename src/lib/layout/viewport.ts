@@ -68,6 +68,7 @@ export function wheelAction(e: WheelLike): { zoom: number } | { pan: [number, nu
 	if (e.ctrlKey || e.metaKey) return { zoom: Math.exp(-dy * 0.01) };
 	// Trackpads report wheelDeltaY ≈ -3 × deltaY (an integer, so allow rounding when deltaY is fractional).
 	const trackpadLike = !!e.wheelDeltaY && Math.abs(e.wheelDeltaY + 3 * e.deltaY) <= 1;
+	// Safari's mouse wheel looks just like a trackpad here, so in Safari it scrolls and ⌘ + wheel zooms.
 	const mouse = e.deltaX === 0 && e.deltaY !== 0 && (e.deltaMode !== 0 || (!!e.wheelDeltaY && !trackpadLike));
 	if (mouse) return { zoom: Math.exp(clamp(-dy * 0.002, -0.5, 0.5)) };
 	return { pan: [-dx, -dy] };
