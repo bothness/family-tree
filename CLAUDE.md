@@ -45,7 +45,7 @@ Run `npm test` and `npm run check` before finishing any change.
 
 ## Where we are
 - Phase A (editing and data model) is done.
-- **Phase B (navigation) is done** on branch `phase-b-navigation` (not yet merged to `main`):
+- **Phase B (navigation) is done** (merged to `main` 9 Oct 2026):
   - done: zoom, pan and fit (V1); search and centre (V3); focus mode with separate up/down depths and a direct / + siblings / all relatives width switch (V3, V4). Focus is kept in the page address (`#focus=…&up=…&down=…&w=…`) and filters every tab.
   - done: saved views (V5/V6), shown as chips under the header (`ViewBar.svelte`, `model/views.ts`). One rule per view: a focus (`scope.root` + `up`/`down`/`width`, absent depth = all generations), a tag, or a hand-picked `people` list. Opening a focus view fills the focus bar; changes show "Update view". The open view is in the page address too (`#view=…`).
   - done: collapse to one person (a 0/0 focus shows only that person, no partners) and Reset to an empty canvas (`app.blank`, `#start`) (V2).
