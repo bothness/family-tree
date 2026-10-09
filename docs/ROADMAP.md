@@ -39,11 +39,15 @@ Decision: **build our own layout**, borrowing ideas from existing libraries. Rul
 
 Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch. Neither service tries to draw everyone at once; both centre on one person and expand from there. A tree around one person lays out cleanly, which avoids most crossings. The "everyone" view then needs a proper layered-graph layout (build our own, or use ELK.js or the family-chart library), with separate connector levels per family and hops at crossings.
 
-## Phase D – Places and images
+## Phase D – Places, images and map
+Order: D1 browser store on IndexedDB → D2 place lookup (G6) → D3 photos (V10) → D4 map (V12).
+
 | # | Change | Notes |
 |---|---|---|
-| G6 | Places looked up via Nominatim (OpenStreetMap) or Wikidata, with coordinates; editable names and custom/historical places | Model already has coordinates, Wikidata and dated `altNames`. Add `osmId`. **The prototype page can't call outside APIs**, so live lookup probably needs the deployed app (or a small proxy function on Netlify or Cloudflare) |
-| V10 | Photos on cards, with sex-based silhouette fallback, plus a compact mode without images | Add a minimal `Media` entity and `person.photo`. The prototype can hold small resized thumbnails in the browser; the real app stores them in R2 or the repo |
+| D1 | Move the browser store from localStorage to IndexedDB, behind the same `DataStore` interface | Room for photos (localStorage is ~5 MB); existing data moves across automatically. Prerequisite for V10 and the browser-only edition |
+| G6 | Places looked up as you type: **Nominatim** (OpenStreetMap) search, keeping coordinates, the OSM id and the **Wikidata id** OSM gives (`extratags.wikidata`); editable names, dated historical names, and free-text/custom places still allowed | Called directly from the browser (allowed by Nominatim's policy at low volume): one request a second at most, sent after a pause in typing, results cached. Add `links.osm` to Place |
+| V10 | Photos on cards, with a silhouette fallback, plus a compact mode without images | Minimal `Media` entity and `person.photo`. **Only a resized copy is kept** (about 800px, plus a small card thumbnail), never the original. Stored in IndexedDB; exports include them so one file is a full backup |
+| V12 | Map view: a **MapLibre** globe with **OpenFreeMap** vector tiles, showing where events happened; filtered by the current focus or view like every other tab | Uses place coordinates from G6. Clicking a place lists who was born or died there; clicking a person opens them |
 
 ## Later – A public, browser-only edition
 Once the app is complete: a version anyone can use to build their own family tree, with all data kept in their browser (no account, no server). Possibly a fork, but better as a build setting of the same app so the two don't drift apart.
@@ -81,3 +85,4 @@ What this means for decisions made before then:
 - 9 Oct: animation: people entering fade in; people leaving go at once (fading them out while others moved looked odd).
 - 9 Oct: brothers and sisters recorded with no parents at all show with the "+ Siblings" (or "All relatives") setting, whatever the generations, except when collapsed.
 - 9 Oct: added "Later – a public, browser-only edition": storage stays behind `DataStore` with the browser as a first-class store (IndexedDB once photos arrive); back-end sync is a layer on top; no server-only features.
+- 9 Oct: Phase D: place lookup via Nominatim with Wikidata ids attached from OSM's tags; photos kept only as resized copies; a MapLibre globe map with OpenFreeMap tiles added as V12, last in Phase D since it needs place coordinates. The browser store moves to IndexedDB first (D1).

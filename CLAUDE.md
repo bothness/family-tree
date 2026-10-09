@@ -2,7 +2,7 @@
 
 A family tree app for one person and close family: sketch trees quickly from patchy information, mark how sure each fact is, and fill in researched detail later. It may later support several editors.
 
-Read `docs/ROADMAP.md` (phases, item codes G1–G11 / V1–V11, decisions log) and `docs/MODEL.md` (data model) before larger changes. `docs/prototype/family-tree-sketchbook.html` is the original single-file prototype. It is the reference for intended behaviour, not code to edit.
+Read `docs/ROADMAP.md` (phases, item codes G1–G11 / V1–V12, D1, decisions log) and `docs/MODEL.md` (data model) before larger changes. `docs/prototype/family-tree-sketchbook.html` is the original single-file prototype. It is the reference for intended behaviour, not code to edit.
 
 ## Commands
 - `npm run dev`: dev server
@@ -58,4 +58,4 @@ Run `npm test` and `npm run check` before finishing any change.
   - a partner's parents are placed above them (e.g. the Murphys above Bridget)
   - families whose children's lines would overlap get separate heights; lines hop where they cross
   - nothing ordered by when it was added (the layout is the same whatever order people and families were stored in)
-- Then Phase D: place lookup (Nominatim or Wikidata) and photos.
+- **Next is Phase D** (branch `phase-d-places`): D1 browser store on IndexedDB, G6 place lookup (Nominatim + Wikidata ids), V10 photos (resized copies only), V12 MapLibre globe map with OpenFreeMap tiles.
