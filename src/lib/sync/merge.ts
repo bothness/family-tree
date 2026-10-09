@@ -10,10 +10,13 @@
 // - other lists (tags, to-dos, links, citations) are merged as sets: additions from both sides, removals from either
 // - a person's `names` is one value (its order says which name is primary)
 // - `meta` (who changed what, when) takes the later of the two; photo thumbnails (remade on each device) take either
-// When both sides changed the same thing differently, the local value is kept and a conflict is recorded, so the
-// app can ask which to keep (`choose`). Something deleted on one side and edited on the other is kept, also with a
-// conflict. Afterwards the model's rules are repaired (no references to things that are gone, each child in one
-// family, at most two partners), and each repair is reported too.
+// Clashes are settled by rules, never by asking:
+// - the same thing changed differently on both sides: the more recently edited person (family, event…) wins, by
+//   its `meta.updatedAt` (stamped by `stampChanges` when a device saves); if that's not known, this device wins
+// - deleted on one side but edited on the other: kept (someone is still working on it)
+// - afterwards the model's rules are repaired: no references to things that are gone, each child in one family
+//   (the other editors' choice), at most two partners (the other editors' first)
+// What was settled is listed in `resolved`, for tests and troubleshooting; the app doesn't show it.
 import type { Dataset } from '../model/types.ts';
 import { migrate } from '../model/migrate.ts';
 import { prune } from '../model/mutations.ts';
@@ -21,26 +24,30 @@ import { prune } from '../model/mutations.ts';
 /** A step into the data: an object's field, or the item with this id (or personId) in a list. */
 export type PathSeg = string | { key: string };
 
-export interface Conflict {
-	/** both-changed: the same thing edited differently; deleted-vs-edited: removed on one side, changed on the
-	 *  other (the edited version is kept); repaired: the merge had to fix the model's rules. */
+export interface Resolved {
+	/** both-changed: the same thing edited differently (`kept` the newer edit); deleted-vs-edited: removed on one
+	 *  side, changed on the other (the edited version kept); repaired: a rule of the model was fixed. */
 	kind: 'both-changed' | 'deleted-vs-edited' | 'repaired';
 	/** Where: the top-level list ("people"), the item's id, and the path within it. */
 	collection: string;
 	id: string;
 	path: PathSeg[];
-	base?: unknown;
 	local?: unknown;
 	remote?: unknown;
-	/** Which side the merged data has now (undefined = removed). */
+	/** Which side's value the merged data has. */
 	kept: 'local' | 'remote';
 	note?: string;
 }
 
 export interface MergeResult {
 	data: Dataset;
-	conflicts: Conflict[];
+	resolved: Resolved[];
 }
+
+type Side = 'local' | 'remote';
+const stamp = (x: unknown) => (isObj(x) && isObj(x.meta) ? String(x.meta.updatedAt ?? '') : '');
+/** The more recently edited of two versions of an item (this device's if that's not known). */
+const newer = (a: unknown, b: unknown): Side => (stamp(b) > stamp(a) ? 'remote' : 'local');
 
 /** Lists whose order means something and whose items have no id: kept whole. */
 const WHOLE = new Set(['names']);
@@ -81,14 +88,14 @@ export function merge3(base: unknown, local: unknown, remote: unknown): MergeRes
 	const o = normalise(base),
 		a = normalise(local),
 		b = normalise(remote);
-	const conflicts: Conflict[] = [];
+	const conflicts: Resolved[] = [];
 
 	const where = (path: PathSeg[]) => {
 		const id = path.find((s): s is { key: string } => typeof s !== 'string');
 		return { collection: String(path[0] ?? ''), id: id?.key ?? '', path: path.slice(id ? path.indexOf(id) + 1 : 1) };
 	};
 
-	function m(o: unknown, a: unknown, b: unknown, path: PathSeg[]): unknown {
+	function m(o: unknown, a: unknown, b: unknown, path: PathSeg[], prefer: Side = 'local'): unknown {
 		if (eq(a, b)) return a;
 		if (eq(o, a)) return b;
 		if (eq(o, b)) return a;
@@ -100,7 +107,7 @@ export function merge3(base: unknown, local: unknown, remote: unknown): MergeRes
 			const ob = isObj(o) ? o : {};
 			const out: Obj = {};
 			for (const k of [...new Set([...Object.keys(b), ...Object.keys(a)])]) {
-				const v = m(ob[k], a[k], b[k], [...path, k]);
+				const v = m(ob[k], a[k], b[k], [...path, k], prefer);
 				if (v !== undefined) out[k] = v;
 			}
 			return out;
@@ -108,14 +115,14 @@ export function merge3(base: unknown, local: unknown, remote: unknown): MergeRes
 		if (Array.isArray(a) && Array.isArray(b) && !(typeof field === 'string' && WHOLE.has(field))) {
 			const ol = Array.isArray(o) ? o : [];
 			const key = keyOf(ol, a, b);
-			return key ? keyed(ol, a, b, key, path) : asSet(ol, a, b);
+			return key ? keyed(ol, a, b, key, path, prefer) : asSet(ol, a, b);
 		}
-		conflicts.push({ kind: 'both-changed', ...where(path), base: o, local: a, remote: b, kept: 'local' });
-		return a;
+		conflicts.push({ kind: 'both-changed', ...where(path), local: a, remote: b, kept: prefer });
+		return prefer === 'local' ? a : b;
 	}
 
 	/** Lists of things with ids, merged item by item: the remote order, then local additions. */
-	function keyed(o: unknown[], a: unknown[], b: unknown[], key: string, path: PathSeg[]): unknown[] {
+	function keyed(o: unknown[], a: unknown[], b: unknown[], key: string, path: PathSeg[], prefer: Side): unknown[] {
 		const by = (l: unknown[]) => new Map(l.map((x) => [(x as Obj)[key] as string, x]));
 		const O = by(o),
 			A = by(a),
@@ -127,18 +134,19 @@ export function merge3(base: unknown, local: unknown, remote: unknown): MergeRes
 				ai = A.get(id),
 				bi = B.get(id);
 			const p = [...path, { key: id }];
-			if (ai !== undefined && bi !== undefined) out.push(m(oi, ai, bi, p));
+			// Clashes inside a top-level item go to whichever side edited that item more recently.
+			if (ai !== undefined && bi !== undefined) out.push(m(oi, ai, bi, p, path.length === 1 ? newer(ai, bi) : prefer));
 			else if (ai !== undefined) {
 				// Only here: added locally, or deleted remotely (kept if this side edited it meanwhile).
 				if (oi === undefined) out.push(ai);
 				else if (!eq(oi, ai)) {
-					conflicts.push({ kind: 'deleted-vs-edited', ...where(p), base: oi, local: ai, remote: undefined, kept: 'local', note: 'deleted on the other device, edited on this one' });
+					conflicts.push({ kind: 'deleted-vs-edited', ...where(p), local: ai, kept: 'local', note: 'deleted on the other device, edited on this one' });
 					out.push(ai);
 				}
 			} else if (bi !== undefined) {
 				if (oi === undefined) out.push(bi);
 				else if (!eq(oi, bi)) {
-					conflicts.push({ kind: 'deleted-vs-edited', ...where(p), base: oi, local: undefined, remote: bi, kept: 'remote', note: 'deleted on this device, edited on the other' });
+					conflicts.push({ kind: 'deleted-vs-edited', ...where(p), remote: bi, kept: 'remote', note: 'deleted on this device, edited on the other' });
 					out.push(bi);
 				}
 			}
@@ -165,13 +173,56 @@ export function merge3(base: unknown, local: unknown, remote: unknown): MergeRes
 
 	const merged = m(o, a, b, []) as Dataset;
 	const data = structuredClone(merged);
+	// Someone kept because the other side edited them: deleting them also took them out of their families and
+	// removed their life events, so bring those back from the side that kept them.
+	for (const c of conflicts)
+		if (c.kind === 'deleted-vs-edited' && c.collection === 'people' && !c.path.length) restorePerson(data, c.kept === 'local' ? a : b, c.id);
 	repair(data, b, conflicts);
-	return { data, conflicts };
+	return { data, resolved: conflicts };
+}
+
+const COLLECTIONS = ['people', 'families', 'events', 'places', 'sources', 'views', 'media'] as const;
+const withoutMeta = (x: Obj) => ({ ...x, meta: undefined });
+
+/** Mark what changed since `base` (people, families, events, places…) with when and by whom, so a later merge
+ *  can tell which edit is newer. Changes `d` in place. */
+export function stampChanges(base: Dataset | null, d: Dataset, by: string, at = new Date().toISOString()) {
+	for (const c of COLLECTIONS) {
+		const before = new Map(((base?.[c] ?? []) as unknown as Obj[]).map((x) => [x.id as string, x]));
+		for (const x of d[c] as unknown as Obj[]) {
+			const old = before.get(x.id as string);
+			if (old && eq(withoutMeta(old), withoutMeta(x))) continue;
+			x.meta = { ...(isObj(x.meta) ? x.meta : {}), updatedAt: at, updatedBy: by };
+		}
+	}
+}
+
+/** Bring back a person's family links, life events and photo from `from` (the side that kept them). */
+function restorePerson(d: Dataset, from: Dataset, pid: string) {
+	for (const e of from.events) {
+		if (!e.participants.some((x) => x.personId === pid)) continue;
+		const here = d.events.find((x) => x.id === e.id);
+		if (!here) d.events.push(structuredClone(e));
+		else if (!here.participants.some((x) => x.personId === pid)) here.participants.push(structuredClone(e.participants.find((x) => x.personId === pid)!));
+	}
+	for (const f of from.families) {
+		const roles = (['partners', 'children'] as const).filter((l) => (f[l] ?? []).some((x) => x.personId === pid));
+		if (!roles.length) continue;
+		const here = d.families.find((x) => x.id === f.id);
+		if (!here) {
+			d.families.push(structuredClone(f));
+			continue;
+		}
+		for (const l of roles) if (!(here[l] ?? []).some((x) => x.personId === pid)) (here[l] ??= []).push(structuredClone(f[l].find((x) => x.personId === pid)!));
+	}
+	const photo = from.people.find((x) => x.id === pid)?.photo;
+	const m = photo && from.media.find((x) => x.id === photo);
+	if (m && !d.media.some((x) => x.id === m.id)) d.media.push(structuredClone(m));
 }
 
 /** Fix what merging item by item can't guarantee, reporting each fix. `remote` decides ties (it's what the other
  *  editors already have). */
-function repair(d: Dataset, remote: Dataset, conflicts: Conflict[]) {
+function repair(d: Dataset, remote: Dataset, conflicts: Resolved[]) {
 	const fixed = (collection: string, id: string, path: PathSeg[], note: string, local?: unknown) =>
 		conflicts.push({ kind: 'repaired', collection, id, path, local, kept: 'remote', note });
 	const people = new Set(d.people.map((p) => p.id));
@@ -240,37 +291,4 @@ function repair(d: Dataset, remote: Dataset, conflicts: Conflict[]) {
 	for (const v of d.views) if (v.scope?.people) v.scope.people = v.scope.people.filter((x) => keptPeople.has(x));
 
 	prune(d);
-}
-
-/** Change the merged data to the other side's value for one conflict (or back). Returns the updated conflict. */
-export function choose(d: Dataset, c: Conflict, side: 'local' | 'remote'): Conflict {
-	if (c.kind === 'repaired' || c.kept === side) return c;
-	const value = side === 'local' ? c.local : c.remote;
-	setAt(d as unknown as Obj, c.id ? [c.collection, { key: c.id }, ...c.path] : [c.collection, ...c.path], value === undefined ? undefined : structuredClone(value));
-	// Removing something (taking the side that deleted it) can leave references to it: tidy them away.
-	if (value === undefined) repair(d, d, []);
-	return { ...c, kept: side };
-}
-
-/** Set (or with undefined, remove) the value at a path; list items are found by their id or personId. */
-function setAt(root: Obj, path: PathSeg[], value: unknown) {
-	let cur: unknown = root;
-	for (let i = 0; i < path.length - 1; i++) cur = step(cur, path[i]);
-	const last = path.at(-1)!;
-	if (typeof last === 'string') {
-		if (!isObj(cur)) return;
-		if (value === undefined) delete cur[last];
-		else cur[last] = value;
-		return;
-	}
-	if (!Array.isArray(cur)) return;
-	const i = cur.findIndex((x) => isObj(x) && ID_KEYS.some((k) => x[k] === last.key));
-	if (value === undefined) {
-		if (i >= 0) cur.splice(i, 1);
-	} else if (i >= 0) cur[i] = value;
-	else cur.push(value);
-}
-function step(cur: unknown, s: PathSeg): unknown {
-	if (typeof s === 'string') return isObj(cur) ? cur[s] : undefined;
-	return Array.isArray(cur) ? cur.find((x) => isObj(x) && ID_KEYS.some((k) => x[k] === s.key)) : undefined;
 }

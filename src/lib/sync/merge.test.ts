@@ -6,7 +6,7 @@ import demo from '../data/demo-darwin.json';
 import type { Dataset } from '../model/types.ts';
 import { deletePerson, emptyDataset, linkPeople, newFamily, newPerson, setLife } from '../model/mutations.ts';
 import { childIds, partnerIds, person } from '../model/queries.ts';
-import { choose, eq, merge3, normalise } from './merge.ts';
+import { eq, merge3, normalise, stampChanges } from './merge.ts';
 
 const base = () => normalise(demo);
 const p = (d: Dataset, id: string) => person(d, id)!;
@@ -20,7 +20,7 @@ describe('merge3 basics', () => {
 		expect(eq(merge3(o, x, x).data, x)).toBe(true);
 		expect(eq(merge3(o, o, x).data, x)).toBe(true);
 		expect(eq(merge3(o, x, o).data, x)).toBe(true);
-		expect(merge3(o, x, x).conflicts).toEqual([]);
+		expect(merge3(o, x, x).resolved).toEqual([]);
 	});
 
 	it('takes edits to different people from both sides without conflict', () => {
@@ -29,8 +29,8 @@ describe('merge3 basics', () => {
 			b = base();
 		p(a, 'per_annie').notes = 'Edited here';
 		p(b, 'per_george').notes = 'Edited there';
-		const { data, conflicts } = merge3(o, a, b);
-		expect(conflicts).toEqual([]);
+		const { data, resolved } = merge3(o, a, b);
+		expect(resolved).toEqual([]);
 		expect(p(data, 'per_annie').notes).toBe('Edited here');
 		expect(p(data, 'per_george').notes).toBe('Edited there');
 	});
@@ -41,8 +41,8 @@ describe('merge3 basics', () => {
 			b = base();
 		p(a, 'per_annie').notes = 'Edited here';
 		p(b, 'per_annie').knownAs = 'Annie';
-		const { data, conflicts } = merge3(o, a, b);
-		expect(conflicts).toEqual([]);
+		const { data, resolved } = merge3(o, a, b);
+		expect(resolved).toEqual([]);
 		expect(p(data, 'per_annie')).toMatchObject({ notes: 'Edited here', knownAs: 'Annie' });
 	});
 
@@ -52,8 +52,8 @@ describe('merge3 basics', () => {
 			b = base();
 		ok(linkPeople(a, 'child', 'per_gwen', newPerson(a, 'Elisabeth Raverat').id, { famId: 'fam_raverat_darwin' }));
 		ok(linkPeople(b, 'child', 'per_gwen', newPerson(b, 'Sophie Raverat').id, { famId: 'fam_raverat_darwin' }));
-		const { data, conflicts } = merge3(o, a, b);
-		expect(conflicts).toEqual([]);
+		const { data, resolved } = merge3(o, a, b);
+		expect(resolved).toEqual([]);
 		const names = childIds(fam(data, 'fam_raverat_darwin')).map((id) => p(data, id).names![0].given);
 		expect(names.sort()).toEqual(['Elisabeth', 'Sophie']);
 	});
@@ -65,8 +65,8 @@ describe('merge3 basics', () => {
 		p(a, 'per_annie').tags = [...(p(a, 'per_annie').tags ?? []), 'malvern'];
 		p(b, 'per_annie').tags = ['darwin-family'];
 		p(a, 'per_maud').research!.todo!.push('Find her parents');
-		const { data, conflicts } = merge3(o, a, b);
-		expect(conflicts).toEqual([]);
+		const { data, resolved } = merge3(o, a, b);
+		expect(resolved).toEqual([]);
 		expect(p(data, 'per_annie').tags).toEqual(['darwin-family', 'malvern']);
 		expect(p(data, 'per_maud').research!.todo).toContain('Find her parents');
 	});
@@ -80,8 +80,8 @@ describe('merge3 basics', () => {
 		for (const d of [o, a, b]) d.media.push({ id: 'media_1', kind: 'image', mime: 'image/jpeg', thumb: 'data:old' });
 		a.media[0].thumb = 'data:remade-here';
 		b.media[0].thumb = 'data:remade-there';
-		const { data, conflicts } = merge3(o, a, b);
-		expect(conflicts).toEqual([]);
+		const { data, resolved } = merge3(o, a, b);
+		expect(resolved).toEqual([]);
 		expect(p(data, 'per_annie').meta?.updatedBy).toBe('cousin');
 	});
 
@@ -99,23 +99,30 @@ describe('merge3 basics', () => {
 	});
 });
 
-describe('conflicts', () => {
-	it('records the same field changed differently, keeps this side, and can switch to theirs', () => {
+describe('clashes are settled by rules', () => {
+	const birth = (d: Dataset) => d.events.find((e) => e.id === 'evt_birth_annie')!.date!.edtf;
+
+	it('the same field changed on both sides: this device wins when nobody knows which edit is newer', () => {
 		const o = base(),
 			a = base(),
 			b = base();
 		setLife(a, 'per_annie', 'birth', '1841', null);
 		setLife(b, 'per_annie', 'birth', 'c.1840', null);
-		const { data, conflicts } = merge3(o, a, b);
-		expect(conflicts).toHaveLength(1);
-		const c = conflicts[0];
-		expect(c).toMatchObject({ kind: 'both-changed', collection: 'events', id: 'evt_birth_annie', path: ['date', 'edtf'], local: '1841', remote: '1840~', kept: 'local' });
-		const birth = () => data.events.find((e) => e.id === 'evt_birth_annie')!.date!.edtf;
-		expect(birth()).toBe('1841');
-		const c2 = choose(data, c, 'remote');
-		expect(birth()).toBe('1840~');
-		choose(data, c2, 'local');
-		expect(birth()).toBe('1841');
+		const { data, resolved } = merge3(o, a, b);
+		expect(birth(data)).toBe('1841');
+		expect(resolved).toMatchObject([{ kind: 'both-changed', collection: 'events', id: 'evt_birth_annie', path: ['date', 'edtf'], kept: 'local' }]);
+	});
+
+	it('the same field changed on both sides: the more recent edit wins', () => {
+		const o = base(),
+			a = base(),
+			b = base();
+		setLife(a, 'per_annie', 'birth', '1841', null);
+		stampChanges(o, a, 'me', '2026-10-09T10:00:00Z');
+		setLife(b, 'per_annie', 'birth', 'c.1840', null);
+		stampChanges(o, b, 'cousin', '2026-10-09T11:00:00Z');
+		expect(birth(merge3(o, a, b).data)).toBe('1840~');
+		expect(birth(merge3(o, b, a).data)).toBe('1840~');
 	});
 
 	it('treats a list of names as one value', () => {
@@ -124,24 +131,39 @@ describe('conflicts', () => {
 			b = base();
 		p(a, 'per_annie').names![0].given = 'Anne';
 		p(b, 'per_annie').names!.push({ type: 'alias', given: 'Annie' });
-		const { conflicts } = merge3(o, a, b);
-		expect(conflicts.map((c) => [c.kind, c.id, c.path])).toEqual([['both-changed', 'per_annie', ['names']]]);
+		const { data, resolved } = merge3(o, a, b);
+		expect(p(data, 'per_annie').names).toEqual(p(a, 'per_annie').names);
+		expect(resolved.map((c) => [c.kind, c.id, c.path])).toEqual([['both-changed', 'per_annie', ['names']]]);
 	});
 
-	it('keeps someone deleted on one side but edited on the other, and says so', () => {
+	it('keeps someone deleted on one side but edited on the other', () => {
 		const o = base(),
 			a = base(),
 			b = base();
 		deletePerson(a, 'per_maud');
 		p(b, 'per_maud').notes = 'Found her birth certificate';
-		const { data, conflicts } = merge3(o, a, b);
+		const { data, resolved } = merge3(o, a, b);
 		expect(p(data, 'per_maud').notes).toBe('Found her birth certificate');
-		expect(conflicts.some((c) => c.kind === 'deleted-vs-edited' && c.id === 'per_maud' && c.kept === 'remote')).toBe(true);
-		// Choosing this side's deletion removes her, and tidies away anything that pointed at her.
-		const c = conflicts.find((c) => c.id === 'per_maud' && c.kind === 'deleted-vs-edited')!;
-		choose(data, c, 'local');
-		expect(person(data, 'per_maud')).toBeUndefined();
-		expect(data.families.some((f) => partnerIds(f).includes('per_maud') || childIds(f).includes('per_maud'))).toBe(false);
+		expect(resolved.some((c) => c.kind === 'deleted-vs-edited' && c.id === 'per_maud')).toBe(true);
+		// …with her family links and life events, which deleting her had removed.
+		expect(partnerIds(fam(data, 'fam_george_maud'))).toContain('per_maud');
+		expect(data.events.some((e) => e.id === 'evt_death_maud')).toBe(true);
+		expect(problems(data)).toEqual([]);
+	});
+});
+
+describe('stampChanges', () => {
+	it('marks only what changed, with when and by whom', () => {
+		const o = base(),
+			d = base();
+		p(d, 'per_annie').notes = 'New';
+		stampChanges(o, d, 'me@example.com', '2026-10-09T12:00:00Z');
+		expect(p(d, 'per_annie').meta).toEqual({ updatedAt: '2026-10-09T12:00:00Z', updatedBy: 'me@example.com' });
+		expect(p(d, 'per_george').meta).toBeUndefined();
+		// A second save with nothing new doesn't move the stamp.
+		const again = structuredClone(d);
+		stampChanges(d, again, 'me@example.com', '2026-10-09T13:00:00Z');
+		expect(p(again, 'per_annie').meta?.updatedAt).toBe('2026-10-09T12:00:00Z');
 	});
 });
 
@@ -165,10 +187,10 @@ describe('repairs after merging', () => {
 			b = structuredClone(o);
 		fam(a, 'fam_horace_ida').children.push({ personId: x });
 		fam(b, 'fam_george_maud').children.push({ personId: x });
-		const { data, conflicts } = merge3(o, a, b);
+		const { data, resolved } = merge3(o, a, b);
 		expect(childIds(fam(data, 'fam_george_maud'))).toContain(x);
 		expect(childIds(fam(data, 'fam_horace_ida'))).not.toContain(x);
-		expect(conflicts.some((c) => c.kind === 'repaired' && c.id === 'fam_horace_ida')).toBe(true);
+		expect(resolved.some((c) => c.kind === 'repaired' && c.id === 'fam_horace_ida')).toBe(true);
 	});
 
 	it('keeps at most two partners in a family', () => {
@@ -179,9 +201,9 @@ describe('repairs after merging', () => {
 			b = structuredClone(o);
 		fam(a, solo.id).partners.push({ personId: 'per_william' });
 		fam(b, solo.id).partners.push({ personId: 'per_george' });
-		const { data, conflicts } = merge3(o, a, b);
+		const { data, resolved } = merge3(o, a, b);
 		expect(partnerIds(fam(data, solo.id))).toEqual(['per_bessy', 'per_george']);
-		expect(conflicts.some((c) => c.kind === 'repaired' && c.note?.includes('two partners'))).toBe(true);
+		expect(resolved.some((c) => c.kind === 'repaired' && c.note?.includes('two partners'))).toBe(true);
 	});
 });
 
@@ -224,12 +246,14 @@ describe('random edits on two devices', () => {
 				b = structuredClone(o);
 			edit(a, r, 12);
 			edit(b, r, 12);
-			const { data, conflicts } = merge3(o, a, b);
+			// Half the time the devices' edits carry times (as when saved through sync), half not.
+			if (seed % 2) {
+				stampChanges(o, a, 'a', `2026-10-09T10:${String(seed).padStart(2, '0')}:00Z`);
+				stampChanges(o, b, 'b', '2026-10-09T10:30:00Z');
+			}
+			const { data, resolved } = merge3(o, a, b);
 			expect(problems(data)).toEqual([]);
-			// Taking the other side for every conflict also leaves valid data.
-			for (const c of conflicts) choose(data, c, c.kept === 'local' ? 'remote' : 'local');
-			expect(problems(data)).toEqual([]);
-			seen.push(...conflicts.map((c) => c.kind));
+			seen.push(...resolved.map((c) => c.kind));
 		});
 	it('the random edits do clash in every way', () => {
 		expect(new Set(seen)).toEqual(new Set(['both-changed', 'deleted-vs-edited', 'repaired']));
