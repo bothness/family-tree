@@ -62,6 +62,8 @@
 		return parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0];
 	}
 	let confirmDel = $state(false);
+	/** Parents whose certainty was changed here: their switch stays visible after being set to Confirmed. */
+	let touchedParents = $state(new Set<string>());
 	let moreOpen = $state(false);
 	let todoText = $state('');
 	let urlText = $state('');
@@ -76,6 +78,7 @@
 		info = '';
 		added = null;
 		confirmDel = false;
+		touchedParents = new Set();
 	});
 
 	const NAME_TYPES: [NameType, string][] = [['married', 'Married name'], ['birth', 'Birth name'], ['deed-poll', 'Deed poll'], ['alias', 'Alias'], ['anglicised', 'Anglicised'], ['religious', 'Religious name'], ['other', 'Other']];
@@ -109,6 +112,12 @@
 		const e = parseUserDate(v);
 		if (e) r[field] = { ...(r[field] ?? {}), edtf: e };
 		else delete r[field];
+	}
+	/** Set (or clear) how sure a link is: a child's place in a family, or a parent's. */
+	function setStatus(link: { status?: Status } | undefined, v: Status | undefined) {
+		if (!link) return;
+		if (v) link.status = v;
+		else delete link.status;
 	}
 	function setExpected(f: Family, v: string) {
 		const n = parseInt(v, 10);
@@ -262,6 +271,15 @@
 			<span class="hint">Parents:</span>
 			{#if parents.length}{#each parents as id, i (id)}{@render personLink(id)}{i < parents.length - 1 ? ' & ' : ''}{/each}{:else}<span class="hint">not recorded</span>{/if}
 		</div>
+		{#if parentFam && parents.length}
+			{@const link = parentFam.children.find((c) => c.personId === pid)}
+			<!-- How sure the link to their parents is (set to "guess" when added with "This is a guess"), and, for a
+			     parent who was added as a guess, how sure that parent is. -->
+			<div class="row"><span class="hint">This parent link is</span><StatusPicker value={link?.status} onchange={(v) => setStatus(link, v)} /></div>
+			{#each parentFam.partners.filter((x) => (x.status && x.status !== 'confirmed') || touchedParents.has(x.personId)) as pr (pr.personId)}
+				<div class="row"><span class="hint">{displayName(person(d, pr.personId))} as a parent is</span><StatusPicker value={pr.status} onchange={(v) => ((touchedParents = new Set([...touchedParents, pr.personId])), setStatus(pr, v))} /></div>
+			{/each}
+		{/if}
 		{#if childOfOptions.length > 1}
 			<label class="fld"><span>Child of</span>
 				<select value={parentFam ? `fam:${parentFam.id}` : 'none'} onchange={(e) => setChildOf(d, pid, val(e))}>

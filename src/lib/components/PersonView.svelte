@@ -89,7 +89,10 @@
 
 <div class="blk ro">
 	<div class="lbl">Family</div>
-	<div class="who"><span class="hint">Parents:</span> {#if parents.length}{#each parents as id, i (id)}{@render personLink(id)}{i < parents.length - 1 ? ' & ' : ''}{/each}{:else}<span class="hint">not recorded</span>{/if}</div>
+	<div class="who">
+		<span class="hint">Parents:</span>
+		{#if parents.length}{#each parents as id, i (id)}{@render personLink(id)}{#if sure(parentFam?.partners.find((x) => x.personId === id)?.status)}<span class="sure">&nbsp;({sure(parentFam?.partners.find((x) => x.personId === id)?.status)})</span>{/if}{i < parents.length - 1 ? ' & ' : ''}{/each}{#if sure(parentFam?.children.find((c) => c.personId === pid)?.status)}<span class="sure">&nbsp;(the link is {sure(parentFam?.children.find((c) => c.personId === pid)?.status)})</span>{/if}{:else}<span class="hint">not recorded</span>{/if}
+	</div>
 	{#if siblings.length}<div class="who"><span class="hint">Siblings:</span> {#each siblings as id, i (id)}{@render personLink(id)}{i < siblings.length - 1 ? ', ' : ''}{/each}</div>{/if}
 	{#if half.length}<div class="who"><span class="hint">Half-siblings:</span> {#each half as id, i (id)}{@render personLink(id)}{i < half.length - 1 ? ', ' : ''}{/each}</div>{/if}
 	{#each partnerFams as f (f.id)}
