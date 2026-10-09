@@ -1,7 +1,8 @@
 // Phase C tree layout, step 1: where each card goes. Lines are drawn separately (connectors.ts) from these
 // positions alone, so the tree can be animated by moving cards and re-running the connectors.
 //
-// Rules (docs/ROADMAP.md): one row per generation; partners side by side (father left for a single couple;
+// Rules (docs/ROADMAP.md): one row per generation; partners side by side (father left for a single couple, unless
+// both partners' parents are in view the other way round and can't be moved, when they swap so lines don't cross;
 // someone with several partners sits between them, earlier partnerships on the left, each partner's other partners
 // further out; a couple who can't be side by side get a raised line, see connectors.ts); each family's children
 // form a block under their parents, oldest first; parents centred over their children; a partner's own parents
@@ -144,19 +145,20 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 	}
 
 	// Each family's parent unit, where its line leaves that unit, and its children's units (oldest first).
-	for (const fm of fams) {
-		const vis = fm.ps.length ? fm.ps : [];
-		if (vis.length) {
-			const u = unitOf.get(vis[0])!;
-			fm.parent = u;
-			const both = vis.length === 2 && unitOf.get(vis[1]) === u;
-			if (both) {
-				const [l, r] = [...vis].sort((a, b) => cardLeft(u, a) - cardLeft(u, b));
-				const outerLeft = !(partnerCount(partners, l) > partnerCount(partners, r));
-				fm.anchorOff = anchorOffset(cardLeft(u, l), cardLeft(u, r), outerLeft, W);
-			} else fm.anchorOff = cardLeft(u, vis[0]) + W / 2;
+	const setAnchor = (fm: Fam) => {
+		const vis = fm.ps;
+		const u = fm.parent!;
+		if (vis.length === 2 && unitOf.get(vis[1]) === u) {
+			const [l, r] = [...vis].sort((a, b) => cardLeft(u, a) - cardLeft(u, b));
+			const outerLeft = !(partnerCount(partners, l) > partnerCount(partners, r));
+			fm.anchorOff = anchorOffset(cardLeft(u, l), cardLeft(u, r), outerLeft, W);
+		} else fm.anchorOff = cardLeft(u, vis[0]) + W / 2;
+	};
+	for (const fm of fams)
+		if (fm.ps.length) {
+			fm.parent = unitOf.get(fm.ps[0])!;
+			setAnchor(fm);
 		}
-	}
 	const childOf = new Map<string, Fam>();
 	for (const fm of fams) if (fm.parent) for (const c of fm.cs) childOf.set(c, fm);
 	for (const fm of fams) {
@@ -267,6 +269,35 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, W:
 		}
 		sweep();
 	}
+
+	// A couple whose parents are both in view but placed the other way round: if either set of parents is free to
+	// move (no parents of their own in view), move the smaller unit across the other; if both are fixed (e.g.
+	// cousins whose parents are brother and sister, in age order), swap the couple instead. Either way their
+	// parents' lines don't cross; a swapped couple outranks "father on the left".
+	let changed = false;
+	for (const u of units) {
+		if (u.members.length !== 2) continue;
+		const pu = (m: string) => {
+			const fm = childOf.get(m);
+			return fm?.parent?.placed ? { fm, u: fm.parent, x: fm.parent.x + fm.anchorOff } : undefined;
+		};
+		const [a, b] = u.members.map(pu);
+		if (!a || !b || a.u === b.u || a.x <= b.x) continue;
+		const free = [a.u, b.u].filter((v) => v.g === a.u.g && !parentFams.get(v)?.length).sort((p, q) => p.members.length - q.members.length);
+		if (a.u.g === b.u.g && free.length) {
+			const row = rows[a.u.g];
+			const mover = free[0];
+			row.splice(row.indexOf(mover), 1);
+			// a's parents belong on the left of b's.
+			if (mover === a.u) row.splice(row.indexOf(b.u), 0, mover);
+			else row.splice(row.indexOf(a.u) + 1, 0, mover);
+		} else {
+			u.members.reverse();
+			for (const fm of fams) if (fm.parent === u) setAnchor(fm);
+		}
+		changed = true;
+	}
+	if (changed) sweep();
 
 	// 4. Read off positions; the focus person (if any) sits at x = 0.
 	const nodes: NodeBox[] = [],

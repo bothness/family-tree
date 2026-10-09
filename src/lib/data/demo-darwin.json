@@ -21,6 +21,14 @@
 			],
 			"notes": "Physician, poet and inventor; a founder of the Lunar Society of Birmingham. Grandfather of both Charles Darwin and Francis Galton.",
 			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "researched"
 			}
@@ -52,6 +60,14 @@
 			],
 			"notes": "Daughter of Charles Howard, a Lichfield solicitor.",
 			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress",
 				"todo": [
@@ -79,6 +95,14 @@
 			],
 			"notes": "Medical student; died young, of an infection caught while dissecting.",
 			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -103,6 +127,14 @@
 			],
 			"notes": "Lawyer. Bought Breadsall Priory, and drowned in the river at the bottom of its garden; much of the family thought it suicide.",
 			"sourceNotes": "Darwin Correspondence Project name register",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_8435",
+						"label": "Darwin Correspondence Project: Erasmus Darwin (1759–99)"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -129,6 +161,14 @@
 				"darwin"
 			],
 			"notes": "Died at about four months old.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -153,6 +193,14 @@
 			],
 			"notes": "Physician in Shrewsbury; lived at The Mount. Father of Charles Darwin.",
 			"sourceNotes": "Wikipedia: Robert Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Robert_Darwin",
+						"label": "Wikipedia: Robert Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "researched"
 			}
@@ -176,6 +224,14 @@
 				"darwin"
 			],
 			"notes": "Died at 19 days old.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -206,6 +262,14 @@
 			],
 			"notes": "Governess hired to look after the young Robert. She and Erasmus had two daughters; she later married Joseph Day.",
 			"sourceNotes": "Wikipedia: Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -238,6 +302,18 @@
 				"darwin"
 			],
 			"notes": "With her sister Mary, ran a girls’ boarding school at Ashbourne from 1794, for which Erasmus wrote his Plan for the Conduct of Female Education (1797). Some sources call her Susan.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://romantic-circles.org/sites/default/files/imported/editions/loves-plants/3.02.%20Education.pdf",
+						"label": "Romantic Circles: Darwin on female education"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -257,6 +333,14 @@
 				"status": "confirmed"
 			},
 			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://romantic-circles.org/sites/default/files/imported/editions/loves-plants/3.02.%20Education.pdf",
+						"label": "Romantic Circles: Darwin on female education"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -282,6 +366,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -302,6 +394,14 @@
 			},
 			"deceased": true,
 			"notes": "Birmingham merchant.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Erasmus_Darwin",
+						"label": "Wikipedia: Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -323,6 +423,14 @@
 			"knownAs": "2nd Earl of Portmore",
 			"deceased": true,
 			"sourceNotes": "Wikipedia: Charles Colyear, 2nd Earl of Portmore",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -342,6 +450,14 @@
 				"status": "confirmed"
 			},
 			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -376,6 +492,22 @@
 			],
 			"notes": "Widow of Colonel Pole when she married Erasmus. The illegitimate daughter of the 2nd Earl of Portmore.",
 			"sourceNotes": "thepeerage.com; Find a Grave (death 5 Feb 1832, marriage 6 Mar 1781)",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Elizabeth_Darwin",
+						"label": "Wikipedia: Elizabeth Darwin"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					},
+					{
+						"url": "https://revolutionaryplayers.org.uk/?p=3626",
+						"label": "Revolutionary Players: Elizabeth Pole"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress",
 				"todo": [
@@ -400,6 +532,14 @@
 			"knownAs": "Colonel Pole",
 			"deceased": true,
 			"notes": "Of Radbourne Hall, Derbyshire.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Colyear,_2nd_Earl_of_Portmore",
+						"label": "Wikipedia: Charles Colyear, 2nd Earl of Portmore"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -422,6 +562,14 @@
 			"tags": [
 				"pole"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://revolutionaryplayers.org.uk/?p=3626",
+						"label": "Revolutionary Players: Elizabeth Pole"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -447,6 +595,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -477,6 +633,18 @@
 				"darwin"
 			],
 			"notes": "Mother of Francis Galton.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_1796",
+						"label": "Darwin Correspondence Project: Violetta Darwin"
+					},
+					{
+						"url": "https://thepeerage.com/p34718.htm",
+						"label": "thepeerage.com: Frances Anne Violetta Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -499,6 +667,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -523,6 +699,14 @@
 				"darwin"
 			],
 			"notes": "Physician and traveller; knighted.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -546,6 +730,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -569,6 +761,14 @@
 				"darwin"
 			],
 			"notes": "Died in infancy.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -591,6 +791,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -614,6 +822,14 @@
 				"galton"
 			],
 			"notes": "Birmingham banker.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Samuel_Tertius_Galton",
+						"label": "Wikipedia: Samuel Tertius Galton"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -637,6 +853,14 @@
 				"galton"
 			],
 			"notes": "Statistician and polymath; half-cousin of Charles Darwin.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Galton",
+						"label": "Wikipedia: Francis Galton"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress",
 				"todo": [
@@ -664,6 +888,14 @@
 			],
 			"notes": "Potter; founder of the Wedgwood firm, built the Etruria works. Friend of Erasmus Darwin in the Lunar Society.",
 			"sourceNotes": "Wikipedia: Josiah Wedgwood (birth date is his baptism, probably the day he was born)",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Josiah_Wedgwood",
+						"label": "Wikipedia: Josiah Wedgwood"
+					}
+				]
+			},
 			"research": {
 				"stage": "researched"
 			}
@@ -687,6 +919,14 @@
 				"wedgwood"
 			],
 			"notes": "A distant cousin of Josiah.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Josiah_Wedgwood",
+						"label": "Wikipedia: Josiah Wedgwood"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -716,6 +956,14 @@
 				"wedgwood",
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress",
 				"todo": [
@@ -742,6 +990,14 @@
 				"wedgwood"
 			],
 			"notes": "Founder of the Royal Horticultural Society.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -764,6 +1020,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -789,6 +1053,14 @@
 			],
 			"notes": "Ran the pottery after his father. Bought Maer Hall in 1807; known in the family as \"Uncle Jos\".",
 			"sourceNotes": "Wikipedia: Josiah Wedgwood II",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Josiah_Wedgwood_II",
+						"label": "Wikipedia: Josiah Wedgwood II"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress"
 			}
@@ -812,6 +1084,14 @@
 				"wedgwood"
 			],
 			"notes": "Early experimenter in photography.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -834,6 +1114,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -856,6 +1144,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -878,6 +1174,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -907,6 +1211,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -932,6 +1244,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -956,6 +1276,14 @@
 				"wedgwood"
 			],
 			"notes": "Moved the family to Leith Hill Place, Surrey, in 1847.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_5027",
+						"label": "Darwin Correspondence Project: Josiah Wedgwood III"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -978,6 +1306,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1006,6 +1342,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1028,6 +1372,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1050,6 +1402,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1073,6 +1433,14 @@
 				"wedgwood"
 			],
 			"notes": "Philologist.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1096,6 +1464,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1127,6 +1503,14 @@
 			],
 			"notes": "Charles Darwin's first cousin and wife. A good pianist; family accounts say she had two or three lessons from Chopin.",
 			"sourceNotes": "Wikipedia: Emma Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Emma_Darwin",
+						"label": "Wikipedia: Emma Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "researched"
 			}
@@ -1155,6 +1539,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1175,6 +1567,14 @@
 			},
 			"deceased": true,
 			"notes": "Physician.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -1210,6 +1610,18 @@
 			],
 			"notes": "Married her cousin Josiah Wedgwood III.",
 			"sourceNotes": "Wikipedia gives 1800; thepeerage.com 1801.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					},
+					{
+						"url": "https://thepeerage.com/p53229.htm",
+						"label": "thepeerage.com: Caroline Sarah Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress",
 				"todo": [
@@ -1235,6 +1647,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1258,6 +1678,14 @@
 				"darwin"
 			],
 			"notes": "Charles's elder brother; lived in London.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1282,6 +1710,14 @@
 				"darwin"
 			],
 			"notes": "Naturalist. Sailed on HMS Beagle 1831–36; published On the Origin of Species in 1859. Lived at Down House, Kent, from 1842.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Charles_Darwin",
+						"label": "Wikipedia: Charles Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "researched"
 			}
@@ -1311,6 +1747,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1332,6 +1776,14 @@
 			"deceased": true,
 			"notes": "Clergyman. Married two of the cousins in turn.",
 			"sourceNotes": "Darwin Correspondence Project name register",
+			"links": {
+				"urls": [
+					{
+						"url": "https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_2809",
+						"label": "Darwin Correspondence Project: Charles Langton"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1355,6 +1807,14 @@
 				"wedgwood"
 			],
 			"notes": "Died as a baby.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1379,6 +1839,18 @@
 				"wedgwood"
 			],
 			"sourceNotes": "Wikipedia and thepeerage.com differ on her name.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					},
+					{
+						"url": "https://thepeerage.com/p53229.htm",
+						"label": "thepeerage.com: Caroline Sarah Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -1410,6 +1882,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Caroline_Wedgwood",
+						"label": "Wikipedia: Caroline Wedgwood"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1432,6 +1912,14 @@
 			"tags": [
 				"wedgwood"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://thepeerage.com/p53229.htm",
+						"label": "thepeerage.com: Caroline Sarah Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1452,6 +1940,14 @@
 			},
 			"deceased": true,
 			"notes": "Vicar of Down Ampney.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Ralph_Vaughan_Williams",
+						"label": "Wikipedia: Ralph Vaughan Williams"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -1475,6 +1971,14 @@
 			},
 			"deceased": true,
 			"notes": "Composer. Great-great-grandson of Josiah Wedgwood, and Charles Darwin’s great-nephew.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Ralph_Vaughan_Williams",
+						"label": "Wikipedia: Ralph Vaughan Williams"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress"
 			}
@@ -1499,6 +2003,14 @@
 			],
 			"notes": "Banker in Southampton.",
 			"sourceNotes": "Wikipedia: William Erasmus Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/William_Erasmus_Darwin",
+						"label": "Wikipedia: William Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1525,6 +2037,14 @@
 			},
 			"deceased": true,
 			"notes": "American, from Cambridge, Massachusetts.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/William_Erasmus_Darwin",
+						"label": "Wikipedia: William Erasmus Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1550,6 +2070,14 @@
 			],
 			"notes": "Charles's favourite child. Died at Great Malvern, where she had been taken for the water cure.",
 			"sourceNotes": "Wikipedia: Anne Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Anne_Darwin",
+						"label": "Wikipedia: Anne Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "researched"
 			}
@@ -1573,6 +2101,14 @@
 				"darwin"
 			],
 			"notes": "Lived 23 days.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://www.findagrave.com/memorial/91914049/mary-eleanor-darwin",
+						"label": "Find a Grave: Mary Eleanor Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1603,6 +2139,14 @@
 				"darwin"
 			],
 			"notes": "Edited her father's books, and her mother's letters.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1622,6 +2166,14 @@
 				"status": "confirmed"
 			},
 			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1646,6 +2198,14 @@
 			],
 			"notes": "Astronomer and mathematician at Cambridge.",
 			"sourceNotes": "Wikipedia: George Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/George_Darwin",
+						"label": "Wikipedia: George Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress"
 			}
@@ -1673,6 +2233,14 @@
 			"knownAs": "Maud du Puy",
 			"deceased": true,
 			"notes": "From Philadelphia.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/George_Darwin",
+						"label": "Wikipedia: George Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -1700,6 +2268,14 @@
 				"darwin"
 			],
 			"notes": "Never married.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1724,6 +2300,14 @@
 			],
 			"notes": "Botanist; worked with his father on plant movement. Married three times.",
 			"sourceNotes": "Wikipedia: Francis Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress"
 			}
@@ -1750,6 +2334,14 @@
 			},
 			"deceased": true,
 			"notes": "Died soon after Bernard was born.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1776,6 +2368,14 @@
 			},
 			"deceased": true,
 			"notes": "Lecturer in English literature at Newnham College.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1802,6 +2402,18 @@
 			},
 			"deceased": true,
 			"notes": "Widow of the legal historian F. W. Maitland.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Francis_Darwin",
+						"label": "Wikipedia: Francis Darwin"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1823,6 +2435,14 @@
 			"knownAs": "F. W. Maitland",
 			"deceased": true,
 			"notes": "Legal historian.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1843,6 +2463,14 @@
 			},
 			"deceased": true,
 			"notes": "Francis Darwin's stepdaughter.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1864,6 +2492,14 @@
 			"knownAs": "Fredegond Shove",
 			"deceased": true,
 			"notes": "Poet.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frederic_William_Maitland",
+						"label": "Wikipedia: Frederic William Maitland"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -1888,6 +2524,14 @@
 			],
 			"notes": "Soldier, politician and economist. Married twice; no children.",
 			"sourceNotes": "Wikipedia: Leonard Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Leonard_Darwin",
+						"label": "Wikipedia: Leonard Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress"
 			}
@@ -1913,6 +2557,14 @@
 				"status": "confirmed"
 			},
 			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Leonard_Darwin",
+						"label": "Wikipedia: Leonard Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -1942,6 +2594,14 @@
 			},
 			"deceased": true,
 			"notes": "Leonard's second cousin.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Leonard_Darwin",
+						"label": "Wikipedia: Leonard Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -1969,6 +2629,14 @@
 			],
 			"notes": "Engineer; founded the Cambridge Scientific Instrument Company.",
 			"sourceNotes": "Wikipedia: Horace Darwin",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress",
 				"todo": [
@@ -1998,6 +2666,14 @@
 			},
 			"knownAs": "Ida Farrer",
 			"deceased": true,
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2022,6 +2698,14 @@
 			],
 			"notes": "Died of scarlet fever at about 18 months, during an outbreak in the village.",
 			"sourceNotes": "Darwin Correspondence Project",
+			"links": {
+				"urls": [
+					{
+						"url": "https://www.darwinproject.ac.uk/letter/DCP-LETT-2300.xml",
+						"label": "Darwin Correspondence Project: letter to W. D. Fox, 1858"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2052,6 +2736,14 @@
 				"darwin"
 			],
 			"notes": "Wood engraver; wrote Period Piece, about a Cambridge childhood.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Gwen_Raverat",
+						"label": "Wikipedia: Gwen Raverat"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2072,6 +2764,14 @@
 			},
 			"deceased": true,
 			"notes": "French painter.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Gwen_Raverat",
+						"label": "Wikipedia: Gwen Raverat"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch",
 				"todo": [
@@ -2098,6 +2798,14 @@
 				"darwin"
 			],
 			"notes": "Physicist.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2127,6 +2835,18 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Geoffrey_Keynes",
+						"label": "Wikipedia: Geoffrey Keynes"
+					},
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2147,6 +2867,14 @@
 			},
 			"deceased": true,
 			"notes": "Surgeon; brother of John Maynard Keynes.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Geoffrey_Keynes",
+						"label": "Wikipedia: Geoffrey Keynes"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2169,6 +2897,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2192,6 +2928,14 @@
 				"darwin"
 			],
 			"notes": "Died as a baby.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2216,6 +2960,14 @@
 				"darwin"
 			],
 			"notes": "Golfer and golf writer.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Darwin%E2%80%93Wedgwood_family",
+						"label": "Wikipedia: Darwin–Wedgwood family"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2247,6 +2999,14 @@
 			],
 			"notes": "Poet.",
 			"sourceNotes": "Wikipedia: Frances Cornford gives both 19 and 30 August 1960.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frances_Cornford",
+						"label": "Wikipedia: Frances Cornford"
+					}
+				]
+			},
 			"research": {
 				"stage": "in-progress",
 				"todo": [
@@ -2270,6 +3030,14 @@
 			},
 			"deceased": true,
 			"notes": "Classical scholar.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Frances_Cornford",
+						"label": "Wikipedia: Frances Cornford"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2293,6 +3061,14 @@
 				"darwin"
 			],
 			"notes": "Killed in the Second Battle of Ypres.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2315,6 +3091,14 @@
 			"tags": [
 				"darwin"
 			],
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}
@@ -2345,6 +3129,14 @@
 				"darwin"
 			],
 			"notes": "Botanist; edited her grandfather’s autobiography and Beagle diary.",
+			"links": {
+				"urls": [
+					{
+						"url": "https://en.wikipedia.org/wiki/Horace_Darwin",
+						"label": "Wikipedia: Horace Darwin"
+					}
+				]
+			},
 			"research": {
 				"stage": "sketch"
 			}

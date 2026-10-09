@@ -39,20 +39,6 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 			const fs = partnerIds(g).map((p) => (pos.has(p) ? parentFam.get(p) : undefined));
 			return (fs[0] === fa && fs[1] === fb) || (fs[0] === fb && fs[1] === fa);
 		}).length;
-	/** Someone in a couple sitting crossed under their parents (the left partner's parents to the right of the right
-	 *  partner's), when those parents are brother and sister's families: the parents keep their age order and the
-	 *  couple keeps father on the left, so the lines must reach over (and hop). Only an actual crossing is exempt. */
-	const crossedCousins = (c: string) =>
-		d.families.some((g) => {
-			const ps = partnerIds(g).filter((p) => pos.has(p));
-			if (!ps.includes(c) || ps.length !== 2) return false;
-			const [a, b] = ps.sort((p, q) => pos.get(p)!.x - pos.get(q)!.x);
-			const [fa, fb] = [a, b].map((p) => d.families.find((h) => h.id === parentFam.get(p)));
-			if (!fa || !fb || fa === fb || !L.anchors[fa.id] || !L.anchors[fb.id]) return false;
-			const grand = (h: typeof fa) => new Set(partnerIds(h!).filter((p) => pos.has(p)).map((p) => parentFam.get(p)));
-			const siblings = [...grand(fa)].some((x) => x && grand(fb).has(x));
-			return siblings && L.anchors[fa.id].x > L.anchors[fb.id].x;
-		});
 
 	for (const f of d.families) {
 		const ps = partnerIds(f).filter((p) => pos.has(p));
@@ -96,7 +82,7 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 		// parents may want the same space), and someone with several families sits between them by design, so
 		// they're exempt.
 		const multi = ps.some((p) => d.families.some((g) => g !== f && partnerIds(g).includes(p) && childIds(g).some((c) => pos.has(c))));
-		const a = multi || cs.some((c) => crossedCousins(c)) ? undefined : L.anchors[f.id];
+		const a = multi ? undefined : L.anchors[f.id];
 		const kids = [...cs.map((c) => pos.get(c)!.x + NODE_W / 2), ...L.ghosts.filter((g) => g.familyId === f.id).map((g) => g.x + GHOST_W / 2)];
 		if (a && kids.length) {
 			const lo = Math.min(...kids) - CENTRE_TOLERANCE,
@@ -141,6 +127,14 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 		const oneSide = (p: NodeLike) => sibs(p.id).every((s) => pos.get(s)!.x < p.x) || sibs(p.id).every((s) => pos.get(s)!.x > p.x);
 		const relaxed = linkCount(fid(a.id), fid(b.id)) > 1 && (oneSide(a) || oneSide(b));
 		if (!leftOk && !rightOk && !relaxed) out.push(`${name(a.id)} and ${name(b.id)}'s brothers and sisters are mixed on both sides`);
+	}
+	// A couple with both partners' parents in view doesn't sit crossed under them (the left partner's parents to
+	// the right of the right partner's).
+	for (const f of d.families) {
+		const ps = partnerIds(f).filter((p) => pos.has(p) && parentFam.has(p));
+		if (ps.length !== 2 || pos.get(ps[0])!.y !== pos.get(ps[1])!.y) continue;
+		const [a, b] = ps.sort((p, q) => pos.get(p)!.x - pos.get(q)!.x).map((p) => L.anchors[parentFam.get(p)!]);
+		if (a && b && a.x > b.x + 1) out.push(`${f.id}: the couple sits crossed under their parents`);
 	}
 	// No vertical line runs through a card.
 	for (const l of L.lines)

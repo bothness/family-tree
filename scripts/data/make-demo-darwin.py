@@ -33,6 +33,77 @@ places = {
 
 people, families, events = [], [], []
 
+WIKI = 'https://en.wikipedia.org/wiki/'
+FAMILY = ('Wikipedia: Darwin–Wedgwood family', WIKI + 'Darwin%E2%80%93Wedgwood_family')
+SOURCES = {  # person → the pages their facts came from (everyone else: the Darwin–Wedgwood family article)
+    'erasmus': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'mary_howard': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'charles_1758': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'erasmus_jr': [('Darwin Correspondence Project: Erasmus Darwin (1759–99)', 'https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_8435')],
+    'elizabeth_1763': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'william_alvey': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'robert': [('Wikipedia: Robert Darwin', WIKI + 'Robert_Darwin')],
+    'mary_parker': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'joseph_day': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'susanna_parker': [('Romantic Circles: Darwin on female education', 'https://romantic-circles.org/sites/default/files/imported/editions/loves-plants/3.02.%20Education.pdf'),
+                       ('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'mary_parker_jr': [('Wikipedia: Erasmus Darwin', WIKI + 'Erasmus_Darwin')],
+    'henry_hadley': [('Romantic Circles: Darwin on female education', 'https://romantic-circles.org/sites/default/files/imported/editions/loves-plants/3.02.%20Education.pdf')],
+    'earl_portmore': [('Wikipedia: Charles Colyear, 2nd Earl of Portmore', WIKI + 'Charles_Colyear,_2nd_Earl_of_Portmore')],
+    'elizabeth_collier_sr': [('Wikipedia: Charles Colyear, 2nd Earl of Portmore', WIKI + 'Charles_Colyear,_2nd_Earl_of_Portmore')],
+    'elizabeth_collier': [('Wikipedia: Elizabeth Darwin', WIKI + 'Elizabeth_Darwin'),
+                          ('Wikipedia: Charles Colyear, 2nd Earl of Portmore', WIKI + 'Charles_Colyear,_2nd_Earl_of_Portmore'),
+                          ('Revolutionary Players: Elizabeth Pole', 'https://revolutionaryplayers.org.uk/?p=3626')],
+    'col_pole': [('Wikipedia: Charles Colyear, 2nd Earl of Portmore', WIKI + 'Charles_Colyear,_2nd_Earl_of_Portmore')],
+    'sacheverell_pole': [('Revolutionary Players: Elizabeth Pole', 'https://revolutionaryplayers.org.uk/?p=3626')],
+    'violetta': [('Darwin Correspondence Project: Violetta Darwin', 'https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_1796'),
+                 ('thepeerage.com: Frances Anne Violetta Darwin', 'https://thepeerage.com/p34718.htm')],
+    'tertius_galton': [('Wikipedia: Samuel Tertius Galton', WIKI + 'Samuel_Tertius_Galton')],
+    'francis_galton': [('Wikipedia: Francis Galton', WIKI + 'Francis_Galton')],
+    'josiah_1': [('Wikipedia: Josiah Wedgwood', WIKI + 'Josiah_Wedgwood')],
+    'sarah_wedgwood': [('Wikipedia: Josiah Wedgwood', WIKI + 'Josiah_Wedgwood')],
+    'josiah_2': [('Wikipedia: Josiah Wedgwood II', WIKI + 'Josiah_Wedgwood_II')],
+    'josiah_3': [('Darwin Correspondence Project: Josiah Wedgwood III', 'https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_5027')],
+    'caroline': [('Wikipedia: Caroline Wedgwood', WIKI + 'Caroline_Wedgwood'), ('thepeerage.com: Caroline Sarah Darwin', 'https://thepeerage.com/p53229.htm')],
+    'sophy_1838': [('Wikipedia: Caroline Wedgwood', WIKI + 'Caroline_Wedgwood')],
+    'sophy_1842': [('Wikipedia: Caroline Wedgwood', WIKI + 'Caroline_Wedgwood'), ('thepeerage.com: Caroline Sarah Darwin', 'https://thepeerage.com/p53229.htm')],
+    'margaret_wedgwood': [('Wikipedia: Caroline Wedgwood', WIKI + 'Caroline_Wedgwood')],
+    'lucy_wedgwood': [('thepeerage.com: Caroline Sarah Darwin', 'https://thepeerage.com/p53229.htm')],
+    'charles_langton': [('Darwin Correspondence Project: Charles Langton', 'https://epsilon.ac.uk/view/dcp-data/nameregs/nameregs_2809')],
+    'arthur_vw': [('Wikipedia: Ralph Vaughan Williams', WIKI + 'Ralph_Vaughan_Williams')],
+    'ralph_vw': [('Wikipedia: Ralph Vaughan Williams', WIKI + 'Ralph_Vaughan_Williams')],
+    'charles': [('Wikipedia: Charles Darwin', WIKI + 'Charles_Darwin')],
+    'emma': [('Wikipedia: Emma Darwin', WIKI + 'Emma_Darwin')],
+    'william': [('Wikipedia: William Erasmus Darwin', WIKI + 'William_Erasmus_Darwin')],
+    'sara_sedgwick': [('Wikipedia: William Erasmus Darwin', WIKI + 'William_Erasmus_Darwin')],
+    'annie': [('Wikipedia: Anne Darwin', WIKI + 'Anne_Darwin')],
+    'mary_eleanor': [('Find a Grave: Mary Eleanor Darwin', 'https://www.findagrave.com/memorial/91914049/mary-eleanor-darwin')],
+    'george': [('Wikipedia: George Darwin', WIKI + 'George_Darwin')],
+    'maud': [('Wikipedia: George Darwin', WIKI + 'George_Darwin')],
+    'francis': [('Wikipedia: Francis Darwin', WIKI + 'Francis_Darwin')],
+    'amy_ruck': [('Wikipedia: Francis Darwin', WIKI + 'Francis_Darwin')],
+    'ellen_crofts': [('Wikipedia: Francis Darwin', WIKI + 'Francis_Darwin')],
+    'florence_fisher': [('Wikipedia: Francis Darwin', WIKI + 'Francis_Darwin'), ('Wikipedia: Frederic William Maitland', WIKI + 'Frederic_William_Maitland')],
+    'maitland': [('Wikipedia: Frederic William Maitland', WIKI + 'Frederic_William_Maitland')],
+    'ermengard': [('Wikipedia: Frederic William Maitland', WIKI + 'Frederic_William_Maitland')],
+    'fredegond': [('Wikipedia: Frederic William Maitland', WIKI + 'Frederic_William_Maitland')],
+    'leonard': [('Wikipedia: Leonard Darwin', WIKI + 'Leonard_Darwin')],
+    'elizabeth_fraser': [('Wikipedia: Leonard Darwin', WIKI + 'Leonard_Darwin')],
+    'mildred_massingberd': [('Wikipedia: Leonard Darwin', WIKI + 'Leonard_Darwin')],
+    'horace': [('Wikipedia: Horace Darwin', WIKI + 'Horace_Darwin')],
+    'ida_farrer': [('Wikipedia: Horace Darwin', WIKI + 'Horace_Darwin')],
+    'erasmus_iv': [('Wikipedia: Horace Darwin', WIKI + 'Horace_Darwin')],
+    'ruth': [('Wikipedia: Horace Darwin', WIKI + 'Horace_Darwin')],
+    'nora': [('Wikipedia: Horace Darwin', WIKI + 'Horace_Darwin')],
+    'charles_waring': [('Darwin Correspondence Project: letter to W. D. Fox, 1858', 'https://www.darwinproject.ac.uk/letter/DCP-LETT-2300.xml')],
+    'gwen': [('Wikipedia: Gwen Raverat', WIKI + 'Gwen_Raverat')],
+    'jacques_raverat': [('Wikipedia: Gwen Raverat', WIKI + 'Gwen_Raverat')],
+    'geoffrey_keynes': [('Wikipedia: Geoffrey Keynes', WIKI + 'Geoffrey_Keynes')],
+    'margaret_darwin': [('Wikipedia: Geoffrey Keynes', WIKI + 'Geoffrey_Keynes'), FAMILY],
+    'frances': [('Wikipedia: Frances Cornford', WIKI + 'Frances_Cornford')],
+    'francis_cornford': [('Wikipedia: Frances Cornford', WIKI + 'Frances_Cornford')],
+}
+
 
 def date(v):
     """'1858' → confirmed; ('1858', 'likely') → that status."""
@@ -61,6 +132,8 @@ def P(pid, given, surname, sex, born=None, died=None, bplace=None, dplace=None, 
         p['notes'] = notes
     if src:
         p['sourceNotes'] = src
+    urls = SOURCES.get(pid, [FAMILY])
+    p['links'] = {'urls': [{'url': u, 'label': l} for l, u in urls]}
     if stage or todo:
         p['research'] = {k: v for k, v in (('stage', stage), ('todo', todo)) if v}
     people.append(p)
@@ -351,5 +424,7 @@ for f in families:
         assert r['personId'] in ids, r
 kids = [c['personId'] for f in families for c in f['children']]
 assert len(kids) == len(set(kids)), 'a child in two families'
+unknown = set(SOURCES) - {p['id'][4:] for p in people}
+assert not unknown, unknown
 json.dump(data, open(sys.argv[1], 'w'), indent='\t', ensure_ascii=False)
 print(len(people), 'people,', len(families), 'families,', len(events), 'events,', len(data['places']), 'places')
