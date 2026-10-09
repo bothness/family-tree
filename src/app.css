@@ -87,6 +87,9 @@ button{cursor:pointer}
 .place-meta{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:12.5px;color:var(--ink-soft);align-items:baseline}
 .place-meta .on-map{color:var(--accent)}
 .place-meta .place-edit{font-family:var(--f-ui);font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-left:auto}
+.place-meta .dup-flag{font-family:var(--f-ui);font-size:12.5px;font-weight:500;color:var(--warn)}
+.dups{display:grid;gap:6px;background:var(--warn-soft);border-radius:7px;padding:8px 10px}
+.dups .grow{flex:1 1 160px;font-size:13.5px}
 .place-details{width:min(360px,calc(100vw - 32px));max-height:min(var(--bits-floating-available-height,70vh),560px);overflow:auto}
 .place-details .del{border:0;background:none;color:var(--ink-soft);padding:0 4px;font-size:18px}
 .place-details a{color:var(--accent)}

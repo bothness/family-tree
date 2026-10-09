@@ -5,12 +5,21 @@
 	import { app } from '#lib/app.svelte.ts';
 	import type { Place } from '#lib/model/types.ts';
 	import { fmtDate, parseUserDate } from '#lib/model/edtf.ts';
-	import { isLinked, linkPlace, placeUses, unlinkPlace } from '#lib/model/places.ts';
+	import { duplicatesOf, isLinked, linkPlace, mergePlaces, mergeTarget, placeUses, unlinkPlace } from '#lib/model/places.ts';
 	import { ATTRIBUTION, searchPlaces, type PlaceHit } from '#lib/places/nominatim.ts';
 
 	let { place }: { place: Place } = $props();
 
 	const uses = $derived(placeUses(app.data, place.id));
+	/** Other places that may be this one (same name, or same OSM place). */
+	const dups = $derived(duplicatesOf(app.data, place.id));
+	let open = $state(false);
+	/** Use one place for both, keeping whichever is on the map (else the more used one). */
+	function merge(otherId: string) {
+		const keep = mergeTarget(app.data, place.id, otherId);
+		mergePlaces(app.data, keep, keep === place.id ? otherId : place.id);
+		if (keep !== place.id) open = false; // this place has gone; the field now shows the kept one
+	}
 	const val = (e: Event) => (e.currentTarget as HTMLInputElement).value;
 	function setName(v: string) {
 		if (v.trim()) place.name = v.trim();
@@ -52,11 +61,28 @@
 <div class="place-meta">
 	{#if place.context}<span>{place.context}</span>{/if}
 	{#if isLinked(place)}<span class="on-map" title="This place has a map position">● on the map</span>{:else}<span class="hint">written by hand</span>{/if}
-	<Popover.Root>
+	{#if dups.length}<button class="linkish dup-flag" type="button" onclick={() => (open = true)} title="Another place has the same name">possible duplicate</button>{/if}
+	<Popover.Root bind:open>
 		<Popover.Trigger class="linkish place-edit" aria-label="Edit place details">Edit place</Popover.Trigger>
 		<Popover.Portal>
 			<Popover.Content class="pop place-details" sideOffset={6} align="end">
 				{#if uses > 1}<p class="hint">Used for {uses} events: changes apply to all of them.</p>{/if}
+				{#if dups.length}
+					<div class="dups">
+						<div class="lbl">Possibly the same place</div>
+						{#each dups as q (q.id)}
+							{@const n = placeUses(app.data, q.id)}
+							<div class="row">
+								<span class="grow">
+									<b>{q.name}</b>{#if q.context}, {q.context}{/if}
+									<span class="hint">· {isLinked(q) ? 'on the map' : 'written by hand'} · {n} {n === 1 ? 'event' : 'events'}</span>
+								</span>
+								<button class="btn small" type="button" onclick={() => merge(q.id)} title="Use one place for both (keeps the one on the map)">Merge</button>
+							</div>
+						{/each}
+						<p class="hint">Merging moves every event to one place and keeps the other's name as a former name.</p>
+					</div>
+				{/if}
 				<label class="fld"><span>Name</span><input type="text" value={place.name} onchange={(e) => setName(val(e))} /></label>
 				<label class="fld"><span>Wider area</span><input type="text" value={place.context ?? ''} placeholder="e.g. West Yorkshire, England" onchange={(e) => setContext(val(e))} /></label>
 				<div class="lbl">Former or other names</div>
