@@ -43,4 +43,4 @@ Sortable date ranges, generations, connected branches, and the gaps report (gues
 - Should anything beyond birth and death come back as events (e.g. residence for maps)?
 - Media (photos, scans): a `Media` entity linked to people, events and sources?
 - Conflicting facts: store alternative values side by side (e.g. two birth events, each `conflicting`)?
-- Storage: GitHub (JSON files) vs Cloudflare D1, to decide after the interface
+- Storage: GitHub (JSON files) vs Cloudflare D1, to decide after the interface; whichever is chosen, it syncs on top of a browser store, since a browser-only edition is planned (see ROADMAP, "Later")

@@ -45,6 +45,17 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 | G6 | Places looked up via Nominatim (OpenStreetMap) or Wikidata, with coordinates; editable names and custom/historical places | Model already has coordinates, Wikidata and dated `altNames`. Add `osmId`. **The prototype page can't call outside APIs**, so live lookup probably needs the deployed app (or a small proxy function on Netlify or Cloudflare) |
 | V10 | Photos on cards, with sex-based silhouette fallback, plus a compact mode without images | Add a minimal `Media` entity and `person.photo`. The prototype can hold small resized thumbnails in the browser; the real app stores them in R2 or the repo |
 
+## Later – A public, browser-only edition
+Once the app is complete: a version anyone can use to build their own family tree, with all data kept in their browser (no account, no server). Possibly a fork, but better as a build setting of the same app so the two don't drift apart.
+
+What this means for decisions made before then:
+- **Storage stays behind the `DataStore` interface**, with a browser store as a first-class option, not just a fallback. Any sync with a back end (GitHub files, Cloudflare D1) is an extra layer on top, so the app works fully with no server.
+- **Browser storage needs more room:** localStorage holds about 5 MB, which photos (V10) would quickly fill. Move the browser store to IndexedDB, with images kept as blobs there.
+- **Export and import are the backup:** with no server, the Data dialog's JSON download and upload is how people keep and move their tree. Consider a single-file export that includes photos, and a gentle reminder to back up.
+- **No server-only features:** place lookup (G6) must be able to call Nominatim or Wikidata directly from the browser (both allow it, within usage limits), not only through our own proxy.
+- **Multi-editor features stay optional:** `meta` provenance and IDs already work for a single user; anything needing accounts goes behind the sync layer.
+- **Privacy wording:** say plainly that data stays on this device, and that clearing browser data deletes it unless exported.
+
 ## Decisions log
 - 8 Oct: V2 = both "collapse to one person" and "reset to blank view".
 - 8 Oct: branches = named saved views, from filters or hand-picked; no auto-naming.
@@ -69,3 +80,4 @@ Approach: focus mode (Phase B) is the main view, as on Ancestry and FamilySearch
 - 9 Oct: sibling sets either side of a couple (V8): **strict age order wins** (user's call). Each family's children stay in birth order; when both partners' parents are in view, the spouse's brothers and sisters go beyond the other family's children on the spouse's side (so a line may cross, with a hop). Moving the married child to the edge facing their spouse was tried and set aside for now.
 - 9 Oct: animation: people entering fade in; people leaving go at once (fading them out while others moved looked odd).
 - 9 Oct: brothers and sisters recorded with no parents at all show with the "+ Siblings" (or "All relatives") setting, whatever the generations, except when collapsed.
+- 9 Oct: added "Later – a public, browser-only edition": storage stays behind `DataStore` with the browser as a first-class store (IndexedDB once photos arrive); back-end sync is a layer on top; no server-only features.
