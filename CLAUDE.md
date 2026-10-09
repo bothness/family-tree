@@ -54,6 +54,7 @@ Run `npm test` and `npm run check` before finishing any change.
   - centred; in a focus view the focus person is at x = 0, so the view grows around them
   - father on the left for a couple; someone with several partners sits between them, earliest partnership on the left
   - siblings grouped and ordered by age; each family's children hang under their own couple
+  - when both partners' parents are in view, the married child sits at the edge of their family facing their spouse, so each side's siblings stay on their side (the one exception to age order)
   - a partner's parents are placed above them (e.g. the Murphys above Bridget)
   - families whose children's lines would overlap get separate heights; lines hop where they cross
   - nothing ordered by when it was added (the layout is the same whatever order people and families were stored in)

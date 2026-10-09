@@ -55,6 +55,10 @@ interface Fam {
 	parent?: Unit;
 	anchorOff: number;
 	kids: Unit[];
+	/** A child married to someone whose own parents are in view: the couple sits at this family's edge facing
+	 *  the spouse ('left' or 'right'), so each side's brothers and sisters stay together. */
+	bridge?: Unit;
+	side?: 'left' | 'right';
 }
 
 /** Children known to be missing (expected count minus those recorded), or null if no count was recorded. */
@@ -148,9 +152,26 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 				fm.anchorOff = r - l === NODE_W + CARD_GAP ? l + NODE_W + CARD_GAP / 2 : (l + r + NODE_W) / 2;
 			} else fm.anchorOff = cardLeft(u, vis[0]) + NODE_W / 2;
 		}
+	}
+	const childOf = new Map<string, Fam>();
+	for (const fm of fams) if (fm.parent) for (const c of fm.cs) childOf.set(c, fm);
+	for (const fm of fams) {
 		const ghost = fm.kids;
-		const kidUnits = [...new Set([...fm.cs].sort(birth).map((c) => unitOf.get(c)!))];
-		fm.kids = [...kidUnits, ...ghost];
+		let kidUnits = [...new Set([...fm.cs].sort(birth).map((c) => unitOf.get(c)!))];
+		// Siblings stay in age order, except that a child married to someone whose own parents are in view goes at
+		// the edge facing their spouse (sibling sets either side of the couple), and the placeholder for missing
+		// children then goes on the outer edge.
+		for (const k of kidUnits) {
+			const m = k.members.find((x) => fm.cs.includes(x))!;
+			const spouse = k.members.find((o) => o !== m && childOf.has(o) && childOf.get(o) !== fm);
+			if (!spouse || !fm.parent) continue;
+			fm.bridge = k;
+			fm.side = k.members.indexOf(spouse) > k.members.indexOf(m) ? 'right' : 'left';
+			kidUnits = kidUnits.filter((u) => u !== k);
+			kidUnits = fm.side === 'right' ? [...kidUnits, k] : [k, ...kidUnits];
+			break;
+		}
+		fm.kids = fm.side === 'right' ? [...ghost, ...kidUnits] : [...kidUnits, ...ghost];
 	}
 	const famsOf = new Map<Unit, Fam[]>();
 	for (const fm of fams)
@@ -192,12 +213,30 @@ function layoutComponent(d: Dataset, ids: string[], root?: string) {
 	const sweep = () => sweepX(rows, famsOf, parentFams, childLeft, childW);
 	sweep();
 	for (const r of deferred) {
-		const fresh = [...reach(r)].filter((u) => !u.placed);
-		// Aim each new unit at its children's centre (bottom-up), else at its parents' (top-down).
+		let fresh = [...reach(r)].filter((u) => !u.placed);
+		// A spouse's brothers and sisters go on the spouse's side of the couple, next to it, in order.
+		for (const fm of fams) {
+			if (!fm.bridge?.placed) continue;
+			const block = fm.kids.filter((k) => k !== fm.bridge && fresh.includes(k));
+			if (!block.length) continue;
+			const row = rows[fm.bridge.g];
+			if (fm.side === 'left') {
+				let x = fm.bridge.x + fm.bridge.w + SIB_GAP;
+				row.splice(row.indexOf(fm.bridge) + 1, 0, ...block);
+				for (const k of block) (k.x = x), (x += k.w + SIB_GAP), (k.placed = true);
+			} else {
+				let x = fm.bridge.x;
+				row.splice(row.indexOf(fm.bridge), 0, ...block);
+				for (const k of [...block].reverse()) (x -= k.w + SIB_GAP), (k.x = x), (k.placed = true);
+			}
+			fresh = fresh.filter((u) => !u.placed);
+		}
+		// Aim each other new unit at its children's centre (bottom-up), else at its parents' (top-down).
 		const want = new Map<Unit, number>();
 		const centre = (u: Unit) => (u.placed ? u.x + u.w / 2 : want.get(u));
+		const kidCentre = (k: Unit, fm: Fam) => (k.placed ? k.x + childLeft(k, fm) + childW(k) / 2 : want.get(k));
 		for (const u of [...fresh].reverse()) {
-			const cs = (famsOf.get(u) ?? []).flatMap((fm) => fm.kids).map(centre).filter((x): x is number => x !== undefined);
+			const cs = (famsOf.get(u) ?? []).flatMap((fm) => fm.kids.map((k) => kidCentre(k, fm))).filter((x): x is number => x !== undefined);
 			if (cs.length) want.set(u, cs.reduce((a, b) => a + b, 0) / cs.length);
 		}
 		for (const u of fresh)
