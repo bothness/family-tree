@@ -5,6 +5,7 @@ import type { RelativeKind } from './model/mutations.ts';
 import type { Camera } from './layout/viewport.ts';
 import type { DataStore } from './storage/index.ts';
 import { betterThumb, prepareImage } from './media/images.ts';
+import { SNOOZE, backupDue, requestPersistence, type Kept } from './storage/safety.ts';
 import { removePhoto, setPhoto } from './model/media.ts';
 import { emptyDataset, uid } from './model/mutations.ts';
 import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
@@ -63,6 +64,19 @@ class AppState {
 	/** Which "add relative" form is open in the person panel. */
 	addKind = $state<RelativeKind | null>(null);
 	showData = $state(false);
+
+	/** Keeping the tree safe (E5): whether the browser agreed to keep our data (null = not asked yet), and when
+	 *  the last backup was downloaded. Per-browser, so kept with the preferences rather than in the data. */
+	kept = $state<Kept | null>(null);
+	backedUpAt = $state<number | null>(readPref('backedUpAt', null));
+	/** When the first change not in a backup was made. */
+	unbackedSince = $state<number | null>(readPref('unbackedSince', null));
+	backupSnoozedUntil = $state<number | null>(readPref('backupSnoozedUntil', null));
+	/** The next data change is a replacement (a backup, the demo, or an empty start), not an edit. */
+	replacing = false;
+	get backupDue() {
+		return backupDue({ unbackedSince: this.unbackedSince, snoozedUntil: this.backupSnoozedUntil }, Date.now());
+	}
 	/** Tree pan/zoom. null = fit everything next time the tree is drawn. Kept here so it survives tab switches. */
 	camera = $state<Camera | null>(null);
 	/** Person the tree view should move to; it clears this once done. */
@@ -172,7 +186,7 @@ class AppState {
 
 	/** Replace the (empty) tree with the demo family, and open on Charles Darwin's family. */
 	loadDemo() {
-		this.data = demoData();
+		this.replaceData(demoData());
 		this.select(null);
 		this.openView('view_charles_family');
 	}
@@ -219,6 +233,34 @@ class AppState {
 		this.picked = null;
 		this.pickingFor = null;
 		this.fitTree();
+	}
+
+	/** Ask the browser (once) to keep our data. */
+	async askToKeep() {
+		if (this.kept === null) this.kept = await requestPersistence();
+	}
+	/** The data changed (called by the saver). Edits count towards the backup reminder; replacements don't. */
+	noteChange() {
+		if (this.replacing) {
+			this.replacing = false;
+			return;
+		}
+		if (!this.unbackedSince) writePref('unbackedSince', (this.unbackedSince = Date.now()));
+		this.askToKeep();
+	}
+	/** All the data is about to be replaced: what was there no longer needs backing up. */
+	replaceData(d: Dataset) {
+		this.replacing = true;
+		writePref('unbackedSince', (this.unbackedSince = null));
+		this.data = d;
+	}
+	noteBackup() {
+		writePref('backedUpAt', (this.backedUpAt = Date.now()));
+		writePref('unbackedSince', (this.unbackedSince = null));
+		writePref('backupSnoozedUntil', (this.backupSnoozedUntil = null));
+	}
+	snoozeBackup() {
+		writePref('backupSnoozedUntil', (this.backupSnoozedUntil = Date.now() + SNOOZE));
 	}
 
 	setShowPhotos(on: boolean) {

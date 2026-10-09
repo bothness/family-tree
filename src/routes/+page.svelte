@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { app, type Tab } from '#lib/app.svelte.ts';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { browserStore } from '#lib/storage/index.ts';
 	import { gaps } from '#lib/model/gaps.ts';
 	import { childIds, family, partnerIds } from '#lib/model/queries.ts';
@@ -24,6 +24,7 @@
 		const saved = await app.store.load().catch(() => null);
 		if (saved) app.data = saved;
 		app.ready = true;
+		if (app.data.people.length) app.askToKeep();
 		app.refreshThumbs();
 	});
 	let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -33,9 +34,13 @@
 		if (pending) app.store?.save(pending);
 		pending = null;
 	};
+	let lastJson: string | null = null;
 	$effect(() => {
 		if (!app.ready) return;
-		pending = JSON.parse(JSON.stringify(app.data));
+		const json = JSON.stringify(app.data);
+		if (lastJson !== null && json !== lastJson) untrack(() => app.noteChange());
+		lastJson = json;
+		pending = JSON.parse(json);
 		clearTimeout(saveTimer);
 		saveTimer = setTimeout(flush, 250);
 	});
@@ -150,6 +155,12 @@
 	<SearchBox />
 	<div class="actions">
 		<button class="btn" onclick={addNew}>+ New person</button>
+		{#if app.backupDue}
+			<span class="remind">
+				<button class="btn small" onclick={() => (app.showData = true)} title="Some changes aren't in a backup yet">Back up your tree</button>
+				<button class="x" onclick={() => app.snoozeBackup()} aria-label="Remind me later" title="Remind me in a few days">×</button>
+			</span>
+		{/if}
 		<button class="btn" onclick={() => (app.showData = true)}>Data</button>
 	</div>
 </header>

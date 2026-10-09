@@ -2,6 +2,7 @@
 	import { app, demoData } from '#lib/app.svelte.ts';
 	import { emptyDataset } from '#lib/model/mutations.ts';
 	import { makeBackup, pruneMedia, readBackup } from '#lib/storage/index.ts';
+	import { ago } from '#lib/storage/safety.ts';
 
 	let { onClose }: { onClose: () => void } = $props();
 
@@ -20,7 +21,7 @@
 	}
 	/** Put new data in place, and delete photo files it no longer refers to. */
 	function useData(d: typeof app.data) {
-		app.data = d;
+		app.replaceData(d);
 		app.select(null);
 		app.showEveryone();
 		if (app.store) pruneMedia(app.store, d);
@@ -54,6 +55,7 @@
 			a.download = `family-tree-${new Date().toISOString().slice(0, 10)}.json`;
 			a.click();
 			setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+			app.noteBackup();
 		} finally {
 			saving = false;
 		}
@@ -69,9 +71,19 @@
 	<div class="dialog" role="dialog" aria-label="Your data">
 		<div class="row"><div class="lbl" style="font-size:14px">Your data (JSON, schema v0.2)</div><button class="btn small" style="margin-left:auto" onclick={onClose}>Close</button></div>
 		<p class="hint" style="margin:0">
-			Your tree is saved in this browser only, on this device. Clearing the browser's data deletes it, so
-			<b>download a backup</b> now and then (it includes photos). You can also copy the data below, or paste data here
-			(including from the prototype) and load it.
+			Your tree is saved in this browser only, on this device, and isn't uploaded anywhere (the only things sent
+			out are place names you search for, to OpenStreetMap, and requests for map tiles and fonts). Clearing the
+			browser's data deletes it, so <b>download a backup</b> now and then (it includes photos). You can also copy the data
+			below, or paste data here (including from the prototype) and load it.
+		</p>
+		<p class="hint safety" style="margin:0">
+			Last backup: <b>{app.backedUpAt ? ago(app.backedUpAt, Date.now()) : 'never'}</b>{#if app.backedUpAt && app.unbackedSince}, with changes since{/if}.
+			{#if app.kept === 'yes'}
+				This browser has agreed to keep your tree until you clear its data.
+			{:else}
+				Browsers can clear saved data to free up space (Safari also after a week or so without a visit), so a
+				backup is the safe copy.
+			{/if}
 		</p>
 		<div class="row">
 			<button class="btn small primary" onclick={download} disabled={saving}>{saving ? 'Preparing…' : 'Download backup'}</button>

@@ -297,3 +297,7 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
   .actions{margin-left:0}
 }
 @media (prefers-reduced-motion:no-preference){.sheet{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(8px)}}}
+/* backup reminder in the header (E5) */
+.remind{display:inline-flex;align-items:center;gap:2px}
+.remind .btn{border-color:var(--warn);color:var(--warn)}
+.remind .x{border:0;background:none;font-size:18px;line-height:1;color:var(--ink-soft);padding:2px 4px}
