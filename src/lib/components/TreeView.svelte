@@ -333,6 +333,12 @@
 			swallowClick = false;
 		}
 	}
+	/** A click on the empty canvas (not a card, placeholder, marker or control; drags never get here) closes the
+	 *  person panel. */
+	function clickBackground(e: MouseEvent) {
+		if ((e.target as Element).closest('g.node, g.ghost, g.edge, .zoombar, button, a')) return;
+		if (app.selected && !app.picked) app.select(null);
+	}
 
 	function onKey(e: KeyboardEvent) {
 		const t = e.target as HTMLElement;
@@ -402,6 +408,7 @@
 		onpointercancel={up}
 		onpointerleave={(e) => !panning && up(e)}
 		onclickcapture={clickCapture}
+		onclick={clickBackground}
 		role="presentation"
 	>
 		<svg width="100%" height="100%" role="img" aria-label="Family tree">
@@ -503,7 +510,7 @@
 			</g>
 		</svg>
 		<div class="zoombar" role="toolbar" aria-label="Tree controls">
-			<div class="zgroup" role="group" aria-label="Zoom">
+			<div class="zgroup zoom" role="group" aria-label="Zoom">
 				<button type="button" onclick={() => zoomBy(0.8)} aria-label="Zoom out" title="Zoom out (−)">−</button>
 				<button type="button" class="pct" onclick={() => zoomBy(1 / cam.k)} title="Back to 100%">{Math.round(cam.k * 100)}%</button>
 				<button type="button" onclick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in (+)">+</button>

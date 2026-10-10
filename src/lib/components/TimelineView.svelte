@@ -50,7 +50,9 @@
 	}
 </script>
 
-<div class="tl" bind:clientWidth={width} bind:this={box}>
+<!-- A click on the timeline's background (not a name, circle or link) closes the person panel. -->
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+<div class="tl" bind:clientWidth={width} bind:this={box} onclick={(e) => !(e.target as Element).closest('.tlname, .mdot, button, a') && app.selected && app.select(null)}>
 	{#if !tl.rows.length}
 		<div class="empty">Add a birth year to anyone and they'll appear here.</div>
 	{:else}

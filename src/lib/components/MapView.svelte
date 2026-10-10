@@ -111,6 +111,10 @@
 				map.on('style.load', addLayers);
 				map.once('load', () => fitToPlaces(false));
 				map.on('click', 'place-dots', showPlace);
+				// A click on the map away from any place closes the person panel.
+				map.on('click', (e) => {
+					if (!map!.queryRenderedFeatures(e.point, { layers: ['place-dots'] }).length && app.selected) app.select(null);
+				});
 				map.on('mouseenter', 'place-dots', () => (map!.getCanvas().style.cursor = 'pointer'));
 				map.on('mouseleave', 'place-dots', () => (map!.getCanvas().style.cursor = ''));
 				map.on('error', (e) => console.warn('[map]', e.error?.message ?? e));

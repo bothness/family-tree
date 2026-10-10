@@ -3,6 +3,7 @@
 	import { app } from '#lib/app.svelte.ts';
 	import { photoOf } from '#lib/model/media.ts';
 	import { person } from '#lib/model/queries.ts';
+	import CropDialog from './CropDialog.svelte';
 	import Silhouette from './Silhouette.svelte';
 
 	/** readonly: view the photo only (viewers in the family edition); nothing shown if there's no photo. */
@@ -14,6 +15,8 @@
 	let busy = $state(false);
 	let err = $state('');
 	let big = $state<string | null>(null);
+	/** A chosen file waiting to be cropped. */
+	let cropping = $state.raw<File | null>(null);
 
 	// The panel shows the kept copy (the thumbnail is sized for tree cards), once it has loaded.
 	let full = $state<string | null>(null);
@@ -32,14 +35,17 @@
 		};
 	});
 
-	async function picked(e: Event) {
+	function picked(e: Event) {
 		const f = (e.currentTarget as HTMLInputElement).files?.[0];
 		(e.currentTarget as HTMLInputElement).value = '';
-		if (!f) return;
-		busy = true;
 		err = '';
+		if (f) cropping = f;
+	}
+	async function cropped(square: Blob) {
+		cropping = null;
+		busy = true;
 		try {
-			await app.addPhoto(pid, f);
+			await app.addPhoto(pid, square);
 		} catch (x) {
 			err = (x as Error).message || "Couldn't add that photo.";
 		} finally {
@@ -72,6 +78,10 @@
 	<input bind:this={input} type="file" accept="image/*" hidden onchange={picked} />
 	{#if err}<p class="hint warn">{err}</p>{/if}
 </div>
+{/if}
+
+{#if cropping}
+	<CropDialog file={cropping} onDone={cropped} onCancel={() => (cropping = null)} />
 {/if}
 
 {#if big}
