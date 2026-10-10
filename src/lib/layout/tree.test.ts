@@ -129,6 +129,36 @@ describe('sibling sets either side of a couple (V8), in strict age order', () =>
 	});
 });
 
+describe('brothers and sisters whose parents are not in view', () => {
+	// A grandson marries a woman whose only relative in view is her older sister (their parents aren't). The wife
+	// is placed late, as an in-law; the sister, with no other family, used to stay where she was first put, far
+	// along the row (from a real tree). The grandfather's second family is what pushed her out.
+	const d4: Dataset = emptyDataset();
+	const P = (id: string, sex: 'M' | 'F', born: string) => {
+		d4.people.push({ id, names: [{ given: id }], sex: { value: sex } });
+		d4.events.push({ id: `b_${id}`, type: 'birth', date: { edtf: born }, participants: [{ personId: id }] });
+	};
+	P('grandad', 'M', '1926'); P('grandma', 'F', '1928'); P('dad', 'M', '1953'); P('uncle1', 'M', '1972'); P('uncle2', 'M', '1974');
+	P('son', 'M', '1982'); P('wife', 'F', '1972'); P('sister', 'F', '1971');
+	const kids = (...ids: string[]) => ids.map((personId) => ({ personId }));
+	d4.families.push(
+		{ id: 'f_a', partners: kids('grandad', 'grandma'), children: kids('dad') },
+		{ id: 'f_b', partners: kids('grandad'), children: kids('uncle1', 'uncle2') },
+		{ id: 'f_dad', partners: kids('dad'), children: kids('son') },
+		{ id: 'f_sw', partners: kids('son', 'wife'), children: [] },
+		{ id: 'f_sisters', partners: [], children: kids('wife', 'sister') }
+	);
+	const L = layoutTree(d4, components(d4).map((ids) => ({ label: '', ids })));
+	it('puts the sister right beside the couple, on the older side', () => {
+		const y = L.nodes.find((n) => n.id === 'wife')!.y;
+		const row = L.nodes.filter((n) => n.y === y).sort((a, b) => a.x - b.x).map((n) => n.id);
+		expect(row.slice(row.indexOf('sister'), row.indexOf('sister') + 3)).toEqual(['sister', 'son', 'wife']);
+		const at = (id: string) => L.nodes.find((n) => n.id === id)!.x;
+		expect(at('son') - at('sister')).toBeLessThanOrEqual(NODE_W + 44);
+	});
+	it('passes the layout rules', () => expect(checkLayout(d4, L, d4.people.map((p) => p.id))).toEqual([]));
+});
+
 describe('connectors', () => {
 	// Two families on the same rows: A's children far apart, B's single child under B. B's line down crosses A's.
 	const d3: Dataset = emptyDataset();

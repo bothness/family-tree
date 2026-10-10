@@ -61,6 +61,7 @@ Run `npm test` and `npm run check` before finishing any change.
   - nothing ordered by when it was added (the layout is the same whatever order people and families were stored in)
   - fewer crossings: after the rules, blocks on each row (a family's children in age order, a spouse with their in-laws) are reordered by where their relatives are, and neighbouring blocks swapped, kept only if no family moves away from its children, no couple's siblings end up on both sides, and fewer lines cross (a person's own families crossing counts double); `check.ts` `crossings()` measures it
   - a child's line that would run along another family's line is moved along their card
+  - brothers and sisters whose parents aren't in view stay side by side (in age order), like any other siblings
 - **Phase D (places, photos, map) is done** (merged to `main` 9 Oct 2026):
   - D1: browser store on IndexedDB (`storage/index.ts`), with backups that include photos.
   - G6: place lookup with Nominatim (`places/nominatim.ts`, one request a second, cached), keeping coordinates, OSM and Wikidata ids; `model/places.ts`; place field `PlaceInput.svelte` and editor `PlaceDetails.svelte`.

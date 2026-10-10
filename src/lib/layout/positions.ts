@@ -224,7 +224,12 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 		if (rows.some((row) => row.length) && [...reach(r)].some((u) => u.placed)) deferred.push(r);
 		else emit(r);
 	}
-	const sweep = (iterations = 12) => sweepX(rows, famsOf, parentFams, childLeft, childW, iterations);
+	// Brothers and sisters whose parents aren't in view: nothing above or below pulls them together, so the sweep
+	// keeps each one beside the others.
+	const orphanSibs = new Map<Unit, Unit[]>();
+	for (const fm of fams)
+		if (!fm.parent) for (const k of fm.kids) if (!k.ghost) orphanSibs.set(k, [...(orphanSibs.get(k) ?? []), ...fm.kids.filter((o) => o !== k && !o.ghost && o.g === k.g)]);
+	const sweep = (iterations = 12) => sweepX(rows, famsOf, parentFams, childLeft, childW, iterations, orphanSibs);
 	sweep();
 	for (const r of deferred) {
 		let fresh = [...reach(r)].filter((u) => !u.placed);
@@ -282,6 +287,34 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 		sweep();
 	}
 
+	// Brothers and sisters whose parents aren't in view stay together too. Someone with no other family in view
+	// would otherwise sit wherever they were first put (the end of the row, if their sibling is placed later as an
+	// in-law), so they go beside their siblings, in age order.
+	const famsBelow = (k: Unit) => !!famsOf.get(k)?.length;
+	for (const fm of fams) {
+		if (fm.parent) continue;
+		const ks = fm.kids.filter((k) => !k.ghost);
+		const lone = ks.filter((k) => k.members.length === 1 && !famsBelow(k));
+		if (!lone.length || lone.length === ks.length) continue;
+		const row = rows[ks[0].g];
+		if (ks.some((k) => k.g !== ks[0].g)) continue;
+		for (const k of lone) row.splice(row.indexOf(k), 1);
+		for (const k of lone) {
+			const i = ks.indexOf(k);
+			const inRow = (v: Unit) => row.includes(v);
+			const next = ks.slice(i + 1).find(inRow),
+				prev = ks.slice(0, i).reverse().find(inRow);
+			if (next) {
+				row.splice(row.indexOf(next), 0, k);
+				k.x = next.x - k.w - SIB_GAP;
+			} else if (prev) {
+				row.splice(row.indexOf(prev) + 1, 0, k);
+				k.x = prev.x + prev.w + SIB_GAP;
+			}
+		}
+		sweep();
+	}
+
 	// A couple whose parents are both in view but placed the other way round: if either set of parents is free to
 	// move (no parents of their own in view), move the smaller unit across the other; if both are fixed (e.g.
 	// cousins whose parents are brother and sister, in age order), swap the couple instead. Either way their
@@ -332,7 +365,9 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	// are (a family's children in age order, a spouse with their in-laws: units joined by a shared family), and
 	// the blocks are reordered by where their relatives are (the average position of their parents above, or of
 	// their children below), sweeping down and up the rows. A new order is kept only if fewer lines cross.
-	const related = (a: Unit, b: Unit) => (parentFams.get(a) ?? []).some((f) => (parentFams.get(b) ?? []).includes(f));
+	// Siblings whose parents aren't in view count as one family here too.
+	const sibFams = (u: Unit) => [...(parentFams.get(u) ?? []), ...fams.filter((fm) => !fm.parent && fm.kids.includes(u))];
+	const related = (a: Unit, b: Unit) => sibFams(a).some((f) => sibFams(b).includes(f));
 	const blocksOf = (row: Unit[]) => {
 		const out: Unit[][] = [];
 		for (const u of row) {
@@ -560,40 +595,55 @@ function sweepX(
 	parentFams: Map<Unit, Fam[]>,
 	childLeft: (k: Unit, fm: Fam) => number,
 	childW: (k: Unit) => number,
-	iterations = 12
+	iterations = 12,
+	orphanSibs = new Map<Unit, Unit[]>()
 ) {
 	const gapAfter = (a: Unit, b: Unit) => {
 		const pa = parentFams.get(a) ?? [],
 			pb = parentFams.get(b) ?? [];
-		return pa.some((f) => pb.includes(f)) ? SIB_GAP : FAM_GAP;
+		return pa.some((f) => pb.includes(f)) || orphanSibs.get(a)?.includes(b) ? SIB_GAP : FAM_GAP;
 	};
-	const place = (row: Unit[], want: { x: number; wt: number }[]) => {
-		const xs = isotonic(want, row.map((u, i) => (i < row.length - 1 ? u.w + gapAfter(u, row[i + 1]) : 0)));
-		row.forEach((u, i) => (u.x = xs[i]));
+	const gapsOf = (row: Unit[]) => row.map((u, i) => (i < row.length - 1 ? u.w + gapAfter(u, row[i + 1]) : 0));
+	type Want = { x: number; wt: number };
+	const place = (row: Unit[], want: Want[] | ((u: Unit, i: number) => Want)) => {
+		const go = (w: Want[]) => {
+			const xs = isotonic(w, gapsOf(row));
+			row.forEach((u, i) => (u.x = xs[i]));
+		};
+		if (Array.isArray(want)) return go(want);
+		go(row.map(want));
+		// Someone kept beside a brother or sister aims at where they were; once more, at where they are now.
+		if (row.some((u) => orphanSibs.has(u))) go(row.map(want));
+	};
+	/** With nothing above or below to aim at: beside the nearest brother or sister whose parents aren't in view
+	 *  (packed up against them), else stay put. */
+	const rest = (row: Unit[], i: number) => {
+		const u = row[i];
+		const js = (orphanSibs.get(u) ?? []).map((s) => row.indexOf(s)).filter((j) => j >= 0);
+		if (!js.length) return { x: u.x, wt: 0.3 };
+		const j = js.reduce((a, b) => (Math.abs(b - i) < Math.abs(a - i) ? b : a));
+		const gaps = gapsOf(row);
+		let off = 0;
+		for (let k = Math.min(i, j); k < Math.max(i, j); k++) off += gaps[k];
+		return { x: row[j].x + (j > i ? -off : off), wt: 1 };
 	};
 	// Start: pack each row from the left (units already positioned keep their place).
 	for (const row of rows) place(row, row.map((u) => ({ x: u.x, wt: 1 })));
 	const down = (row: Unit[]) =>
-		place(
-			row,
-			row.map((u) => {
-				const ws = (parentFams.get(u) ?? []).filter((fm) => fm.parent).map((fm) => fm.parent!.x + fm.anchorOff - childLeft(u, fm) - childW(u) / 2);
-				return ws.length ? { x: ws.reduce((a, b) => a + b, 0) / ws.length, wt: 1 } : { x: u.x, wt: 0.3 };
-			})
-		);
+		place(row, (u, i) => {
+			const ws = (parentFams.get(u) ?? []).filter((fm) => fm.parent).map((fm) => fm.parent!.x + fm.anchorOff - childLeft(u, fm) - childW(u) / 2);
+			return ws.length ? { x: ws.reduce((a, b) => a + b, 0) / ws.length, wt: 1 } : rest(row, i);
+		});
 	const up = (row: Unit[]) =>
-		place(
-			row,
-			row.map((u) => {
-				const ws = (famsOf.get(u) ?? []).map((fm) => {
-					const xs = fm.kids.map((k) => k.x + childLeft(k, fm));
-					const lo = Math.min(...xs),
-						hi = Math.max(...fm.kids.map((k) => k.x + childLeft(k, fm) + childW(k)));
-					return (lo + hi) / 2 - fm.anchorOff;
-				});
-				return ws.length ? { x: ws.reduce((a, b) => a + b, 0) / ws.length, wt: 1 } : { x: u.x, wt: 0.3 };
-			})
-		);
+		place(row, (u, i) => {
+			const ws = (famsOf.get(u) ?? []).map((fm) => {
+				const xs = fm.kids.map((k) => k.x + childLeft(k, fm));
+				const lo = Math.min(...xs),
+					hi = Math.max(...fm.kids.map((k) => k.x + childLeft(k, fm) + childW(k)));
+				return (lo + hi) / 2 - fm.anchorOff;
+			});
+			return ws.length ? { x: ws.reduce((a, b) => a + b, 0) / ws.length, wt: 1 } : rest(row, i);
+		});
 	for (let it = 0; it < iterations; it++) {
 		for (let g = 1; g < rows.length; g++) down(rows[g]);
 		for (let g = rows.length - 2; g >= 0; g--) up(rows[g]);
