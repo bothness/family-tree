@@ -1,7 +1,6 @@
 # Family tree data model – v0.2
 
-Files: `family-tree.schema.json` (JSON Schema 2020-12), `example-data.json` (sample data), `validate.mjs` (validator + gaps report).
-Run: `npm i ajv ajv-formats && node validate.mjs example-data.json`
+Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/example-data.json` (sample data), `scripts/validate.mjs` (validator + gaps report, `npm run validate [file.json]`). Code: `src/lib/model/` (see its `CLAUDE.md`).
 
 ## Entities
 | Entity | Purpose | Drives |
@@ -51,6 +50,5 @@ Sortable date ranges, generations, connected branches, and the gaps report (gues
 ## Open questions
 - Living people: privacy rules for wider sharing
 - Should anything beyond birth and death come back as events (e.g. residence for maps)?
-- Media (photos, scans): a `Media` entity linked to people, events and sources?
+- Media beyond a person's photo (scans of documents): link `Media` to events and sources?
 - Conflicting facts: store alternative values side by side (e.g. two birth events, each `conflicting`)?
-- Storage: GitHub (JSON files) vs Cloudflare D1, to decide after the interface; whichever is chosen, it syncs on top of a browser store, since a browser-only edition is planned (see ROADMAP, "Later")

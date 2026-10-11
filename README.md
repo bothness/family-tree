@@ -12,10 +12,10 @@ npm run build      # static site in build/
 
 Data is saved in your browser. Use **Data** to copy it out, or to paste in data (including exports from the original prototype).
 
-- `docs/ROADMAP.md`: what's done and what's next
+- `docs/ROADMAP.md`: what's next · `docs/DECISIONS.md`: what was decided, and finished phases
 - `docs/MODEL.md`: the data model
 - `schema/family-tree.schema.json`: JSON Schema (v0.2)
-- `CLAUDE.md`: project notes for Claude Code
+- `CLAUDE.md` (and one per area, e.g. `src/lib/layout/CLAUDE.md`): notes for Claude Code
 
 ## Credits
 - Placeholder faces for people without a photo: [Material Symbols](https://github.com/google/material-design-icons) by Google (face_6, face_3, face; rounded, filled), Apache License 2.0.

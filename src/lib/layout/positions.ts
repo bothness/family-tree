@@ -1,7 +1,7 @@
 // Phase C tree layout, step 1: where each card goes. Lines are drawn separately (connectors.ts) from these
 // positions alone, so the tree can be animated by moving cards and re-running the connectors.
 //
-// Rules (docs/ROADMAP.md): one row per generation; partners side by side (father left for a single couple, unless
+// Rules (src/lib/layout/CLAUDE.md): one row per generation; partners side by side (father left for a single couple, unless
 // both partners' parents are in view the other way round and can't be moved, when they swap so lines don't cross;
 // someone with several partners sits between them, earlier partnerships on the left, each partner's other partners
 // further out; a couple who can't be side by side get a raised line, see connectors.ts); each family's children

@@ -1,5 +1,5 @@
 // Storage is behind one small interface so the backend can change without touching the rest of the app.
-// The browser store is first-class (a browser-only edition is planned, see docs/ROADMAP.md "Later"): any sync
+// The browser store is first-class (the public edition is browser-only): any sync
 // with a back end goes on top of it, never instead of it.
 import type { Dataset } from '../model/types.ts';
 import { migrate } from '../model/migrate.ts';
