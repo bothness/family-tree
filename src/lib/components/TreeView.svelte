@@ -422,7 +422,8 @@
 				{/each}
 			</defs>
 			<g transform="translate({cam.x},{cam.y}) scale({cam.k})">
-				{#each layout.labels as l (l.x)}
+				<!-- Keyed by both: in the horizontal layout every label has x = 0. -->
+				{#each layout.labels as l (`${l.x},${l.y}`)}
 					<text class="brlabel" x={l.x} y={l.y}>{l.text}</text>
 				{/each}
 				{#each anim.lines as l (l.key)}
