@@ -6,6 +6,10 @@ describe('parseUserDate', () => {
 		['1858', '1858'],
 		['c.1858', '1858~'],
 		['circa 1858', '1858~'],
+		['ca 1858', '1858~'],
+		['c1858', '1858~'],
+		['c 1858', '1858~'],
+		['abt. 1858', '1858~'],
 		['1880s', '188X'],
 		['before 1901', '../1901'],
 		['after 1901', '1901/..'],
@@ -87,6 +91,13 @@ describe('yearOnly', () => {
 		expect(yearOnly('1885-03')).toBe('1885');
 		expect(yearOnly('1883-06-02')).toBe('1883');
 		expect(yearOnly('1858~')).toBe('c.1858');
+		expect(yearOnly('1809-02-12?')).toBe('1809?');
+		expect(yearOnly('1809-02~')).toBe('c.1809');
+		expect(yearOnly('1885-03%')).toBe('c.1885?');
+		expect(yearOnly('[1960-08-19,1960-08-30]')).toBe('1960');
+		expect(yearOnly('[1800,1801]')).toBe('1800 or 1801');
+		expect(yearOnly('../1901-05')).toBe('bef. 1901');
+		expect(yearOnly('1901/1911')).toBe('1901–1911');
 	});
 });
 

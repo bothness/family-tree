@@ -326,8 +326,8 @@
 			</label>
 			<div class="row"><span class="hint">This partnership is</span><StatusPicker value={r.status} onchange={(v: Status | undefined) => ((f.relationship ??= {}).status = v)} /></div>
 			<div class="row">
-				<label class="fld" style="flex-basis:90px"><span>From</span><input type="text" value={fmtDate(r.start?.edtf)} placeholder="e.g. 1883" onchange={(e) => setRel(f, 'start', val(e))} /></label>
-				<label class="fld" style="flex-basis:90px"><span>Until</span><input type="text" value={fmtDate(r.end?.edtf)} onchange={(e) => setRel(f, 'end', val(e))} /></label>
+				<label class="fld" style="flex-basis:90px"><span>From</span><input type="text" class:pencil={dateUnsure(r.start?.edtf)} value={fmtDate(r.start?.edtf)} placeholder="e.g. 1883" onchange={(e) => setRel(f, 'start', val(e))} /></label>
+				<label class="fld" style="flex-basis:90px"><span>Until</span><input type="text" class:pencil={dateUnsure(r.end?.edtf)} value={fmtDate(r.end?.edtf)} onchange={(e) => setRel(f, 'end', val(e))} /></label>
 				<label class="fld" style="flex-basis:100px"><span>Ended by</span>
 					<select value={r.endReason ?? ''} onchange={(e) => { const v = val(e); if (v) (f.relationship ??= {}).endReason = v as EndReason; else delete f.relationship?.endReason; }}>
 						{#each END_REASONS as [v, l] (v)}<option value={v}>{l}</option>{/each}

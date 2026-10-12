@@ -97,6 +97,15 @@ describe('where a couple married', () => {
 		expect(d.places).toEqual([]);
 	});
 
+	it('goes with the family when one partner of a childless couple is deleted', () => {
+		d.families.push({ id: 'fam_1', partners: [{ personId: 'john' }, { personId: 'mary' }], relationship: { type: 'marriage' }, children: [] });
+		d.places.push({ id: 'plc_maer', name: 'Maer' });
+		setFamilyPlace(d, 'fam_1', 'plc_maer');
+		deletePerson(d, 'mary');
+		expect(d.families).toEqual([]);
+		expect(d.places).toEqual([]);
+	});
+
 	it('shows on the map, as a marriage or a partnership', () => {
 		d.places.push({ id: 'plc_maer', name: 'Maer', coordinates: { lat: 52.9, lon: -2.3 } });
 		d.families.push({ id: 'fam_1', partners: [{ personId: 'john' }, { personId: 'mary' }], relationship: { type: 'marriage', start: { edtf: '1883' }, place: { placeId: 'plc_maer' } }, children: [] });

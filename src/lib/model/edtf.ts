@@ -37,7 +37,7 @@ function marked(input: string): string | null {
 		m: RegExpMatchArray | null;
 	for (let again = true; again; ) {
 		again = false;
-		if ((m = s.match(/^(c\.|ca\.|abt\.?|about|circa|~)\s*(.+)$/i)) || (m = s.match(/^(c)\s+(.+)$/i))) [approx, s, again] = [true, m[2], true];
+		if ((m = s.match(/^(c\.|ca\.|abt\.?|about|circa|~)\s*(.+)$/i)) || (m = s.match(/^(ca?)\s*(\d.*)$/i))) [approx, s, again] = [true, m[2], true];
 		if ((m = s.match(/^(maybe|perhaps|possibly|probably|prob\.)\s+(.+)$/i))) [unsure, s, again] = [true, m[2], true];
 	}
 	if ((m = s.match(/^(.+?)\s*([?~%])$/))) {
@@ -128,8 +128,12 @@ export const datesDisagree = (e: string | null | undefined) => !!e?.startsWith('
 /** Short form for tree cards: exact dates collapse to the year. */
 export function yearOnly(e: string | null | undefined): string {
 	if (!e || !edtfRange(e)) return '';
-	const m = e.match(/^(\d{4})-\d{2}(-\d{2})?$/);
-	return m ? m[1] : fmtDate(e);
+	// Keep a point's mark: 1809-02-12? → 1809?, 1809-02~ → c.1809.
+	const year = (p: string) => p.replace(/^(\d{4})-\d{2}(-\d{2})?(?=[?~%]?$)/, '$1');
+	const m = e.match(/^\[(.+)\]$/);
+	// One of several: their years, once each ("1800 or 1801"; days in one year read as that year).
+	if (m) return [...new Set(m[1].split(',').map((p) => fmtPoint(year(p))))].join(' or ');
+	return fmtDate(e.split('/').map(year).join('/'));
 }
 
 function single(input: string): DateRange | null {

@@ -104,6 +104,7 @@ const steps = {
   // and confirmed dates stay as they are, and dates whose sources disagree are listed to rewrite ("1800 or 1801").
   dates(d) {
     const changed = [], check = [];
+    let likely = 0;
     const names = Object.fromEntries(d.people.map(p => [p.id, p.knownAs || nameText(p.names?.[0]) || p.id]));
     const fix = (dt, what) => {
       if (!dt || !("status" in dt)) return;
@@ -113,6 +114,7 @@ const steps = {
         if (dt.edtf !== was) changed.push(`${what}: ${fmtDate(was)} → ${fmtDate(dt.edtf)}`);
         else if (!/[?%]|^\[/.test(was)) check.push(`${what}: ${fmtDate(was)} was a guess, but it can't take a "not sure" mark; kept as it is`);
       }
+      if (dt.status === "likely") likely++;
       if (dt.status === "conflicting") check.push(`${what}: ${fmtDate(was)}, sources disagree; type the dates as "1800 or 1801"`);
       delete dt.status;
     };
@@ -122,6 +124,7 @@ const steps = {
       fix(f.relationship?.start, `${who}, start`);
       fix(f.relationship?.end, `${who}, end`);
     }
+    if (likely) changed.push(`${likely} "likely" dates kept as they are, now in ink (EDTF has one level of doubt)`);
     return { changed, check };
   },
 

@@ -85,8 +85,6 @@ export function attachChild(d: Dataset, f: Family, cid: string, unsure = false) 
 
 /** Remove families that no longer carry information, and places and sources nothing uses. */
 export function prune(d: Dataset) {
-	prunePlaces(d);
-	pruneSources(d);
 	d.families = d.families.filter((f) => {
 		const np = (f.partners ?? []).length,
 			nc = (f.children ?? []).length;
@@ -94,6 +92,9 @@ export function prune(d: Dataset) {
 		if (np === 1) return nc > 0 || f.childrenComplete === 'no';
 		return true; // couple, with or without children
 	});
+	// After the families, so a family removed here takes its marriage place with it.
+	prunePlaces(d);
+	pruneSources(d);
 }
 
 export type RelativeKind = 'parent' | 'partner' | 'child' | 'sibling';

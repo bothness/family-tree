@@ -20,10 +20,10 @@ export function gaps(d: Dataset): Record<string, Gap[]> {
 				.forEach((n) => add(p.id, 'guess', `${n === primaryName(p) ? 'Name' : (n.type ?? 'other') + ' name'} is a guess`));
 			const b = lifeEvent(d, p.id, 'birth');
 			if (!b) add(p.id, 'missing', 'No birth date or place');
-			else if (dateUnsure(b.date?.edtf)) add(p.id, 'guess', `Birth date ${datesDisagree(b.date!.edtf) ? 'sources disagree' : 'is a guess'} (${fmtDate(b.date!.edtf)})`);
+			else if (dateUnsure(b.date?.edtf)) add(p.id, 'guess', `${datesDisagree(b.date!.edtf) ? 'Sources disagree on the birth date' : 'Birth date is a guess'} (${fmtDate(b.date!.edtf)})`);
 			const x = lifeEvent(d, p.id, 'death');
 			if (p.deceased && !x?.date) add(p.id, 'missing', 'Date of death not recorded');
-			else if (dateUnsure(x?.date?.edtf)) add(p.id, 'guess', `Death date ${datesDisagree(x!.date!.edtf) ? 'sources disagree' : 'is a guess'} (${fmtDate(x!.date!.edtf)})`);
+			else if (dateUnsure(x?.date?.edtf)) add(p.id, 'guess', `${datesDisagree(x!.date!.edtf) ? 'Sources disagree on the death date' : 'Death date is a guess'} (${fmtDate(x!.date!.edtf)})`);
 			if (!p.deceased && !x && !isLiving(d, p)) add(p.id, 'check', 'Born over 110 years ago – mark as deceased?');
 		}
 		p.research?.todo?.forEach((t) => add(p.id, 'todo', t));
