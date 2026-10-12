@@ -87,11 +87,8 @@
 				{#if c.detail && editing !== s.id}<div class="src-detail">{c.detail}</div>{/if}
 				{#if editing === s.id}
 					<div class="oname">
-						<label class="fld"><span>What it tells us about {displayName(p)} (optional)</span>
-							<input type="text" value={c.detail ?? ''} placeholder="e.g. p. 214, or confirmed her birthday" onchange={(e) => setDetail(s.id, val(e))} />
-						</label>
 						<div class="row">
-							<label class="fld" style="flex:2 1 180px"><span>Source</span><input type="text" value={s.title} onchange={(e) => setField(s.id, 'title', val(e))} /></label>
+							<label class="fld" style="flex:2 1 180px"><span>Source name</span><input type="text" value={s.title} onchange={(e) => setField(s.id, 'title', val(e))} /></label>
 							<label class="fld" style="flex:1 1 120px"><span>Kind</span>
 								<select value={s.type} onchange={(e) => (s.type = val(e) as SourceType)}>
 									{#each SOURCE_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
@@ -105,6 +102,10 @@
 						{#if others(s.id).length}
 							<div class="hint">Also used for {#each others(s.id) as id, i (id)}<button class="plink" onclick={() => app.select(id)}>{displayName(person(d, id))}</button>{i < others(s.id).length - 1 ? ', ' : ''}{/each}. Changes to the source apply to them too.</div>
 						{/if}
+						<label class="fld"><span>What it tells us about {displayName(p)} (optional)</span>
+							<input type="text" value={c.detail ?? ''} placeholder="e.g. p. 214, or confirmed her birthday" onchange={(e) => setDetail(s.id, val(e))} />
+						</label>
+						<div class="row"><button class="btn small" onclick={() => (editing = null)}>Close source</button></div>
 					</div>
 				{/if}
 			</li>
@@ -112,7 +113,7 @@
 	{/each}
 </ul>
 <Combobox.Root type="single" bind:value bind:open {onOpenChange} onValueChange={choose} inputValue={query}>
-	<Combobox.Input bind:ref={input} class="place-input" placeholder="Add a source: what it is, or paste a link" autocomplete="off" oninput={(e) => (query = e.currentTarget.value)} aria-label="Add a source" />
+	<Combobox.Input bind:ref={input} class="place-input" placeholder="Add a source: describe the source or paste a link" autocomplete="off" oninput={(e) => (query = e.currentTarget.value)} aria-label="Add a source" />
 	<Combobox.Portal>
 		<Combobox.Content class="search-pop" sideOffset={4} align="start">
 			{#if known.length}
