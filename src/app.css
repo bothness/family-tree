@@ -289,6 +289,14 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .evlist .ty{font-weight:700;min-width:84px;text-transform:capitalize}
 .evlist .grow{flex:1;min-width:0}
 .evlist .del{border:0;background:none;color:var(--ink-soft);padding:0 4px}
+.srclist{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.srclist li{display:grid;gap:5px;font-size:14px;border-bottom:1px dotted var(--rule);padding-bottom:5px}
+.src-line{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.src-line .src-title{text-align:left}
+.src-line a{color:var(--accent);text-decoration:none}
+.src-type{color:var(--ink-soft);font-size:13px}
+.src-line .del{border:0;background:none;color:var(--ink-soft);padding:0 4px;margin-left:auto}
+.src-detail{color:var(--ink-soft);font-size:13px}
 .tag{font-size:12px;border-radius:9px;padding:0 7px;background:var(--paper);color:var(--ink-soft)}
 .tag.guess{background:transparent;border:1px dashed var(--pencil);font-family:var(--f-pencil);font-size:14px}
 .tag.likely{border:1px dashed var(--ink-soft)}

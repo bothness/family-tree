@@ -7,6 +7,7 @@ import type { Dataset } from '../model/types.ts';
 import { deletePerson, emptyDataset, linkPeople, newFamily, newPerson, setLife } from '../model/mutations.ts';
 import { childIds, partnerIds, person } from '../model/queries.ts';
 import { eq, merge3, normalise, stampChanges } from './merge.ts';
+import { cite, uncite } from '../model/sources.ts';
 
 const base = () => normalise(demo);
 const p = (d: Dataset, id: string) => person(d, id)!;
@@ -101,6 +102,35 @@ describe('merge3 basics', () => {
 		expect(JSON.stringify(r1)).toBe(JSON.stringify(r2));
 		p(r1, 'per_annie').notes = 'changed afterwards';
 		expect(p(a, 'per_annie').notes).toBe('x');
+	});
+});
+
+describe('shared sources and places', () => {
+	it('keeps a source one side removed as unused while the other side cited it', () => {
+		const o = base();
+		o.sources.push({ id: 'src_letter', type: 'papers', title: 'A letter' });
+		o.people.find((x) => x.id === 'per_annie')!.citations!.push({ sourceId: 'src_letter' });
+		const a = structuredClone(o),
+			b = structuredClone(o);
+		uncite(a, 'per_annie', 'src_letter');
+		expect(a.sources.some((s) => s.id === 'src_letter')).toBe(false);
+		cite(b, 'per_charles', 'src_letter', 'mentions him');
+		const { data } = merge3(o, a, b);
+		expect(data.sources.some((s) => s.id === 'src_letter')).toBe(true);
+		expect(p(data, 'per_charles').citations).toContainEqual({ sourceId: 'src_letter', detail: 'mentions him' });
+		expect(p(data, 'per_annie').citations?.some((c) => c.sourceId === 'src_letter')).toBeFalsy();
+	});
+
+	it('keeps a place one side removed as unused while the other side used it', () => {
+		const o = base();
+		setLife(o, 'per_annie', 'death', null, 'Nowhere Green');
+		const a = structuredClone(o),
+			b = structuredClone(o);
+		setLife(a, 'per_annie', 'death', null, 'Malvern');
+		expect(a.places.some((x) => x.name === 'Nowhere Green')).toBe(false);
+		setLife(b, 'per_charles', 'death', null, 'Nowhere Green');
+		const { data } = merge3(o, a, b);
+		expect(data.places.some((x) => x.name === 'Nowhere Green')).toBe(true);
 	});
 });
 

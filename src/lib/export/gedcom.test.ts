@@ -55,7 +55,12 @@ describe('toGedcom', () => {
 	d.people.push(
 		{ id: 'per_john', names: [{ type: 'birth', given: 'John', surname: 'Smith', status: 'confirmed' }], sex: { value: 'M' }, deceased: true, knownAs: 'Jack', notes: 'Cooper.\nLived in Leeds.', research: { stage: 'in-progress', todo: ['Find baptism'] } },
 		{ id: 'per_mary', names: [{ type: 'birth', given: 'Mary', surname: 'Walker', status: 'likely' }, { type: 'married', given: 'Mary', surname: 'Smith' }], sex: { value: 'F' } },
-		{ id: 'per_ann', names: [{ given: 'Ann', surname: 'Smith' }], sex: { value: 'F' }, sourceNotes: 'x'.repeat(450) }
+		{ id: 'per_ann', names: [{ given: 'Ann', surname: 'Smith' }], sex: { value: 'F' }, notes: 'x'.repeat(450), citations: [{ sourceId: 'src_census', detail: 'schedule 112' }, { sourceId: 'src_wd' }] }
+	);
+	d.sources.push(
+		{ id: 'src_census', type: 'record', title: '1891 census, Leeds', date: '1891' },
+		{ id: 'src_wd', type: 'wikidata', title: 'Wikidata Q42', url: 'https://www.wikidata.org/wiki/Q42' },
+		{ id: 'src_unused', type: 'memory', title: 'Not cited' }
 	);
 	d.places.push({ id: 'plc_leeds', name: 'Leeds', context: 'West Yorkshire, England', coordinates: { lat: 53.8, lon: -1.55 } });
 	d.events.push(
@@ -94,6 +99,13 @@ describe('toGedcom', () => {
 		expect(lines).toContain('1 NOTE Cooper.');
 		expect(lines).toContain('2 CONT Lived in Leeds.');
 		expect(lines.some((l) => l.startsWith('2 CONC xxx'))).toBe(true);
+	});
+	it('writes each cited source once, cited with what it tells us; Wikidata also as REFN', () => {
+		expect(ged).toContain('1 SOUR @S1@\r\n2 PAGE schedule 112\r\n1 SOUR @S2@');
+		expect(ged).toContain('0 @S1@ SOUR\r\n1 TITL 1891 census, Leeds\r\n1 DATA\r\n2 DATE 1891\r\n1 _TYPE record');
+		expect(ged).toContain('1 NOTE https://www.wikidata.org/wiki/Q42');
+		expect(ged).toContain('1 REFN Q42\r\n2 TYPE Wikidata');
+		expect(ged).not.toContain('Not cited');
 	});
 	it('puts the man as husband whatever the stored order, with children and the marriage', () => {
 		const fam = ged.slice(ged.indexOf('@F1@ FAM'));

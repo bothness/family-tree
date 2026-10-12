@@ -8,7 +8,7 @@
       "deceased": true,
       "tags": ["smith"],
       "notes": "Cooper by trade. Lived on Kirkstall Road, Leeds, in 1891.",
-      "sourceNotes": "Marriage certificate 1883 (GRO): age 25, cooper.\n1891 census, Leeds, schedule 112.",
+      "citations": [{ "sourceId": "src_marriage_1883", "detail": "age 25, cooper" }, { "sourceId": "src_census_1891_leeds", "detail": "schedule 112" }],
       "research": { "stage": "in-progress", "todo": ["Find baptism – age on marriage cert suggests c.1858"] }
     },
     {
@@ -21,7 +21,7 @@
       "deceased": true,
       "tags": ["smith"],
       "notes": "Family say she came from Bradford.",
-      "sourceNotes": "Maiden name from Aunt Jean (2026) – not yet checked.",
+      "citations": [{ "sourceId": "src_aunt_jean", "detail": "her maiden name; not yet checked" }, { "sourceId": "src_marriage_1883" }],
       "research": { "stage": "sketch", "todo": ["Confirm maiden name from marriage cert"] }
     },
     {
@@ -29,7 +29,7 @@
       "names": [{ "given": "Thomas", "surname": "Smith", "status": "confirmed" }],
       "sex": { "value": "M", "status": "confirmed" },
       "tags": ["smith"],
-      "sourceNotes": "Birth certificate, March 1885 (GRO).",
+      "citations": [{ "sourceId": "src_birth_thomas" }],
       "research": { "stage": "in-progress", "todo": ["Confirm marriage to Bridget Murphy (c.1910, Leeds?)"] }
     },
     {
@@ -38,7 +38,7 @@
       "knownAs": "Annie",
       "sex": { "value": "F", "status": "confirmed" },
       "tags": ["smith"],
-      "sourceNotes": "Listed as 'Annie', daughter, in 1891 census.",
+      "citations": [{ "sourceId": "src_census_1891_leeds", "detail": "listed as 'Annie', daughter" }],
       "research": { "stage": "sketch" }
     },
     {
@@ -46,7 +46,7 @@
       "names": [{ "given": "Bridget", "surname": "Murphy", "status": "likely" }],
       "sex": { "value": "F", "status": "confirmed" },
       "tags": ["murphy"],
-      "links": { "urls": [{ "url": "https://www.census.nationalarchives.ie/", "label": "Irish census search" }] },
+      "citations": [{ "sourceId": "src_irish_census" }],
       "research": { "stage": "sketch", "todo": ["Find 1911 census entry in Leeds"] }
     },
     {
@@ -70,7 +70,7 @@
       "deceased": true,
       "tags": ["smith"],
       "notes": "Farm labourer near Wakefield, later a cooper in Leeds. Married twice.",
-      "sourceNotes": "Named as John's father on the 1883 marriage certificate.",
+      "citations": [{ "sourceId": "src_marriage_1883", "detail": "named as John's father" }],
       "research": { "stage": "sketch", "todo": ["Find William and Sarah's marriage (c.1855)"] }
     },
     {
@@ -104,7 +104,7 @@
       "deceased": true,
       "tags": ["smith"],
       "notes": "John's half-brother.",
-      "sourceNotes": "Birth certificate, May 1872 (GRO).",
+      "citations": [{ "sourceId": "src_birth_1872" }],
       "research": { "stage": "in-progress", "todo": ["When did Ted die? Not in the 1921 census"] }
     },
     {
@@ -151,7 +151,7 @@
       "deceased": true,
       "tags": ["smith"],
       "notes": "Infant who died the year they were born.",
-      "sourceNotes": "Burial register, St Matthew's, Leeds, 1887 – name illegible.",
+      "citations": [{ "sourceId": "src_burials_st_matthews", "detail": "name illegible" }],
       "research": { "stage": "sketch", "todo": ["Look for a matching baptism"] }
     },
     {
@@ -174,7 +174,7 @@
       "deceased": true,
       "tags": ["smith"],
       "notes": "Divorced Albert Dunn in 1938; married George Hall in 1940.",
-      "sourceNotes": "Birth certificate 1911; marriage certificates 1932 and 1940; Aunt Jean (2026).",
+      "citations": [{ "sourceId": "src_birth_peggy" }, { "sourceId": "src_marriage_1932" }, { "sourceId": "src_marriage_1940" }, { "sourceId": "src_aunt_jean" }],
       "research": { "stage": "researched" }
     },
     {
@@ -187,7 +187,7 @@
       "deceased": true,
       "tags": ["smith"],
       "notes": "Changed his surname to Smyth by deed poll.",
-      "sourceNotes": "London Gazette, 1948 (to check).",
+      "citations": [{ "sourceId": "src_gazette_1948", "detail": "to check" }],
       "research": { "stage": "in-progress", "todo": ["Find the deed poll notice in the London Gazette"] }
     },
     {
@@ -248,7 +248,7 @@
       "deceased": true,
       "tags": ["walker"],
       "notes": "Wool comber, Bradford. Possibly Mary Smith's father – not yet linked.",
-      "sourceNotes": "1861 census, Bradford: James (29), Hannah, Mary (1), Joseph (born after).",
+      "citations": [{ "sourceId": "src_census_1861_bradford", "detail": "James (29), Hannah, Mary (1)" }],
       "research": { "stage": "sketch", "todo": ["Is their Mary the Mary who married John Smith in 1883?"] }
     },
     {
@@ -429,7 +429,20 @@
     { "id": "plc_wakefield", "name": "Wakefield", "type": "town" },
     { "id": "plc_cork", "name": "Cork", "type": "town", "altNames": [{ "name": "Corcaigh", "lang": "ga" }], "coordinates": { "lat": 51.8985, "lon": -8.4756 } }
   ],
-  "sources": [],
+  "sources": [
+    { "id": "src_marriage_1883", "type": "record", "title": "Marriage certificate, John Smith and Mary Walker, Leeds (GRO)", "date": "1883" },
+    { "id": "src_census_1891_leeds", "type": "record", "title": "1891 census, Leeds", "date": "1891" },
+    { "id": "src_aunt_jean", "type": "memory", "title": "Aunt Jean (Jean Hall)", "date": "2026" },
+    { "id": "src_birth_thomas", "type": "record", "title": "Birth certificate, Thomas Smith (GRO)", "date": "1885-03" },
+    { "id": "src_irish_census", "type": "record", "title": "Irish census search", "url": "https://www.census.nationalarchives.ie/" },
+    { "id": "src_birth_1872", "type": "record", "title": "Birth certificate, May 1872 (GRO)", "date": "1872-05" },
+    { "id": "src_burials_st_matthews", "type": "record", "title": "Burial register, St Matthew's, Leeds", "date": "1887" },
+    { "id": "src_birth_peggy", "type": "record", "title": "Birth certificate, Margaret Smith", "date": "1911" },
+    { "id": "src_marriage_1932", "type": "record", "title": "Marriage certificate, Margaret Smith and Albert Dunn", "date": "1932" },
+    { "id": "src_marriage_1940", "type": "record", "title": "Marriage certificate, Margaret Dunn and George Hall", "date": "1940" },
+    { "id": "src_gazette_1948", "type": "book", "title": "London Gazette", "date": "1948" },
+    { "id": "src_census_1861_bradford", "type": "record", "title": "1861 census, Bradford", "date": "1861" }
+  ],
   "views": [
     {
       "id": "view_smith_descendants",

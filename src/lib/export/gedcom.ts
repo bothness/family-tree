@@ -1,7 +1,9 @@
 // GEDCOM 5.5.1 export (E1), for other family tree apps and sites. Some things don't carry over, so they're kept as
 // notes (readable everywhere) and as underscore tags such as `_STATUS` (which GEDCOM allows for app-specific data):
 // - how sure each fact is (GEDCOM only grades sources): a "Certainty" note, plus `_STATUS` on names, events, links
-// - research stage, to-dos, tags and links: a "Research" note; a Wikidata id as `REFN … TYPE Wikidata`
+// - research stage, to-dos and tags: a "Research" note
+// - sources: a `SOUR` record each (title, date, web address as a note, our type as `_TYPE`), cited from each person
+//   with `PAGE` for what it tells us; a Wikidata source also as `REFN … TYPE Wikidata`
 // - expected children: `NCHI` (GEDCOM's "number of children") when more are expected than recorded
 // Not exported: saved views, places' historical names, and a name's date of use.
 import type { Dataset, EdtfDate, Family, LifeEvent, Name, Person, Status } from '../model/types.ts';
@@ -94,6 +96,8 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 	const indi = new Map(d.people.map((p, i) => [p.id, `@I${i + 1}@`]));
 	const fams = d.families.filter((f) => partnerIds(f).some((id) => indi.has(id)) || childIds(f).some((id) => indi.has(id)));
 	const fam = new Map(fams.map((f, i) => [f.id, `@F${i + 1}@`]));
+	const cited = d.sources.filter((s) => d.people.some((p) => p.citations?.some((c) => c.sourceId === s.id)));
+	const sour = new Map(cited.map((s, i) => [s.id, `@S${i + 1}@`]));
 
 	o.add(0, 'HEAD');
 	o.add(1, 'SOUR', 'FAMILY_TREE_BUILDER');
@@ -156,9 +160,12 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 			if (unsure(e.date?.status)) unsureFacts.push(`${kind} date: ${STATUS_WORD[e.date!.status!]}`);
 			if (unsure(e.place?.status)) unsureFacts.push(`${kind} place: ${STATUS_WORD[e.place!.status!]}`);
 		}
-		if (p.links?.wikidata) {
-			o.add(1, 'REFN', p.links.wikidata);
-			o.add(2, 'TYPE', 'Wikidata');
+		for (const c of p.citations ?? []) {
+			const q = d.sources.find((s) => s.id === c.sourceId && s.type === 'wikidata')?.url?.match(/(Q\d+)$/)?.[1];
+			if (q) {
+				o.add(1, 'REFN', q);
+				o.add(2, 'TYPE', 'Wikidata');
+			}
 		}
 		const photo = p.photo && opts.photoPath?.(p.photo);
 		if (photo) {
@@ -180,8 +187,12 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 				}
 			}
 		}
+		for (const c of p.citations ?? []) {
+			if (!sour.has(c.sourceId)) continue;
+			o.add(1, 'SOUR', sour.get(c.sourceId)!);
+			if (c.detail) o.add(2, 'PAGE', c.detail);
+		}
 		if (p.notes) o.add(1, 'NOTE', p.notes);
-		if (p.sourceNotes) o.add(1, 'NOTE', `Sources:\n${p.sourceNotes}`);
 		if (unsureFacts.length) o.add(1, 'NOTE', `Certainty (from Family Tree Builder): ${unsureFacts.join('; ')}.`);
 		const research = researchNote(p);
 		if (research) o.add(1, 'NOTE', research);
@@ -232,6 +243,16 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 		].filter(Boolean);
 		if (notes.length) o.add(1, 'NOTE', notes.join('\n'));
 	}
+	for (const s of cited) {
+		o.add(0, `${sour.get(s.id)} SOUR`);
+		o.add(1, 'TITL', s.title);
+		if (s.date) {
+			o.add(1, 'DATA');
+			o.add(2, 'DATE', gedcomDate(s.date));
+		}
+		if (s.url) o.add(1, 'NOTE', s.url);
+		o.add(1, '_TYPE', s.type);
+	}
 	o.add(0, 'TRLR');
 	return '﻿' + o.lines.join('\r\n') + '\r\n';
 }
@@ -247,6 +268,5 @@ function researchNote(p: Person): string {
 	if (stage) parts.push(`Research: ${stage === 'in-progress' ? 'in progress' : stage}.`);
 	if (p.research?.todo?.length) parts.push(`To do:\n${p.research.todo.map((t) => `- ${t}`).join('\n')}`);
 	if (p.tags?.length) parts.push(`Tags: ${p.tags.join(', ')}.`);
-	if (p.links?.urls?.length) parts.push(`Links:\n${p.links.urls.map((u) => (u.label ? `${u.label}: ${u.url}` : u.url)).join('\n')}`);
 	return parts.join('\n');
 }

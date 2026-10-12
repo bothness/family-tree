@@ -5,6 +5,7 @@
 	import PlaceInput from './PlaceInput.svelte';
 	import PhotoPicker from './PhotoPicker.svelte';
 	import PersonView from './PersonView.svelte';
+	import SourceList from './SourceList.svelte';
 	import { edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
 	import {
 		birthNameNote, birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, halfSiblings,
@@ -67,8 +68,6 @@
 	let moreOpen = $state(false);
 	let namesOpen = $state(false);
 	let todoText = $state('');
-	let urlText = $state('');
-	let urlLabel = $state('');
 	// The "just added" notice is about the view at the time: drop it once the focus changes (e.g. Expand view).
 	$effect(() => {
 		void app.activeFocus;
@@ -116,7 +115,7 @@
 		n[field] = v.trim() || undefined;
 		if (n.display && (n.given || n.surname)) delete n.display;
 	}
-	function setText(field: 'knownAs' | 'notes' | 'sourceNotes', v: string) {
+	function setText(field: 'knownAs' | 'notes', v: string) {
 		if (v.trim()) p[field] = v.trim();
 		else delete p[field];
 	}
@@ -143,13 +142,6 @@
 		const n = parseInt(v, 10);
 		if (isNaN(n)) delete f.expectedChildren;
 		else f.expectedChildren = { ...(f.expectedChildren ?? {}), min: n };
-	}
-	function addUrl() {
-		let u = urlText.trim();
-		if (!u) return;
-		if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
-		((p.links ??= {}).urls ??= []).push(urlLabel.trim() ? { url: u, label: urlLabel.trim() } : { url: u });
-		urlText = urlLabel = '';
 	}
 	function addTodo() {
 		if (!todoText.trim()) return;
@@ -403,28 +395,15 @@
 </div>
 
 <details class="more" bind:open={moreOpen}>
-	<summary>Notes, sources and links <span>{[p.notes && 'notes', p.sourceNotes && 'sources', (p.links?.wikidata || p.links?.urls?.length) && 'links'].filter(Boolean).join(' · ')}</span></summary>
+	<summary>Notes and sources <span>{[p.notes && 'notes', p.citations?.length && `${p.citations.length} source${p.citations.length > 1 ? 's' : ''}`].filter(Boolean).join(' · ')}</span></summary>
 	<div class="blk" style="border:0;margin-top:6px">
 		<label class="fld"><span>Biography and notes</span><textarea rows="4" value={p.notes ?? ''} onchange={(e) => setText('notes', val(e))}></textarea></label>
-		<label class="fld"><span>Sources</span><textarea rows="3" value={p.sourceNotes ?? ''} placeholder="e.g. Birth certificate 1885 (GRO); 1891 census, Leeds; Aunt Jean" onchange={(e) => setText('sourceNotes', val(e))}></textarea></label>
 	</div>
 	<div class="blk">
-		<div class="lbl">Links</div>
-		<label class="fld"><span>Wikidata ID (for notable people)</span>
-			<input type="text" value={p.links?.wikidata ?? ''} placeholder="e.g. Q42"
-				onchange={(e) => { const v = val(e).trim().toUpperCase(); p.links ??= {}; if (/^Q\d+$/.test(v)) p.links.wikidata = v; else delete p.links.wikidata; }} />
-		</label>
-		{#if p.links?.wikidata}<a class="hint" href="https://www.wikidata.org/wiki/{p.links.wikidata}" target="_blank" rel="noopener">Open {p.links.wikidata} on Wikidata ↗</a>{/if}
-		<ul class="evlist">
-			{#each p.links?.urls ?? [] as u, i (i)}
-				<li><span class="grow"><a href={u.url} target="_blank" rel="noopener">{u.label || u.url}</a></span><button class="del" aria-label="Remove link" onclick={() => p.links!.urls!.splice(i, 1)}>×</button></li>
-			{/each}
-		</ul>
-		<div class="row">
-			<input type="text" bind:value={urlText} placeholder="https://…" style="flex:2 1 160px" />
-			<input type="text" bind:value={urlLabel} placeholder="Label (optional)" style="flex:1 1 100px" />
-			<button class="btn small" onclick={addUrl}>Add link</button>
-		</div>
+		<div class="lbl">Sources</div>
+		<SourceList {pid} />
+	</div>
+	<div class="blk">
 		<label class="fld"><span>Tags (comma separated)</span>
 			<input type="text" value={(p.tags ?? []).join(', ')}
 				onchange={(e) => { const t = val(e).split(',').map((s) => s.trim()).filter(Boolean); if (t.length) p.tags = t; else delete p.tags; }} />

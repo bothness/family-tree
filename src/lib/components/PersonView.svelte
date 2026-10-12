@@ -6,6 +6,7 @@
 	import PhotoPicker from './PhotoPicker.svelte';
 	import { edtfRange, fmtDate } from '#lib/model/edtf.ts';
 	import { birthStart, childIds, displayName, famAsChild, famsAsPartner, halfSiblings, lifeEvent, nameIsGuess, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName } from '#lib/model/queries.ts';
+	import { source, sourceTypeLabel } from '#lib/model/sources.ts';
 	import type { EdtfDate, Family, LifeEvent, NameType, Status } from '#lib/model/types.ts';
 
 	let { pid }: { pid: string } = $props();
@@ -127,15 +128,24 @@
 	</div>
 {/if}
 
-{#if p.notes || p.sourceNotes || p.links?.wikidata || p.links?.urls?.length || p.tags?.length}
+{#if p.notes || p.citations?.length || p.tags?.length}
 	<div class="blk ro">
 		{#if p.notes}<div class="lbl">Biography and notes</div><p class="ro-text">{p.notes}</p>{/if}
-		{#if p.sourceNotes}<div class="lbl">Sources</div><p class="ro-text">{p.sourceNotes}</p>{/if}
-		{#if p.links?.wikidata || p.links?.urls?.length}
-			<div class="lbl">Links</div>
-			<ul class="evlist">
-				{#if p.links?.wikidata}<li><a href="https://www.wikidata.org/wiki/{p.links.wikidata}" target="_blank" rel="noopener">{p.links.wikidata} on Wikidata ↗</a></li>{/if}
-				{#each p.links?.urls ?? [] as u, i (i)}<li><a href={u.url} target="_blank" rel="noopener">{u.label || u.url}</a></li>{/each}
+		{#if p.citations?.length}
+			<div class="lbl">Sources</div>
+			<ul class="srclist">
+				{#each p.citations as c (c.sourceId)}
+					{@const s = source(d, c.sourceId)}
+					{#if s}
+						<li>
+							<div class="src-line">
+								{#if s.url}<a href={s.url} target="_blank" rel="noopener">{s.title} ↗</a>{:else}<span>{s.title}</span>{/if}
+								<span class="src-type">{sourceTypeLabel(s.type)}{#if s.date} · {fmtDate(s.date)}{/if}</span>
+							</div>
+							{#if c.detail}<div class="src-detail">{c.detail}</div>{/if}
+						</li>
+					{/if}
+				{/each}
 			</ul>
 		{/if}
 		{#if p.tags?.length}<div class="hint">Tags: {p.tags.join(', ')}</div>{/if}

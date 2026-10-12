@@ -54,6 +54,7 @@ export function setLifePlace(d: Dataset, pid: string, kind: 'birth' | 'death', p
 		if (!e) return;
 		delete e.place;
 		if (!e.date) d.events = d.events.filter((x) => x !== e);
+		prunePlaces(d);
 		return;
 	}
 	if (!e) {
@@ -61,6 +62,7 @@ export function setLifePlace(d: Dataset, pid: string, kind: 'birth' | 'death', p
 		e = d.events.at(-1)!;
 	}
 	e.place = { ...(e.place ?? {}), placeId };
+	prunePlaces(d);
 }
 
 /** Link a hand-written place to a looked-up one, so every event already using it gets the map position.
@@ -129,4 +131,27 @@ export function mergePlaces(d: Dataset, keepId: string, goneId: string) {
 	d.places = d.places.filter((p) => p.id !== goneId);
 	// Anything else pointing at the removed place (a parent place) now points at the kept one.
 	for (const p of d.places) if (p.parentId === goneId) p.parentId = keepId;
+}
+
+/** Remove places nothing uses: not the place of any event (or anything else with a `placeId`), nor the wider
+ *  area of a place that is. */
+export function prunePlaces(d: Dataset) {
+	const used = new Set<string>();
+	const walk = (o: unknown): void => {
+		if (Array.isArray(o)) o.forEach(walk);
+		else if (o && typeof o === 'object')
+			for (const [k, v] of Object.entries(o)) {
+				if (k === 'placeId' && typeof v === 'string') used.add(v);
+				else walk(v);
+			}
+	};
+	walk([d.people, d.families, d.events]);
+	for (const id of [...used]) {
+		let p = d.places.find((x) => x.id === id);
+		while (p?.parentId && !used.has(p.parentId)) {
+			used.add(p.parentId);
+			p = d.places.find((x) => x.id === p!.parentId);
+		}
+	}
+	if (d.places.some((p) => !used.has(p.id))) d.places = d.places.filter((p) => used.has(p.id));
 }

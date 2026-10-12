@@ -2,7 +2,10 @@
 // Usage: node scripts/migrate-0.3.mjs backup.json [out.json]   (default out: backup-0.3.json beside it)
 // Photos (`mediaFiles`) pass through untouched. Prints what it changed and anything to check by hand;
 // check the result with `npm run validate out.json` before using "Replace the shared tree with a backup".
+// Uses the app's own model code for sources and places (Node 24 runs the TypeScript as it is).
 import { readFileSync, writeFileSync } from "node:fs";
+import { cite, pruneSources, sourceFromText } from "../src/lib/model/sources.ts";
+import { prunePlaces } from "../src/lib/model/places.ts";
 
 const nameText = n => n?.display || [n?.given, n?.surname].filter(Boolean).join(" ");
 
@@ -40,6 +43,60 @@ const steps = {
     }
     return { changed, check };
   },
+
+  // Free-text sources join the notes; Wikidata ids and links become shared sources, cited by each person.
+  sources(d) {
+    const changed = [], check = [];
+    const OLD_TYPES = { oral: "memory", certificate: "record", "parish-register": "record", census: "record", will: "record",
+      military: "record", newspaper: "book", book: "book", photograph: "papers", "family-document": "papers", website: "web" };
+    for (const s of d.sources ?? []) {
+      check.push(`Older source "${s.title}" kept as ${OLD_TYPES[s.type] ?? "other"}${s.repository || s.reference || s.reliability || s.notes ? "; its repository, reference, reliability and notes are dropped" : ""}`);
+      for (const k of ["repository", "reference", "reliability", "notes"]) delete s[k];
+      s.type = OLD_TYPES[s.type] ?? "other";
+    }
+    const walk = o => {
+      if (Array.isArray(o)) return o.forEach(walk);
+      if (!o || typeof o !== "object") return;
+      if (typeof o.sourceId === "string" && o.note) {
+        o.detail = [o.detail, o.note].filter(Boolean).join("; ");
+        delete o.note;
+      }
+      Object.values(o).forEach(walk);
+    };
+    walk([d.people, d.families, d.events]);
+    const before = d.sources.length;
+    for (const p of d.people) {
+      const label = p.knownAs || nameText(p.names?.[0]) || p.id;
+      if (p.sourceNotes?.trim()) {
+        p.notes = p.notes?.trim() ? `${p.notes.trimEnd()}\n\n${p.sourceNotes.trim()}` : p.sourceNotes.trim();
+        changed.push(`${label}: sources text moved to notes`);
+      }
+      delete p.sourceNotes;
+      const links = p.links ?? {};
+      if (links.wikidata) cite(d, p.id, sourceFromText(links.wikidata));
+      for (const u of links.urls ?? []) {
+        const s = sourceFromText(u.url);
+        if (s.type === "memory") check.push(`${label}: "${u.url}" isn't a web address; kept as a source titled as it is`);
+        cite(d, p.id, u.label?.trim() ? { ...s, title: u.label.trim() } : s);
+      }
+      const other = Object.keys(links).filter(k => !["wikidata", "urls"].includes(k));
+      if (other.length) check.push(`${label}: links (${other.join(", ")}) dropped`);
+      delete p.links;
+    }
+    pruneSources(d);
+    const shared = d.sources.map(s => d.people.filter(p => p.citations?.some(c => c.sourceId === s.id)).length);
+    changed.push(`${d.sources.length - before} sources made from links (${d.sources.length} in all), ${shared.filter(n => n > 1).length} shared by more than one person`);
+    return { changed, check };
+  },
+
+  // Places nothing uses any more are removed (the app now does this as you edit).
+  places(d) {
+    const before = d.places.map(p => p.name);
+    prunePlaces(d);
+    const kept = new Set(d.places.map(p => p.name));
+    const gone = before.filter(n => !kept.has(n));
+    return { changed: gone.length ? [`removed ${gone.length} unused: ${gone.join(", ")}`] : [], check: [] };
+  },
 };
 
 const [from, to = from.replace(/(\.json)?$/, "-0.3.json")] = process.argv.slice(2);
@@ -48,6 +105,10 @@ if (!from) {
   process.exit(1);
 }
 const d = JSON.parse(readFileSync(from, "utf8"));
+d.sources ??= [];
+d.places ??= [];
+d.events ??= [];
+d.families ??= [];
 if (d.schemaVersion !== "0.2") {
   console.error(`Expected a v0.2 backup, found ${d.schemaVersion ?? "no version"}.`);
   process.exit(1);

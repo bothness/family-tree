@@ -5,11 +5,11 @@ Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/exa
 ## Entities
 | Entity | Purpose | Drives |
 |---|---|---|
-| **Person** | Names (multiple, typed), sex, Wikidata/URL links, tags, research stage + to-dos | Every view |
+| **Person** | Names (multiple, typed), sex, sources cited, tags, research stage + to-dos | Every view |
 | **Family** | Up to two partners + children; whether the children list is complete; expected child count | Tree |
 | **Event** | Birth, marriage, census, residence, occupation, migration… with date, place and participants (with roles) | Timeline, map, person page |
 | **Place** | Hierarchy (parent), coordinates, historical/alternative names, Wikidata | Map, place grouping |
-| **Source** | Certificate, census, oral account… with reliability | Evidence, gaps |
+| **Source** | A record, book, web page, family papers or someone's memory; shared by everyone who cites it | Person panel, GEDCOM `SOUR` |
 | **View** | Saved, named filter. One rule: a focus (root + up/down generations + width), tags, or a hand-picked people list | Saved views (chips under the header); filter every tab |
 
 ## Key decisions
@@ -23,6 +23,8 @@ Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/exa
 
 ## Changes in v0.3
 - Names: the first name in `names` is the main name, the one they were born with (or the first known), as in GEDCOM, Gramps and FamilySearch. `preferred` now means "show this name on the tree instead" (e.g. a married name; at most one). `knownAs` is for nicknames and titles ("Polly", "Sir Francis Darwin"), and a one-word `knownAs` takes the surname of the name shown.
+- Sources: one model for what used to be free-text sources, links and the Wikidata id. A `Source` is `{ id, type, title, url?, date? }` with `type` one of `memory | record | papers | book | web | wikidata | other` (Family memory, Record or certificate, Family papers, Book or article, Web page, Wikidata, Other). It's shared, like a place: a person cites it with `citations: [{ sourceId, detail? }]`, the detail being what it tells us about them ("p. 214", "named as John's father"). In the app people only see sources; the citation is the source's line on a person plus its note. `person.sourceNotes` and `person.links` are gone (places keep `links`).
+- Nothing unused is kept: a source no one cites, and a place no event uses (nor the wider area of one that is), are removed as you edit and when merging.
 - Older data is converted once, outside the app, by `scripts/migrate-0.3.mjs` (a backup file in, a backup file out). The app reads v0.2 data without converting it.
 
 ## Changes in v0.2

@@ -1,6 +1,8 @@
 // Changes to a Dataset. Functions mutate in place (works with Svelte 5 $state proxies) and are unit-tested.
 import type { Dataset, Family, Person, Sex, Status } from './types.ts';
 import { parseUserDate } from './edtf.ts';
+import { prunePlaces } from './places.ts';
+import { pruneSources } from './sources.ts';
 import { childIds, coupleFam, displayName, famAsChild, family, famsAsPartner, lifeEvent, partnerIds, person, placeName, soloFam } from './queries.ts';
 
 export const uid = (prefix: string) =>
@@ -28,6 +30,7 @@ export function setLife(d: Dataset, pid: string, kind: 'birth' | 'death', dateSt
 	const place = placeStr != null ? placeStr.trim() : e?.place ? placeName(d, e.place.placeId) : '';
 	if (!edtf && !place) {
 		if (e) d.events = d.events.filter((x) => x !== e);
+		prunePlaces(d);
 		return;
 	}
 	if (!e) {
@@ -40,6 +43,7 @@ export function setLife(d: Dataset, pid: string, kind: 'birth' | 'death', dateSt
 	} else delete e.date;
 	if (place) e.place = { ...(e.place ?? {}), placeId: findOrCreatePlace(d, place)! };
 	else delete e.place;
+	prunePlaces(d);
 }
 
 /** Create a person from a single name string ("Mary Ann Smith" → given "Mary Ann", surname "Smith"). */
@@ -79,8 +83,10 @@ export function attachChild(d: Dataset, f: Family, cid: string, unsure = false) 
 	(f.children ??= []).push(l);
 }
 
-/** Remove families that no longer carry information. */
+/** Remove families that no longer carry information, and places and sources nothing uses. */
 export function prune(d: Dataset) {
+	prunePlaces(d);
+	pruneSources(d);
 	d.families = d.families.filter((f) => {
 		const np = (f.partners ?? []).length,
 			nc = (f.children ?? []).length;

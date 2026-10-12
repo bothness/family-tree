@@ -4,7 +4,7 @@
 # Facts from Wikipedia (Erasmus Darwin, Darwin–Wedgwood family, Josiah Wedgwood, Robert Darwin, Emma Darwin,
 # George/Francis/Leonard/Horace Darwin, Anne Darwin, Caroline Wedgwood), the Darwin Correspondence Project name
 # registers and thepeerage.com. Where sources disagree or are thin, the fact is marked likely / guess / conflicting.
-import json, sys
+import json, re, sys
 
 places = {
     'elston': ('Elston', 'Nottinghamshire, England', 53.0335, -0.8713),
@@ -32,6 +32,16 @@ places = {
 }
 
 people, families, events = [], [], []
+sources = {}  # url → shared source
+
+
+def source_id(title, url):
+    if url not in sources:
+        sid = 'src_' + re.sub(r'[^a-z0-9]+', '_', title.lower()).strip('_')[:40]
+        while sid in [x['id'] for x in sources.values()]:
+            sid += '_'
+        sources[url] = {'id': sid, 'type': 'web', 'title': title, 'url': url}
+    return sources[url]['id']
 
 WIKI = 'https://en.wikipedia.org/wiki/'
 FAMILY = ('Wikipedia: Darwin–Wedgwood family', WIKI + 'Darwin%E2%80%93Wedgwood_family')
@@ -135,12 +145,13 @@ def P(pid, given, surname, sex, born=None, died=None, bplace=None, dplace=None, 
         p['deceased'] = True
     if tags:
         p['tags'] = tags
+    urls = SOURCES.get(pid, [FAMILY])
+    # Free-text sources that only name a page already cited are left out; anything more joins the notes.
+    if src and src not in [l for l, u in urls]:
+        notes = f'{notes}\n\n{src}' if notes else src
     if notes:
         p['notes'] = notes
-    if src:
-        p['sourceNotes'] = src
-    urls = SOURCES.get(pid, [FAMILY])
-    p['links'] = {'urls': [{'url': u, 'label': l} for l, u in urls]}
+    p['citations'] = [{'sourceId': source_id(l, u)} for l, u in urls]
     if stage or todo:
         p['research'] = {k: v for k, v in (('stage', stage), ('todo', todo)) if v}
     people.append(p)
@@ -414,7 +425,7 @@ data = {
     'events': events,
     'places': [{'id': 'plc_' + k, 'name': n, 'context': c, 'type': 'town', 'coordinates': {'lat': la, 'lon': lo}}
                for k, (n, c, la, lo) in places.items() if 'plc_' + k in used],
-    'sources': [],
+    'sources': list(sources.values()),
     'views': [
         {'id': 'view_charles_family', 'name': "Charles Darwin's family", 'kind': 'tree',
          'scope': {'root': 'per_charles', 'up': 2, 'down': 1, 'width': 'direct'}},

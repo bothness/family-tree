@@ -132,7 +132,7 @@
 		<p class="hint" style="margin:0">
 			GEDCOM is the format other family tree apps and sites (Ancestry, FamilySearch, Gramps, MacFamilyTree…) import.
 			Names, dates, places, families, notes and sources carry over. How sure each fact is, research notes, to-dos and
-			tags become notes; saved views don't carry over. The ZIP holds the GEDCOM file, the photos, and your full data
+			tags become notes; the kind of each source and saved views don't carry over. The ZIP holds the GEDCOM file, the photos, and your full data
 			(which this app can open again, so it counts as a backup).
 		</p>
 		<textarea spellcheck="false" bind:value={text}></textarea>

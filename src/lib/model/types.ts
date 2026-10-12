@@ -1,4 +1,4 @@
-// TypeScript mirror of schema/family-tree.schema.json (v0.2).
+// TypeScript mirror of schema/family-tree.schema.json (v0.3).
 // Keep the two in step: tests/schema.test.ts validates the sample data against the JSON Schema.
 
 export type Status = 'confirmed' | 'likely' | 'guess' | 'conflicting';
@@ -9,8 +9,10 @@ export type EndReason = 'death' | 'divorce' | 'separation' | 'annulment' | 'unkn
 export type ChildRelation = 'biological' | 'adopted' | 'step' | 'foster' | 'unknown';
 export type ResearchStage = 'sketch' | 'in-progress' | 'researched';
 export type Completeness = 'yes' | 'no' | 'unknown';
+export type SourceType = 'memory' | 'record' | 'papers' | 'book' | 'web' | 'wikidata' | 'other';
 
-export interface Citation { sourceId: string; detail?: string; note?: string }
+/** A link to a source, with what it tells us ("p. 214", "confirmed her birthday"). */
+export interface Citation { sourceId: string; detail?: string }
 
 /** A date in EDTF (ISO 8601-2), e.g. "1858~", "188X", "../1901", "1901/1911". */
 export interface EdtfDate { edtf: string; status?: Status; citations?: Citation[]; note?: string }
@@ -49,12 +51,11 @@ export interface Person {
 	sex?: { value?: Sex; status?: Status };
 	/** True if died. Absent = living or not known (born >110 years ago is treated as probably deceased). */
 	deceased?: boolean;
-	links?: ExternalLinks;
 	tags?: string[];
 	/** Biography and free-text notes. */
 	notes?: string;
-	/** Free-text sources. */
-	sourceNotes?: string;
+	/** The sources for this person's facts. */
+	citations?: Citation[];
 	research?: Research;
 	/** Portrait shown on tree cards: a Media id. */
 	photo?: string;
@@ -132,16 +133,16 @@ export interface Place {
 	meta?: Meta;
 }
 
+/** Anything that tells us about people: a record, a book, a web page, someone's memory. Shared by everyone who
+ *  cites it, and removed when no one does. */
 export interface Source {
 	id: string;
+	type: SourceType;
+	/** What it is, in plain words: "1891 census, Leeds", "Grandma (Jean Hall)". */
 	title: string;
-	type?: string;
-	date?: string;
-	repository?: string;
-	reference?: string;
 	url?: string;
-	reliability?: 'original' | 'derivative' | 'authored' | 'hearsay';
-	notes?: string;
+	/** EDTF: when it was published, or when someone told us. */
+	date?: string;
 	meta?: Meta;
 }
 

@@ -98,7 +98,7 @@
       "pattern": "^Q[0-9]+$"
     },
     "Citation": {
-      "description": "A reference from a fact to a source, with where in the source it was found.",
+      "description": "A person's link to a source, with what it tells us about them.",
       "type": "object",
       "required": [
         "sourceId"
@@ -110,10 +110,7 @@
         },
         "detail": {
           "type": "string",
-          "description": "Page, folio, line, entry number etc."
-        },
-        "note": {
-          "type": "string"
+          "description": "What this source tells us about them, or where in it: \"p. 214\", \"confirmed her birthday\"."
         }
       }
     },
@@ -337,9 +334,6 @@
           "$ref": "#/$defs/MediaId",
           "description": "Portrait shown on tree cards."
         },
-        "links": {
-          "$ref": "#/$defs/ExternalLinks"
-        },
         "tags": {
           "type": "array",
           "items": {
@@ -350,9 +344,12 @@
           "type": "string",
           "description": "Biography and free-text notes."
         },
-        "sourceNotes": {
-          "type": "string",
-          "description": "Free-text record of sources (certificates, census entries, family recollections). Structured sources via citations are optional."
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "description": "The sources for this person's facts."
         },
         "research": {
           "$ref": "#/$defs/Research"
@@ -722,9 +719,11 @@
       }
     },
     "Source": {
+      "description": "Anything that tells us about people: a record, a book, a web page, someone's memory. Shared by everyone who cites it; removed when no one does.",
       "type": "object",
       "required": [
         "id",
+        "type",
         "title"
       ],
       "additionalProperties": false,
@@ -732,51 +731,29 @@
         "id": {
           "$ref": "#/$defs/SourceId"
         },
-        "title": {
-          "type": "string"
-        },
         "type": {
           "enum": [
-            "certificate",
-            "parish-register",
-            "census",
-            "will",
-            "newspaper",
-            "military",
-            "photograph",
+            "memory",
+            "record",
+            "papers",
             "book",
-            "website",
-            "oral",
-            "family-document",
+            "web",
+            "wikidata",
             "other"
           ]
         },
-        "date": {
+        "title": {
           "type": "string",
-          "description": "EDTF date of the source itself."
-        },
-        "repository": {
-          "type": "string",
-          "description": "Where it's held, e.g. GRO, a county archive, a family member."
-        },
-        "reference": {
-          "type": "string",
-          "description": "Catalogue or index reference."
+          "minLength": 1,
+          "description": "What it is, in plain words: \"1891 census, Leeds\", \"Grandma (Jean Hall)\"."
         },
         "url": {
           "type": "string",
           "format": "uri"
         },
-        "reliability": {
-          "enum": [
-            "original",
-            "derivative",
-            "authored",
-            "hearsay"
-          ]
-        },
-        "notes": {
-          "type": "string"
+        "date": {
+          "type": "string",
+          "description": "EDTF: when it was published, or when someone told us."
         },
         "meta": {
           "$ref": "#/$defs/Meta"

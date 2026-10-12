@@ -9,13 +9,14 @@ The data model and everything that reads or writes it without drawing it: `model
 - **Dates are EDTF strings** (`1858~`, `188X`, `../1901`, `1901/1911`). `parseUserDate` (`edtf.ts`) turns everyday forms into EDTF: "c.1858", "1880s", "before 1901", "1901–1911", `YYYY-MM-DD`, "12 Feb 1809" / "12 February 1809", "Feb 1809". Qualifiers only go before years; no "st/nd/th"; years are four digits; impossible days are refused.
 - **Families** have 0–2 partners plus children. Each child is in exactly one family; a parent can be in several (half-siblings). `childrenComplete` and `expectedChildren` record known gaps.
 - Birth and death are events. Other life events stay in the model but are hidden from the UI.
-- **Names**: `names[0]` is the main name, the one they were born with (`primaryName`). One other name may be `preferred`: shown on the tree instead (`shownName`), e.g. a married name. `knownAs` is a nickname or title; one word takes the shown surname (`displayName`). `notes` is the biography; `sourceNotes` holds free-text sources.
+- **Names**: `names[0]` is the main name, the one they were born with (`primaryName`). One other name may be `preferred`: shown on the tree instead (`shownName`), e.g. a married name. `knownAs` is a nickname or title; one word takes the shown surname (`displayName`). `notes` is the biography.
+- **Sources** (`sources.ts`) are shared like places: `Source { type, title, url?, date? }`, cited from a person as `citations: [{ sourceId, detail? }]`. `sourceFromText` turns typed text or a pasted link into a new source (type and title from the site). Sources no one cites and places nothing uses are removed by `prune` (and `uncite`, `setLife`, `setLifePlace`); merging brings one back if the other side just used it.
 - `deceased: true`, or absent (living or not known). Born over 110 years ago counts as probably deceased.
 - **Derived data is never stored** (date ranges, generations, branches, gaps).
 
 ## Files
 - `types.ts` mirrors `schema/family-tree.schema.json`. **When the model changes, update together:** `types.ts`, the schema, `migrate.ts`, `src/lib/data/example-data.json` (the test fixture), `docs/MODEL.md`, and the GEDCOM export if the field carries over.
-- `queries.ts` read-only lookups · `mutations.ts` in-place changes · `edtf.ts` dates · `gaps.ts` research to-do · `focus.ts` who a focus view shows · `views.ts` saved views · `places.ts` places · `media.ts` photo entries.
+- `queries.ts` read-only lookups · `mutations.ts` in-place changes · `edtf.ts` dates · `gaps.ts` research to-do · `focus.ts` who a focus view shows · `views.ts` saved views · `places.ts` places · `sources.ts` sources · `media.ts` photo entries.
 - `places/nominatim.ts`: OpenStreetMap place search, called from the browser. At most one request a second, cached, and only when asked ("Search OpenStreetMap for …"): Nominatim's policy forbids search-as-you-type.
 - `media/images.ts` resizes photos (800px, halving in steps so it stays smooth, plus a 192px square thumbnail); `media/crop.ts` is the square-crop maths.
 - `storage/`: the `DataStore` interface (async; the dataset plus photo files) on IndexedDB, falling back to localStorage. `safety.ts`: persistent storage and backup reminders. The app must work fully with no server: sync is a layer on top (`src/lib/sync/`, see `server/CLAUDE.md`).

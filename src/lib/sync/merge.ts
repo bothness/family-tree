@@ -7,7 +7,7 @@
 // - the top-level lists (people, families, …) and lists of things with an `id`, or a `personId` (a family's
 //   partners and children, an event's participants), are merged item by item, so two people editing different
 //   people, or adding different children to one family, never clash
-// - other lists (tags, to-dos, links, citations) are merged as sets: additions from both sides, removals from either
+// - other lists (tags, to-dos, citations) are merged as sets: additions from both sides, removals from either
 // - a person's `names` is one value (its order says which name is primary)
 // - `meta` (who changed what, when) takes the later of the two; photo thumbnails (remade on each device) take either
 // Clashes are settled by rules, never by asking:
@@ -15,7 +15,8 @@
 //   its `meta.updatedAt` (stamped by `stampChanges` when a device saves); if that's not known, this device wins
 // - deleted on one side but edited on the other: kept (someone is still working on it)
 // - afterwards the model's rules are repaired: no references to things that are gone, each child in one family
-//   (the other editors' choice), at most two partners (the other editors' first)
+//   (the other editors' choice), at most two partners (the other editors' first); a place or source one side
+//   removed as unused but the other just used is kept; then anything no one uses goes
 // What was settled is listed in `resolved`, for tests and troubleshooting; the app doesn't show it.
 import type { Dataset } from '../model/types.ts';
 import { migrate } from '../model/migrate.ts';
@@ -177,7 +178,7 @@ export function merge3(base: unknown, local: unknown, remote: unknown): MergeRes
 	// removed their life events, so bring those back from the side that kept them.
 	for (const c of conflicts)
 		if (c.kind === 'deleted-vs-edited' && c.collection === 'people' && !c.path.length) restorePerson(data, c.kept === 'local' ? a : b, c.id);
-	repair(data, b, conflicts);
+	repair(data, a, b, conflicts);
 	return { data, resolved: conflicts };
 }
 
@@ -225,7 +226,7 @@ function restorePerson(d: Dataset, from: Dataset, pid: string) {
 
 /** Fix what merging item by item can't guarantee, reporting each fix. `remote` decides ties (it's what the other
  *  editors already have). */
-function repair(d: Dataset, remote: Dataset, conflicts: Resolved[]) {
+function repair(d: Dataset, local: Dataset, remote: Dataset, conflicts: Resolved[]) {
 	const fixed = (collection: string, id: string, path: PathSeg[], note: string, local?: unknown) =>
 		conflicts.push({ kind: 'repaired', collection, id, path, local, kept: 'remote', note });
 	const people = new Set(d.people.map((p) => p.id));
@@ -283,6 +284,21 @@ function repair(d: Dataset, remote: Dataset, conflicts: Resolved[]) {
 			delete p.photo;
 		}
 	d.media = d.media.filter((m) => d.people.some((p) => p.photo === m.id));
+	// A place or source removed on one side (no one used it there) but just used on the other comes back.
+	const restore = <T extends { id: string }>(list: T[], all: (x: Dataset) => T[], id: string) => {
+		const x = all(local).find((y) => y.id === id) ?? all(remote).find((y) => y.id === id);
+		if (x && !list.some((y) => y.id === id)) list.push(structuredClone(x));
+	};
+	for (const e of d.events) if (e.place) restore(d.places, (x) => x.places, e.place.placeId);
+	for (const p of d.people) for (const c of p.citations ?? []) restore(d.sources, (x) => x.sources, c.sourceId);
+	const sources = new Set(d.sources.map((s) => s.id));
+	for (const p of d.people) {
+		const gone = (p.citations ?? []).filter((c) => !sources.has(c.sourceId));
+		if (!gone.length) continue;
+		p.citations = p.citations!.filter((c) => sources.has(c.sourceId));
+		if (!p.citations.length) delete p.citations;
+		for (const g of gone) fixed('people', p.id, ['citations'], 'the source was removed', g);
+	}
 	const places = new Set(d.places.map((p) => p.id));
 	for (const e of d.events)
 		if (e.place && !places.has(e.place.placeId)) {
