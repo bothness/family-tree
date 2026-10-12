@@ -93,7 +93,7 @@
 
 <div class="overlay">
 	<div class="dialog" role="dialog" aria-label="Your data">
-		<div class="row"><div class="lbl" style="font-size:14px">Your data (JSON, schema v0.2)</div><button class="btn small" style="margin-left:auto" onclick={onClose}>Close</button></div>
+		<div class="row"><div class="lbl" style="font-size:14px">Your data (JSON, schema v{app.data.schemaVersion})</div><button class="btn small" style="margin-left:auto" onclick={onClose}>Close</button></div>
 		{#if shared}
 			<p class="hint" style="margin:0">
 				This is the family's shared tree: it's kept on the server for everyone invited, with a copy in this browser so it
