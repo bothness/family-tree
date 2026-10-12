@@ -84,6 +84,7 @@ button{cursor:pointer}
 .pop-head{padding:6px 9px 2px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
 .pop-foot{padding:6px 9px 2px;font-size:11px;color:var(--ink-soft);border-top:1px solid var(--rule);margin-top:4px}
 .place-meta{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:12.5px;color:var(--ink-soft);align-items:baseline}
+.dates-help{justify-self:start;font-size:12.5px;color:var(--ink-soft)}
 .place-meta .on-map{color:var(--accent)}
 .place-meta .place-edit{font-family:var(--f-ui);font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-left:auto}
 .place-meta .dup-flag{font-family:var(--f-ui);font-size:12.5px;font-weight:500;color:var(--warn)}

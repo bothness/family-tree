@@ -171,15 +171,16 @@
 {#snippet lifeRow(kind: 'birth' | 'death', label: string)}
 	{@const e = kind === 'birth' ? birth : death}
 	<div class="row life-row">
-		<label class="fld"><span>{label}</span>
-			<input type="text" class:pencil={dateUnsure(e?.date?.edtf)} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 12 Feb 1858, c.1858, 1858?"
-				onchange={(ev) => { setLife(d, pid, kind, val(ev), null); if (kind === 'death') p.deceased = true; }} />
-		</label>
+		<!-- The help link sits under the date, level with the place's details under the place. -->
+		<div class="fld">
+			<label class="fld"><span>{label}</span>
+				<input type="text" class:pencil={dateUnsure(e?.date?.edtf)} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 12 Feb 1858, c.1858, 1858?"
+					onchange={(ev) => { setLife(d, pid, kind, val(ev), null); if (kind === 'death') p.deceased = true; }} />
+			</label>
+			{#if kind === 'birth'}<a class="dates-help" href="./dates.html" target="_blank" rel="noopener">Uncertain dates?</a>{/if}
+		</div>
 		<div class="fld"><span>Place</span><PlaceInput {pid} {kind} /></div>
 	</div>
-	{#if kind === 'birth'}
-		<a class="hint" href="./dates.html" target="_blank" rel="noopener">Uncertain dates?</a>
-	{/if}
 	{#if e?.place}
 		<div class="row"><span class="hint">This place is</span><StatusPicker value={e.place.status} onchange={(v) => setStatus(e.place, v)} /></div>
 	{/if}
