@@ -49,21 +49,28 @@ const steps = {
     const changed = [], check = [];
     const OLD_TYPES = { oral: "memory", certificate: "record", "parish-register": "record", census: "record", will: "record",
       military: "record", newspaper: "book", book: "book", photograph: "papers", "family-document": "papers", website: "web" };
+    const older = [];
     for (const s of d.sources ?? []) {
-      check.push(`Older source "${s.title}" kept as ${OLD_TYPES[s.type] ?? "other"}${s.repository || s.reference || s.reliability || s.notes ? "; its repository, reference, reliability and notes are dropped" : ""}`);
+      older.push([s.id, `Older source "${s.title}" kept as ${OLD_TYPES[s.type] ?? "other"}${s.repository || s.reference || s.reliability || s.notes ? "; its repository, reference, reliability and notes are dropped" : ""}`]);
       for (const k of ["repository", "reference", "reliability", "notes"]) delete s[k];
       s.type = OLD_TYPES[s.type] ?? "other";
     }
-    const walk = o => {
-      if (Array.isArray(o)) return o.forEach(walk);
+    // Older citations on a name, date or link stay where they are, but the app only shows a person's own sources.
+    const walk = (o, where) => {
+      if (Array.isArray(o)) return o.forEach(x => walk(x, where));
       if (!o || typeof o !== "object") return;
-      if (typeof o.sourceId === "string" && o.note) {
-        o.detail = [o.detail, o.note].filter(Boolean).join("; ");
-        delete o.note;
+      if (typeof o.sourceId === "string") {
+        if (o.note) {
+          o.detail = [o.detail, o.note].filter(Boolean).join("; ");
+          delete o.note;
+        }
+        check.push(`${where}: a source cited on one fact; the app won't show it (add it to the person if it matters)`);
       }
-      Object.values(o).forEach(walk);
+      Object.values(o).forEach(v => walk(v, where));
     };
-    walk([d.people, d.families, d.events]);
+    for (const p of d.people) for (const n of p.names ?? []) walk(n, `${p.knownAs || nameText(p.names[0]) || p.id}, a name`);
+    for (const e of d.events) walk(e, `event ${e.id}`);
+    for (const f of d.families) walk(f, `family ${f.id}`);
     const before = d.sources.length;
     for (const p of d.people) {
       const label = p.knownAs || nameText(p.names?.[0]) || p.id;
@@ -76,14 +83,17 @@ const steps = {
       if (links.wikidata) cite(d, p.id, sourceFromText(links.wikidata));
       for (const u of links.urls ?? []) {
         const s = sourceFromText(u.url);
-        if (s.type === "memory") check.push(`${label}: "${u.url}" isn't a web address; kept as a source titled as it is`);
-        cite(d, p.id, u.label?.trim() ? { ...s, title: u.label.trim() } : s);
+        if (s.type === "memory") check.push(`${label}: "${u.url}" isn't a web address; kept as a source titled "${u.label || u.url}"`);
+        const same = s.type !== "memory" && d.sources.find(x => x.url === s.url);
+        if (same && u.label?.trim() && u.label.trim() !== same.title) check.push(`${label}: link "${u.label.trim()}" is the same page as "${same.title}", so it shares that source and title`);
+        cite(d, p.id, u.label?.trim() ? { ...s, title: u.label.trim(), ...(s.type === "memory" ? { url: undefined } : {}) } : s);
       }
       const other = Object.keys(links).filter(k => !["wikidata", "urls"].includes(k));
       if (other.length) check.push(`${label}: links (${other.join(", ")}) dropped`);
       delete p.links;
     }
     pruneSources(d);
+    for (const [id, note] of older) check.push(d.sources.some(s => s.id === id) ? note : note.replace(/ kept as \w+.*/, " removed: no one cites it"));
     const shared = d.sources.map(s => d.people.filter(p => p.citations?.some(c => c.sourceId === s.id)).length);
     changed.push(`${d.sources.length - before} sources made from links (${d.sources.length} in all), ${shared.filter(n => n > 1).length} shared by more than one person`);
     return { changed, check };

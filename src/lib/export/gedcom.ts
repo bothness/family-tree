@@ -2,7 +2,7 @@
 // notes (readable everywhere) and as underscore tags such as `_STATUS` (which GEDCOM allows for app-specific data):
 // - how sure each fact is (GEDCOM only grades sources): a "Certainty" note, plus `_STATUS` on names, events, links
 // - research stage, to-dos and tags: a "Research" note
-// - sources: a `SOUR` record each (title, date, web address as a note, our type as `_TYPE`), cited from each person
+// - sources: a `SOUR` record each (title, year as `PUBL`, web address as a note, our type as `_TYPE`), cited from each person
 //   with `PAGE` for what it tells us; a Wikidata source also as `REFN … TYPE Wikidata`
 // - expected children: `NCHI` (GEDCOM's "number of children") when more are expected than recorded
 // Not exported: saved views, places' historical names, and a name's date of use.
@@ -246,10 +246,8 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 	for (const s of cited) {
 		o.add(0, `${sour.get(s.id)} SOUR`);
 		o.add(1, 'TITL', s.title);
-		if (s.date) {
-			o.add(1, 'DATA');
-			o.add(2, 'DATE', gedcomDate(s.date));
-		}
+		// GEDCOM keeps a source's own date only as text: its publication facts.
+		if (s.date) o.add(1, 'PUBL', gedcomDate(s.date));
 		if (s.url) o.add(1, 'NOTE', s.url);
 		o.add(1, '_TYPE', s.type);
 	}

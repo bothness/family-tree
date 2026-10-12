@@ -102,7 +102,7 @@ describe('toGedcom', () => {
 	});
 	it('writes each cited source once, cited with what it tells us; Wikidata also as REFN', () => {
 		expect(ged).toContain('1 SOUR @S1@\r\n2 PAGE schedule 112\r\n1 SOUR @S2@');
-		expect(ged).toContain('0 @S1@ SOUR\r\n1 TITL 1891 census, Leeds\r\n1 DATA\r\n2 DATE 1891\r\n1 _TYPE record');
+		expect(ged).toContain('0 @S1@ SOUR\r\n1 TITL 1891 census, Leeds\r\n1 PUBL 1891\r\n1 _TYPE record');
 		expect(ged).toContain('1 NOTE https://www.wikidata.org/wiki/Q42');
 		expect(ged).toContain('1 REFN Q42\r\n2 TYPE Wikidata');
 		expect(ged).not.toContain('Not cited');

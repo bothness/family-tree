@@ -5,9 +5,9 @@
 // this device's data, `remote` is the newest saved version. Anything only one side changed is taken from that
 // side, at every level:
 // - the top-level lists (people, families, …) and lists of things with an `id`, or a `personId` (a family's
-//   partners and children, an event's participants), are merged item by item, so two people editing different
-//   people, or adding different children to one family, never clash
-// - other lists (tags, to-dos, citations) are merged as sets: additions from both sides, removals from either
+//   partners and children, an event's participants), or a `sourceId` (a person's citations), are merged item by
+//   item, so two people editing different people, or adding different children to one family, never clash
+// - other lists (tags, to-dos) are merged as sets: additions from both sides, removals from either
 // - a person's `names` is one value (its order says which name is primary)
 // - `meta` (who changed what, when) takes the later of the two; photo thumbnails (remade on each device) take either
 // Clashes are settled by rules, never by asking:
@@ -52,7 +52,7 @@ const newer = (a: unknown, b: unknown): Side => (stamp(b) > stamp(a) ? 'remote' 
 
 /** Lists whose order means something and whose items have no id: kept whole. */
 const WHOLE = new Set(['names']);
-const ID_KEYS = ['id', 'personId'] as const;
+const ID_KEYS = ['id', 'personId', 'sourceId'] as const;
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);

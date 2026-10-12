@@ -121,6 +121,23 @@ describe('shared sources and places', () => {
 		expect(p(data, 'per_annie').citations?.some((c) => c.sourceId === 'src_letter')).toBeFalsy();
 	});
 
+	it('merges citations one by one: the same source cited or noted on both sides stays one citation', () => {
+		const o = base();
+		const a = structuredClone(o),
+			b = structuredClone(o);
+		const sid = o.sources[0].id;
+		const who = o.people.find((x) => !x.citations?.some((c) => c.sourceId === sid))!.id;
+		cite(a, who, sid);
+		cite(b, who, sid, 'p. 4');
+		const once = merge3(o, a, b).data;
+		expect(p(once, who).citations!.filter((c) => c.sourceId === sid)).toHaveLength(1);
+		const c2 = structuredClone(once),
+			d2 = structuredClone(once);
+		p(c2, who).citations!.find((c) => c.sourceId === sid)!.detail = 'here';
+		p(d2, who).citations!.find((c) => c.sourceId === sid)!.detail = 'there';
+		expect(p(merge3(once, c2, d2).data, who).citations!.filter((c) => c.sourceId === sid)).toHaveLength(1);
+	});
+
 	it('keeps a place one side removed as unused while the other side used it', () => {
 		const o = base();
 		setLife(o, 'per_annie', 'death', null, 'Nowhere Green');
@@ -251,7 +268,7 @@ describe('random edits on two devices', () => {
 			const ids = d.people.map((x) => x.id);
 			// Half the edits go to a few people both devices are working on, so the two sides really clash.
 			const who = r() < 0.5 ? pick(r, ['per_charles', 'per_emma', 'per_annie', 'per_george'].filter((x) => ids.includes(x))) ?? pick(r, ids) : pick(r, ids);
-			switch (Math.floor(r() * 6)) {
+			switch (Math.floor(r() * 9)) {
 				case 0:
 					linkPeople(d, pick(r, ['parent', 'partner', 'child', 'sibling'] as const), who, newPerson(d, `New ${i}`).id);
 					break;
@@ -266,6 +283,18 @@ describe('random edits on two devices', () => {
 					break;
 				case 4:
 					p(d, who).notes = `note ${i}`;
+					break;
+				case 5:
+					cite(d, who, pick(r, [...d.sources.map((s) => s.id), null]) ?? { type: 'memory', title: `Memory ${i % 3}` }, pick(r, [undefined, `p. ${i}`]));
+					break;
+				case 6: {
+					const c = pick(r, p(d, who).citations ?? []);
+					if (c && r() < 0.5) uncite(d, who, c.sourceId);
+					else if (c) c.detail = `detail ${i}`;
+					break;
+				}
+				case 7:
+					setLife(d, who, pick(r, ['birth', 'death'] as const), null, pick(r, ['Shrewsbury', 'Down', 'Nowhere Green', '']));
 					break;
 				default:
 					p(d, who).tags = [...(p(d, who).tags ?? []), `t${i % 3}`];
@@ -316,5 +345,15 @@ function problems(d: Dataset): string[] {
 	for (const [c, n] of parents) if (n > 1) out.push(`${c} is a child in ${n} families`);
 	const media = new Set(d.media.map((m) => m.id));
 	for (const x of d.people) if (x.photo && !media.has(x.photo)) out.push(`${x.id} has a missing photo`);
+	const sources = new Set(d.sources.map((s) => s.id));
+	for (const x of d.people) {
+		const cs = (x.citations ?? []).map((c) => c.sourceId);
+		for (const c of cs) if (!sources.has(c)) out.push(`${x.id} cites missing ${c}`);
+		if (new Set(cs).size < cs.length) out.push(`${x.id} cites a source twice`);
+	}
+	const cited = new Set(d.people.flatMap((x) => (x.citations ?? []).map((c) => c.sourceId)));
+	for (const s of d.sources) if (!cited.has(s.id)) out.push(`${s.id} is cited by no one`);
+	const used = new Set(d.events.flatMap((e) => (e.place ? [e.place.placeId] : [])));
+	for (const pl of d.places) if (!used.has(pl.id)) out.push(`${pl.id} is used by nothing`);
 	return out;
 }
