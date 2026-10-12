@@ -2,23 +2,10 @@
 
 Open work only, tagged by area (Layout, Data, Interface, Shared edition, Product). Finished phases and the reasons behind decisions are in `DECISIONS.md`. When something here is done, delete it (or tick it, if it's part of a set still in progress) and add a line to `DECISIONS.md`.
 
-## Where things stand (11 Oct 2026)
+## Where things stand (12 Oct 2026)
 - Phases A–F are done: editing and the data model, navigation and saved views, our own tree layout, places, photos and the map, exports and the demo, and the shared family edition. V13/V14 (vertical and horizontal trees) are done too.
+- Schema 0.3 is released and the family edition's data converted (names, sources, dates, marriage places; see `DECISIONS.md`).
 - The public edition is live at https://bothness.github.io/family-tree/ and the family edition at https://mbfamilytree.pages.dev. Every push to `main` deploys both.
-
-## Release 0.3 (merged 12 Oct 2026) · Data
-Breaking model changes go out together, with the family edition's data converted once by `scripts/migrate-0.3.mjs` rather than by code in the app.
-- [x] Names: the birth name first, `preferred` = shown on the tree, other names folded in the panel
-- [x] Sources: one shared model for free-text sources, links and Wikidata; free-text sources join the notes. Unused sources and places are removed
-- [x] Dates: certainty by EDTF marks only (`?` and "or" in pencil, `~` in ink); `date.status` dropped; "Uncertain dates?" help page
-- [x] A place for marriages (`relationship.place`, on the map and in GEDCOM), and a certainty switch for birth, death and marriage places
-- [ ] Cutover, on a quiet day:
-  1. Dry run first with local wrangler (port 8790, `--persist-to` a scratch folder): replace from a converted backup, photos included.
-  2. Everyone's devices show "saved" and are idle. Data → Download backup.
-  3. `node scripts/migrate-0.3.mjs backup.json`, settle its "to check by hand" list, then `npm run validate backup-0.3.json`.
-  4. Merge and push; wait for the Cloudflare deploy, hard-reload and check the new build is running (other names folded into an "Also …" line). An old build would read the 0.3 file as v0.1 and label it 0.2.
-  5. At once: Data → "Replace the shared tree with a backup…" with the converted file. Everyone reloads (an old open tab still treats `preferred` as the main name).
-  6. Check: download a fresh backup and `npm run validate` it.
 
 ## Small follow-ups
 | Area | Item | Notes |
