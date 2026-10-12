@@ -22,9 +22,6 @@ From a review at phone width (390px) on 10 Oct, with the demo loaded. These are 
 **Screen space**
 | # | Option | Notes |
 |---|---|---|
-| M1 | **Bottom tab bar** | Tree / Timeline / Map / Research to-do move to a bar at the bottom, as in most phone apps; the header keeps the name, search, + New person and Data |
-| M2 | **Search as an icon** | A magnifier that opens a full-width search, instead of the search box taking its own row |
-| M3 | **Views and focus in one row** | The view chips and the focus bar merged into one line, with the focus controls (up/down depth, width) behind a "Focus" chip that opens a small sheet |
 | M4 | **Bars hide while panning** | The bars slide away while the tree is dragged and come back on a tap or when it stops |
 
 **Person panel**

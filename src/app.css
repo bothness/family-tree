@@ -138,6 +138,7 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 .stepper button{border:0;background:none;padding:2px 8px;color:var(--ink-soft)}
 .stepper button:hover:not(:disabled){background:var(--paper);color:var(--ink)}
 .stepper button:disabled{opacity:.35;cursor:default}
+.step{display:inline-flex;align-items:center;gap:8px}
 .legend{margin-left:auto;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
 .legend .pen{font-family:var(--f-pencil);font-size:17px;color:var(--pencil)}
 .legend .ink{font-family:var(--f-name);color:var(--ink)}
@@ -244,8 +245,8 @@ svg text{font-family:var(--f-ui)}
 .outofview p{margin:0;flex:1 1 100%}
 .outofview b{color:var(--warn)}
 .blk .outofview{margin:4px 0 0}
-.sheet-head .x{border:0;background:none;font-size:30px;line-height:1;color:var(--ink-soft);padding:2px 8px;margin:-6px -8px 0 0;min-width:40px;min-height:40px;border-radius:8px}
-.sheet-head .x:hover{color:var(--ink);background:var(--paper)}
+.sheet-head .x,.focusbar .x{border:0;background:none;font-size:30px;line-height:1;color:var(--ink-soft);padding:2px 8px;margin:-6px -8px 0 0;min-width:40px;min-height:40px;border-radius:8px}
+.sheet-head .x:hover,.focusbar .x:hover{color:var(--ink);background:var(--paper)}
 .blk{border-top:1px solid var(--rule);padding-top:12px;margin-top:12px;display:grid;gap:9px}
 .lbl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -309,28 +310,44 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .dialog{background:var(--sheet);border-radius:12px;padding:16px;width:min(680px,100%);max-height:90%;display:grid;gap:10px;grid-template-rows:auto auto 1fr auto}
 .dialog textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;min-height:240px;resize:vertical}
 
+/* phones only: the search magnifier, the Focus chip, labels in the focus sheet (shown under 760px) */
+.phone-only,.search-toggle{display:none}
+.ibtn{border:1px solid var(--rule);background:var(--sheet);border-radius:7px;width:34px;height:33px;place-items:center;padding:0;color:var(--ink-soft)}
+.ibtn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.ibtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.chip.focus-chip{border-color:var(--ink);color:var(--ink);font-weight:500}
+.chip.focus-chip::after{content:" ▾";font-size:11px}
 @media (max-width:760px){
-  .focusbar{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;font-size:14px;color:var(--ink-soft)}
-.linkish{border:0;background:none;padding:0;font-family:var(--f-name);font-weight:600;font-size:15px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
-.stepper{display:inline-flex;align-items:center;border:1px solid var(--rule);border-radius:7px;overflow:hidden;font-variant-numeric:tabular-nums}
-.stepper > span{padding:0 6px;color:var(--ink);min-width:30px;text-align:center}
-.stepper button{border:0;background:none;padding:2px 8px;color:var(--ink-soft)}
-.stepper button:hover:not(:disabled){background:var(--paper);color:var(--ink)}
-.stepper button:disabled{opacity:.35;cursor:default}
-.legend{display:none}
+  .legend{display:none}
   .sheet{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:78%;border-left:0;border-top:1px solid var(--rule);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:10}
   .actions{margin-left:0}
-  /* Phone: keep the header, views and focus bar short, so the tree gets the screen. The view chips and focus
-     controls scroll sideways in one row instead of wrapping onto several. */
+  /* Phone: keep the header and views short, so the tree gets the screen. Row one is the name, + and Data (and
+     Saved); row two the tabs and a magnifier that opens the search on a third row. The view chips scroll sideways
+     in one row, and the focus controls fold into a Focus chip that opens them as a sheet. */
+  .wide-only{display:none}
+  .phone-only{display:revert}
   .top{padding:8px 12px;gap:6px 8px}
-  .brand{font-size:18px}
-  .actions{order:1;margin-left:auto}
-  .tabs{order:2}
+  .brand{font-size:17px}
+  .actions{order:1;margin-left:auto;align-items:center}
+  .btn.new{font-size:19px;line-height:21px}
+  .sync-status{padding-right:0}
+  .tabs{order:2;flex:1;justify-content:space-between}
+  .tabs button{padding:5px 9px}
+  .search-toggle{display:inline-grid;order:2}
   .search{order:3;flex:1 1 100%}
+  .search:not(.open){display:none}
   .bar{padding:6px 12px}
-  .views,.focusbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-  .views::-webkit-scrollbar,.focusbar::-webkit-scrollbar{display:none}
-  .views > *,.focusbar > *{flex:none;white-space:nowrap}
+  .views{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .views::-webkit-scrollbar{display:none}
+  .views > *{flex:none;white-space:nowrap}
+  .focusbar{display:none}
+  .focusbar.open{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--sheet);border-bottom:0;border-top:1px solid var(--rule);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px));gap:14px 10px;font-size:15px}
+  .focusbar.open .focus-who{flex:1;font-size:16px}
+  .focusbar.open .x{margin:-8px -8px 0 0}
+  .focusbar.open .step{flex:1 1 100%;justify-content:space-between}
+  .focusbar.open .stepper button{padding:8px 14px}
+  .focusbar.open .seg{flex:1 1 100%}
+  .focusbar.open .seg button{flex:1;padding:8px 6px;font-size:14px}
   .map-note{bottom:44px}
 }
 @media (prefers-reduced-motion:no-preference){.sheet{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(8px)}}}

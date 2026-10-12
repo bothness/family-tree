@@ -160,20 +160,20 @@
 	<div class="brand">Family Tree Builder</div>
 	<nav class="tabs">
 		{#each tabs as [k, l] (k)}
-			<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{l}{#if k === 'todo'}<span class="count">{todoCount}</span>{/if}</button>
+			<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{#if k === 'todo'}<span class="wide-only">{l}</span><span class="phone-only">To-do</span><span class="count">{todoCount}</span>{:else}{l}{/if}</button>
 		{/each}
 	</nav>
 	<SearchBox />
 	<div class="actions">
-		{#if app.canEdit}<button class="btn primary" onclick={addNew}>+ New person</button>{/if}
+		{#if app.canEdit}<button class="btn primary new" onclick={addNew} aria-label="New person">+<span class="wide-only"> New person</span></button>{/if}
 		{#if app.backupDue}
 			<span class="remind">
 				<button class="btn small" onclick={() => (app.showData = true)} title="Some changes aren't in a backup yet">Back up your tree</button>
 				<button class="x" onclick={() => app.snoozeBackup()} aria-label="Remind me later" title="Remind me in a few days">×</button>
 			</span>
 		{/if}
-		{#if __SYNC__}<SyncStatus />{/if}
 		<button class="btn" onclick={() => (app.showData = true)}>Data</button>
+		{#if __SYNC__}<SyncStatus />{/if}
 	</div>
 </header>
 

@@ -23,7 +23,7 @@ Everything the user sees and touches: `components/`, `src/routes/+page.svelte` (
 ## Conventions
 - Interaction: wheel zooms at the cursor (Safari: the wheel scrolls, ⌘ + wheel zooms); drag or middle-button drag pans; pinch zooms; +/−/0 keys. The view re-fits only on load, Fit, search or focus changes, never on ordinary edits.
 - On touch screens (`pointer: coarse`) the zoom buttons are hidden; the bottom controls scroll sideways if they don't fit.
-- Phones: one breakpoint, `@media (max-width:760px)`, near the end of `app.css`. Open options for phones are M1–M15 in `docs/ROADMAP.md`.
+- Phones: one breakpoint, `@media (max-width:760px)`, near the end of `app.css`. There the header is two rows (name, +, Data, Saved; tabs and a search magnifier, `SearchBox` opens its box on a third row), and the focus bar is hidden behind a Focus chip in `ViewBar` that opens it as a bottom sheet (`.focusbar.open`). `.phone-only` / `.wide-only` swap labels. Open options for phones are in `docs/ROADMAP.md`.
 - Never trigger `alert`/`confirm`: in-page confirmations only.
 
 ## Checking in a browser
@@ -32,4 +32,4 @@ Everything the user sees and touches: `components/`, `src/routes/+page.svelte` (
 - A file input can be fed from the page: build a `File` (e.g. from a canvas), put it in a `DataTransfer`, set `input.files` and dispatch `change`.
 
 ## Open issues
-- Re-crop a photo that's already kept. Self-host the fonts. The demo opens too wide to read. Phone options M1–M15 (all in `docs/ROADMAP.md`).
+- Re-crop a photo that's already kept. Self-host the fonts. The demo opens too wide to read. Phone options M4–M15 (all in `docs/ROADMAP.md`).

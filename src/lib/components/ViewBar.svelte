@@ -59,6 +59,15 @@
 		app.openView(existing?.id ?? addView(app.data, `Tagged ${tag}`, { tags: [tag] }).id);
 	}
 
+	// Phones: the focus controls open as a sheet from the Focus chip. A tap outside closes it, as with the person panel.
+	let focusOpen = $state(false);
+	$effect(() => {
+		if (!app.activeFocus) focusOpen = false;
+	});
+	function outside(e: PointerEvent) {
+		if (focusOpen && !(e.target as HTMLElement).closest('.focusbar, .focus-chip, .pop, .menu')) focusOpen = false;
+	}
+
 	let pickName = $state('Picked people');
 	function savePicked(e: SubmitEvent) {
 		e.preventDefault();
@@ -66,6 +75,8 @@
 		pickName = 'Picked people';
 	}
 </script>
+
+<svelte:window onpointerdown={outside} onkeydown={(e) => e.key === 'Escape' && (focusOpen = false)} />
 
 {#if app.picked}
 	<form class="bar pickbar" onsubmit={savePicked}>
@@ -79,6 +90,12 @@
 {:else}
 	<div class="bar">
 		<div class="views" role="group" aria-label="Views">
+			{#if app.activeFocus}
+				{@const f = app.activeFocus}
+				<button class="chip focus-chip phone-only" aria-expanded={focusOpen} onclick={() => (focusOpen = !focusOpen)}>
+					Focus: {displayName(person(app.data, f.id)).split(' ')[0]} ↑{depth(f.up)} ↓{depth(f.down)}
+				</button>
+			{/if}
 			<button class="chip" aria-pressed={!app.activeView && !app.activeFocus && !app.blank} onclick={() => app.showEveryone()}>Everyone</button>
 			{#each app.data.views as v (v.id)}
 				{#if renaming === v.id}
@@ -149,14 +166,16 @@
 
 	{#if app.activeFocus}
 		{@const f = app.activeFocus}
-		<div class="bar focusbar" role="group" aria-label="Focus">
-			<span>Focused on <button class="linkish" onclick={() => app.centreOn(f.id)}>{displayName(person(app.data, f.id))}</button></span>
-			<span class="stepper" title="Generations of ancestors shown">
+		<!-- On phones this is a sheet, opened from the Focus chip (above) and closed with the × or a tap outside. -->
+		<div class="bar focusbar" class:open={focusOpen} role="group" aria-label="Focus">
+			<span class="focus-who">Focused on <button class="linkish" onclick={() => app.centreOn(f.id)}>{displayName(person(app.data, f.id))}</button></span>
+			<button class="x phone-only" onclick={() => (focusOpen = false)} aria-label="Close">×</button>
+			<span class="step"><span class="phone-only">Generations up</span><span class="stepper" title="Generations of ancestors shown">
 				<button aria-label="Fewer generations up" disabled={f.up === 0} onclick={() => fewer('up')}>−</button><span aria-label="Generations up">↑{depth(f.up)}</span><button aria-label="More generations up" disabled={!isFinite(f.up)} onclick={() => app.adjustFocus({ up: f.up + 1 })}>+</button>
-			</span>
-			<span class="stepper" title="Generations of descendants shown">
+			</span></span>
+			<span class="step"><span class="phone-only">Generations down</span><span class="stepper" title="Generations of descendants shown">
 				<button aria-label="Fewer generations down" disabled={f.down === 0} onclick={() => fewer('down')}>−</button><span aria-label="Generations down">↓{depth(f.down)}</span><button aria-label="More generations down" disabled={!isFinite(f.down)} onclick={() => app.adjustFocus({ down: f.down + 1 })}>+</button>
-			</span>
+			</span></span>
 			<span class="seg" role="group" aria-label="Who to show">
 				{#each WIDTHS as [w, label, hint] (w)}
 					<button aria-pressed={f.width === w} title={hint} onclick={() => app.adjustFocus({ width: w })}>{label}</button>
