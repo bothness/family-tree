@@ -70,7 +70,7 @@ describe('toGedcom', () => {
 	d.families.push({
 		id: 'fam_1',
 		partners: [{ personId: 'per_mary', status: 'confirmed' }, { personId: 'per_john', status: 'confirmed' }],
-		relationship: { type: 'marriage', status: 'confirmed', start: { edtf: '1883-06-02' } },
+		relationship: { type: 'marriage', status: 'confirmed', start: { edtf: '1883-06-02' }, place: { placeId: 'plc_leeds', status: 'likely' } },
 		children: [{ personId: 'per_ann', relation: 'biological', status: 'likely' }],
 		childrenComplete: 'no',
 		expectedChildren: { min: 4, note: '1911 census: 4 born alive' }
@@ -110,7 +110,8 @@ describe('toGedcom', () => {
 	it('puts the man as husband whatever the stored order, with children and the marriage', () => {
 		const fam = ged.slice(ged.indexOf('@F1@ FAM'));
 		expect(fam).toMatch(/1 HUSB @I1@\r\n1 WIFE @I2@\r\n1 CHIL @I3@/);
-		expect(fam).toContain('1 MARR\r\n2 DATE 2 JUN 1883');
+		expect(fam).toContain('1 MARR\r\n2 DATE 2 JUN 1883\r\n2 PLAC Leeds, West Yorkshire, England');
+		expect(fam).toContain('where it began: likely');
 		expect(fam).toContain('1 NCHI 4');
 		expect(fam).toContain('Children: 1911 census: 4 born alive');
 	});

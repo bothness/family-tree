@@ -20,8 +20,9 @@ export const placeContext = (p: Place | undefined) => p?.context ?? '';
 /** Whether a place came from the lookup (has a map position and OSM link) or was typed in by hand. */
 export const isLinked = (p: Place | undefined) => !!p?.links?.osm || !!p?.coordinates;
 
-/** How many events use this place. */
-export const placeUses = (d: Dataset, id: string) => d.events.filter((e) => e.place?.placeId === id).length;
+/** How many births, deaths and marriages use this place. */
+export const placeUses = (d: Dataset, id: string) =>
+	d.events.filter((e) => e.place?.placeId === id).length + d.families.filter((f) => f.relationship?.place?.placeId === id).length;
 
 /** Places already in the tree whose name (or a former name) starts a word with what's typed. */
 export function knownPlaces(d: Dataset, q: string, limit = 5): Place[] {
@@ -62,6 +63,15 @@ export function setLifePlace(d: Dataset, pid: string, kind: 'birth' | 'death', p
 		e = d.events.at(-1)!;
 	}
 	e.place = { ...(e.place ?? {}), placeId };
+	prunePlaces(d);
+}
+
+/** Set (or clear, with null) where a couple married, or their partnership began. */
+export function setFamilyPlace(d: Dataset, fid: string, placeId: string | null) {
+	const f = d.families.find((x) => x.id === fid);
+	if (!f) return;
+	if (placeId) (f.relationship ??= {}).place = { ...(f.relationship?.place ?? {}), placeId };
+	else if (f.relationship) delete f.relationship.place;
 	prunePlaces(d);
 }
 
@@ -116,6 +126,7 @@ export function mergePlaces(d: Dataset, keepId: string, goneId: string) {
 		gone = d.places.find((p) => p.id === goneId);
 	if (!keep || !gone || keep === gone) return;
 	for (const e of d.events) if (e.place?.placeId === goneId) e.place.placeId = keepId;
+	for (const f of d.families) if (f.relationship?.place?.placeId === goneId) f.relationship.place.placeId = keepId;
 	const known = new Set([keep.name, ...(keep.altNames ?? []).map((a) => a.name)].map(foldName));
 	for (const a of [{ name: gone.name }, ...(gone.altNames ?? [])])
 		if (!known.has(foldName(a.name))) {

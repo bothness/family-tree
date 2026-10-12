@@ -11,7 +11,7 @@ Breaking model changes go out together, with the family edition's data converted
 - [x] Names: the birth name first, `preferred` = shown on the tree, other names folded in the panel
 - [x] Sources: one shared model for free-text sources, links and Wikidata; free-text sources join the notes. Unused sources and places are removed
 - [x] Dates: certainty by EDTF marks only (`?` and "or" in pencil, `~` in ink); `date.status` dropped; "Uncertain dates?" help page
-- [ ] A place for marriages (`relationship.place`), and a certainty switch for birth, death and marriage places
+- [x] A place for marriages (`relationship.place`, on the map and in GEDCOM), and a certainty switch for birth, death and marriage places
 - [ ] Cutover, on a quiet day:
   1. Dry run first with local wrangler (port 8790, `--persist-to` a scratch folder): replace from a converted backup, photos included.
   2. Everyone's devices show "saved" and are idle. Data → Download backup.

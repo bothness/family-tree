@@ -180,6 +180,9 @@
 	{#if kind === 'birth'}
 		<a class="hint" href="./dates.html" target="_blank" rel="noopener">Uncertain dates?</a>
 	{/if}
+	{#if e?.place}
+		<div class="row"><span class="hint">This place is</span><StatusPicker value={e.place.status} onchange={(v) => setStatus(e.place, v)} /></div>
+	{/if}
 {/snippet}
 
 <div class="sheet-head">
@@ -331,6 +334,10 @@
 					</select>
 				</label>
 			</div>
+			<div class="fld"><span>{r.type === 'marriage' || r.type === 'civil-partnership' ? 'Where they married' : 'Place'}</span><PlaceInput fid={f.id} /></div>
+			{#if r.place}
+				<div class="row"><span class="hint">This place is</span><StatusPicker value={r.place.status} onchange={(v) => setStatus(r.place, v)} /></div>
+			{/if}
 			<div class="who"><span class="hint">Children:</span> {#each kidsOf(f) as id, i (id)}{@render personLink(id)}{i < f.children.length - 1 ? ', ' : ''}{:else}<span class="hint">none yet</span>{/each}</div>
 			<div class="row">
 				<label class="fld" style="flex:2 1 170px"><span>Are all their children recorded?</span>

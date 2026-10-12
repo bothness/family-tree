@@ -411,6 +411,10 @@
               "$ref": "#/$defs/Date",
               "description": "When the partnership began, e.g. the marriage date."
             },
+            "place": {
+              "$ref": "#/$defs/PlaceRef",
+              "description": "Where it began, e.g. where they married."
+            },
             "end": {
               "$ref": "#/$defs/Date",
               "description": "When the partnership ended."
@@ -559,23 +563,7 @@
           "$ref": "#/$defs/Date"
         },
         "place": {
-          "type": "object",
-          "required": [
-            "placeId"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "placeId": {
-              "$ref": "#/$defs/PlaceId"
-            },
-            "detail": {
-              "type": "string",
-              "description": "Street address, house name etc. below the place level."
-            },
-            "status": {
-              "$ref": "#/$defs/Status"
-            }
-          }
+          "$ref": "#/$defs/PlaceRef"
         },
         "participants": {
           "type": "array",
@@ -898,6 +886,26 @@
         },
         "meta": {
           "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "PlaceRef": {
+      "description": "Where something happened: a place, with how sure that is.",
+      "type": "object",
+      "required": [
+        "placeId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "placeId": {
+          "$ref": "#/$defs/PlaceId"
+        },
+        "detail": {
+          "type": "string",
+          "description": "Street address, house name etc. below the place level."
+        },
+        "status": {
+          "$ref": "#/$defs/Status"
         }
       }
     }

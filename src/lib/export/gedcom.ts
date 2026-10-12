@@ -6,7 +6,7 @@
 //   with `PAGE` for what it tells us; a Wikidata source also as `REFN … TYPE Wikidata`
 // - expected children: `NCHI` (GEDCOM's "number of children") when more are expected than recorded
 // Not exported: saved views, places' historical names, and a name's date of use.
-import type { Dataset, EdtfDate, Family, LifeEvent, Name, Person, Status } from '../model/types.ts';
+import type { Dataset, EdtfDate, Family, LifeEvent, Name, Person, PlaceRef, Status } from '../model/types.ts';
 import { childIds, displayName, lifeEvent, partnerIds } from '../model/queries.ts';
 import { dateUnsure, datesDisagree } from '../model/edtf.ts';
 
@@ -113,17 +113,17 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 	o.add(0, '@SUBM1@ SUBM');
 	o.add(1, 'NAME', 'Family Tree Builder user');
 
-	const place = (lvl: number, e: LifeEvent) => {
-		const pl = e.place && d.places.find((x) => x.id === e.place!.placeId);
+	const place = (lvl: number, ref?: PlaceRef) => {
+		const pl = ref && d.places.find((x) => x.id === ref.placeId);
 		if (!pl) return;
-		o.add(lvl, 'PLAC', [pl.name, e.place!.detail, pl.context].filter(Boolean).join(', '));
+		o.add(lvl, 'PLAC', [pl.name, ref!.detail, pl.context].filter(Boolean).join(', '));
 		if (pl.coordinates) {
 			const { lat, lon } = pl.coordinates;
 			o.add(lvl + 1, 'MAP');
 			o.add(lvl + 2, 'LATI', `${lat >= 0 ? 'N' : 'S'}${Math.abs(lat)}`);
 			o.add(lvl + 2, 'LONG', `${lon >= 0 ? 'E' : 'W'}${Math.abs(lon)}`);
 		}
-		if (unsure(e.place!.status)) o.add(lvl + 1, '_STATUS', e.place!.status);
+		if (unsure(ref!.status)) o.add(lvl + 1, '_STATUS', ref!.status);
 	};
 	const date = (lvl: number, dt?: EdtfDate) => {
 		if (!dt?.edtf) return;
@@ -156,7 +156,7 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 			}
 			o.add(1, tag, !e.date?.edtf && !e.place ? 'Y' : undefined);
 			date(2, e.date);
-			place(2, e);
+			place(2, e.place);
 			if (dateUnsure(e.date?.edtf)) unsureFacts.push(`${kind} date: ${datesDisagree(e.date!.edtf) ? STATUS_WORD.conflicting : STATUS_WORD.guess}`);
 			if (unsure(e.place?.status)) unsureFacts.push(`${kind} place: ${STATUS_WORD[e.place!.status!]}`);
 		}
@@ -212,14 +212,16 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 		const r = f.relationship;
 		const unsureFacts: string[] = [];
 		if (r && (r.type === 'marriage' || r.type === 'civil-partnership')) {
-			o.add(1, 'MARR', r.start?.edtf ? undefined : 'Y');
+			o.add(1, 'MARR', r.start?.edtf || r.place ? undefined : 'Y');
 			if (r.type === 'civil-partnership') o.add(2, 'TYPE', 'Civil partnership');
 			date(2, r.start);
+			place(2, r.place);
 			if (unsure(r.status)) o.add(2, '_STATUS', r.status);
-		} else if (r?.type === 'partnership' && r.start?.edtf) {
+		} else if (r?.type === 'partnership' && (r.start?.edtf || r.place)) {
 			o.add(1, 'EVEN');
 			o.add(2, 'TYPE', 'Partnership');
 			date(2, r.start);
+			place(2, r.place);
 		}
 		if (r?.endReason === 'divorce' || r?.endReason === 'annulment') {
 			o.add(1, r.endReason === 'divorce' ? 'DIV' : 'ANUL', r.end?.edtf ? undefined : 'Y');
@@ -230,6 +232,7 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 			date(2, r.end);
 		}
 		if (unsure(r?.status)) unsureFacts.push(`the relationship: ${STATUS_WORD[r!.status!]}`);
+		if (unsure(r?.place?.status)) unsureFacts.push(`where it began: ${STATUS_WORD[r!.place!.status!]}`);
 		for (const x of ps) if (unsure(x.status)) unsureFacts.push(`${displayName(d.people.find((q) => q.id === x.personId))} as a partner: ${STATUS_WORD[x.status!]}`);
 		const n = f.expectedChildren?.min;
 		if (n && n > f.children.length) o.add(1, 'NCHI', String(n));

@@ -176,6 +176,9 @@ def F(fid, a, b, kids=(), start=None, end=None, endReason=None, rtype='marriage'
             r['end'] = date(end)
         if endReason:
             r['endReason'] = endReason
+        if place:  # where they married: 'maer', or ('maer', 'likely')
+            pl, ps = (place, 'confirmed') if isinstance(place, str) else place
+            r['place'] = {'placeId': 'plc_' + pl, 'status': ps}
         f['relationship'] = r
     f['children'] = [{'personId': 'per_' + k, 'relation': (relation or {}).get(k, 'biological'),
                       'status': (kid_status or {}).get(k, 'confirmed')} for k in kids]
@@ -185,14 +188,6 @@ def F(fid, a, b, kids=(), start=None, end=None, endReason=None, rtype='marriage'
     if note:
         f['notes'] = note
     families.append(f)
-    if place:  # marriage place as a marriage event (unused: the UI and map only show births and deaths for now)
-        pl, ps = (place, 'confirmed') if isinstance(place, str) else place
-        ev = {'id': f'evt_marriage_{fid}', 'type': 'marriage', 'familyId': 'fam_' + fid}
-        if start:
-            ev['date'] = date(start)
-        ev['place'] = {'placeId': 'plc_' + pl, 'status': ps}
-        ev['participants'] = [{'personId': 'per_' + x} for x in (a, b) if x]
-        events.append(ev)
 
 
 D, W = ['darwin'], ['wedgwood']
@@ -306,7 +301,7 @@ P('emma', 'Emma', 'Wedgwood', 'F', '1808-05-02', '1896-10-02', 'maer', 'downe', 
 
 # ---- Robert Darwin's family ----
 F('darwin_wedgwood', 'robert', 'susannah', ['marianne', 'caroline', 'susan', 'erasmus_alvey', 'charles', 'catherine'],
-  start='1796-04-18', end='1817', endReason='death',
+  start='1796-04-18', end='1817', endReason='death', place='london',
   note='Married at St Marylebone, London.')
 P('marianne', 'Marianne', 'Darwin', 'F', '1798', '1858', married='Parker', tags=D, stage='sketch')
 P('henry_parker', 'Henry', 'Parker', 'M', stage='sketch', notes='Physician.', todo=['Find dates', 'Add their children'])
@@ -341,7 +336,7 @@ F('vaughan_williams', 'arthur_vw', 'margaret_wedgwood', ['ralph_vw'], end='1875-
 # ---- Charles and Emma's children ----
 F('charles_emma', 'charles', 'emma',
   ['william', 'annie', 'mary_eleanor', 'henrietta', 'george', 'bessy', 'francis', 'leonard', 'horace', 'charles_waring'],
-  start='1839-01-29', end='1882-04-19', endReason='death',
+  start='1839-01-29', end='1882-04-19', endReason='death', place='maer',
   note='Married at St Peter’s, Maer. Ten children, three of whom died young.')
 P('william', 'William Erasmus', 'Darwin', 'M', '1839-12-27', '1914-09-08', 'london', 'sedbergh', tags=D, stage='sketch',
   notes='Banker in Southampton.', src=WP + 'William Erasmus Darwin')
@@ -414,7 +409,8 @@ P('ruth', 'Ruth Frances', 'Darwin', 'F', '1883', '1972', tags=D, stage='sketch')
 P('nora', 'Emma Nora', 'Darwin', 'F', '1885', '1989', knownAs='Nora Barlow', married='Barlow', tags=D, stage='sketch',
   notes='Botanist; edited her grandfather’s autobiography and Beagle diary.')
 
-used = {e['place']['placeId'] for e in events if 'place' in e}
+used = {e['place']['placeId'] for e in events if 'place' in e} | \
+    {f['relationship']['place']['placeId'] for f in families if 'place' in f.get('relationship', {})}
 data = {
     'schemaVersion': '0.3',
     'people': people,

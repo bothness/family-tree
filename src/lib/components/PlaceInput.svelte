@@ -1,22 +1,24 @@
 <script lang="ts">
-	// The place of a birth or death (G6). As you type it offers places already in the tree, or keeps what you typed
+	// The place of a birth or death (G6), or of a marriage (`fid`). As you type it offers places already in the tree, or keeps what you typed
 	// as written. OpenStreetMap is searched only when you ask ("Search OpenStreetMap for …"): Nominatim's usage
 	// policy forbids search-as-you-type on its public service. Its matches bring a map position and Wikidata id.
 	import { Combobox } from 'bits-ui';
 	import { app } from '#lib/app.svelte.ts';
 	import { lifeEvent } from '#lib/model/queries.ts';
-	import { setLife } from '#lib/model/mutations.ts';
-	import { isLinked, knownPlaces, placeFromLookup, setLifePlace } from '#lib/model/places.ts';
+	import { findOrCreatePlace, setLife } from '#lib/model/mutations.ts';
+	import { isLinked, knownPlaces, placeFromLookup, setFamilyPlace, setLifePlace } from '#lib/model/places.ts';
 	import { ATTRIBUTION, searchPlaces, type PlaceHit } from '#lib/places/nominatim.ts';
 	import PlaceDetails from './PlaceDetails.svelte';
 
-	let { pid, kind }: { pid: string; kind: 'birth' | 'death' } = $props();
+	let { pid = '', kind = 'birth', fid }: { pid?: string; kind?: 'birth' | 'death'; fid?: string } = $props();
 
 	const d = $derived(app.data);
-	const current = $derived.by(() => {
-		const id = lifeEvent(d, pid, kind)?.place?.placeId;
-		return id ? d.places.find((p) => p.id === id) : undefined;
-	});
+	const ref = $derived(fid ? d.families.find((f) => f.id === fid)?.relationship?.place : lifeEvent(d, pid, kind)?.place);
+	const current = $derived(ref ? d.places.find((p) => p.id === ref.placeId) : undefined);
+	/** Use this place (or none). */
+	const use = (id: string | null) => (fid ? setFamilyPlace(d, fid, id) : setLifePlace(d, pid, kind, id));
+	/** Use a place as written, one already in the tree by that name or a new one. */
+	const useText = (t: string) => (fid ? setFamilyPlace(d, fid, findOrCreatePlace(d, t)) : setLife(d, pid, kind, null, t));
 	let query = $state('');
 	let open = $state(false);
 	let value = $state('');
@@ -80,10 +82,10 @@
 			value = ''; // `chosen` stays set, so the typed text isn't saved as written meanwhile
 			return void searchOnline();
 		}
-		if (v.startsWith('known:')) setLifePlace(d, pid, kind, v.slice(6));
-		else if (v.startsWith('osm:')) setLifePlace(d, pid, kind, placeFromLookup(d, fresh[Number(v.slice(4))]));
-		else if (v === 'text') setLife(d, pid, kind, null, query);
-		else if (v === 'clear') setLifePlace(d, pid, kind, null);
+		if (v.startsWith('known:')) use(v.slice(6));
+		else if (v.startsWith('osm:')) use(placeFromLookup(d, fresh[Number(v.slice(4))]));
+		else if (v === 'text') useText(query);
+		else if (v === 'clear') use(null);
 		value = '';
 		query = current?.name ?? '';
 		open = false;
@@ -102,15 +104,15 @@
 			if (chosen) return void (chosen = false);
 			const t = query.trim();
 			if (t === (current?.name ?? '')) return;
-			if (t) setLife(d, pid, kind, null, t);
-			else setLifePlace(d, pid, kind, null);
+			if (t) useText(t);
+			else use(null);
 		}, 0);
 	}
 </script>
 
 <div class="place-field">
 	<Combobox.Root type="single" bind:value bind:open {onOpenChange} onValueChange={choose} inputValue={query}>
-		<Combobox.Input class="place-input" placeholder="Town or parish" autocomplete="off" oninput={(e) => typed(e.currentTarget.value)} aria-label="Place" />
+		<Combobox.Input class={ref?.status === 'guess' ? 'place-input pencil' : 'place-input'} placeholder="Town or parish" autocomplete="off" oninput={(e) => typed(e.currentTarget.value)} aria-label="Place" />
 		<Combobox.Portal>
 			<Combobox.Content class="search-pop place-pop" sideOffset={4} align="start">
 				{#if known.length}

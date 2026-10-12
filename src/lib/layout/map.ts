@@ -1,11 +1,11 @@
-// What the map shows (V12): each place with a map position, and the births and deaths there among the people in
+// What the map shows (V12): each place with a map position, and the births, deaths and marriages there among the people in
 // view (focus or saved view, like every other tab). Places written by hand have no position, so they're listed
 // separately to keep the gap visible.
 import type { Dataset } from '../model/types.ts';
-import { birthStart, displayName, person } from '../model/queries.ts';
+import { birthStart, displayName, partnerIds, person } from '../model/queries.ts';
 import { fmtDate } from '../model/edtf.ts';
 
-export interface MapEvent { personId: string; name: string; kind: 'birth' | 'death'; date: string }
+export interface MapEvent { personId: string; name: string; kind: 'birth' | 'death' | 'marriage' | 'partnership'; date: string }
 export interface MapPlace { placeId: string; name: string; context: string; lat: number; lon: number; events: MapEvent[] }
 export interface MapData {
 	places: MapPlace[];
@@ -22,6 +22,15 @@ export function mapData(d: Dataset, ids: Iterable<string>): MapData {
 		if (!pid || !inView.has(pid) || !person(d, pid)) continue;
 		const list = byPlace.get(e.place.placeId) ?? byPlace.set(e.place.placeId, []).get(e.place.placeId)!;
 		list.push({ personId: pid, name: displayName(person(d, pid)), kind: e.type, date: fmtDate(e.date?.edtf) });
+	}
+	// Where couples married (or their partnership began), when either is in view.
+	for (const f of d.families) {
+		const r = f.relationship;
+		const ps = partnerIds(f).filter((x) => person(d, x));
+		const pid = ps.find((x) => inView.has(x));
+		if (!r?.place || !pid) continue;
+		const list = byPlace.get(r.place.placeId) ?? byPlace.set(r.place.placeId, []).get(r.place.placeId)!;
+		list.push({ personId: pid, name: ps.map((x) => displayName(person(d, x))).join(' & '), kind: r.type === 'marriage' || r.type === 'civil-partnership' ? 'marriage' : 'partnership', date: fmtDate(r.start?.edtf) });
 	}
 	const places: MapPlace[] = [],
 		unmapped: MapData['unmapped'] = [];

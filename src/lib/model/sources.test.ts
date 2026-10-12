@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { Dataset } from './types.ts';
 import { deletePerson, emptyDataset, setLife } from './mutations.ts';
 import { cite, knownSources, sourceFromText, sourceUsers, uncite } from './sources.ts';
-import { setLifePlace } from './places.ts';
+import { mergePlaces, placeUses, setFamilyPlace, setLifePlace } from './places.ts';
+import { mapData } from '../layout/map.ts';
 
 let d: Dataset;
 beforeEach(() => {
@@ -79,3 +80,28 @@ describe('unused places', () => {
 		expect(d.places).toEqual([]);
 	});
 });
+
+describe('where a couple married', () => {
+	it('is a place like any other: counted, merged, kept while used and removed after', () => {
+		d.families.push({ id: 'fam_1', partners: [{ personId: 'john' }, { personId: 'mary' }], relationship: { type: 'marriage' }, children: [] });
+		setLife(d, 'john', 'birth', '1858', 'Leeds');
+		const leeds = d.places[0].id;
+		setFamilyPlace(d, 'fam_1', leeds);
+		expect(placeUses(d, leeds)).toBe(2);
+		setLifePlace(d, 'john', 'birth', null);
+		expect(d.places.map((x) => x.name)).toEqual(['Leeds']);
+		d.places.push({ id: 'plc_other', name: 'Leeds (city)' });
+		mergePlaces(d, 'plc_other', leeds);
+		expect(d.families[0].relationship!.place).toEqual({ placeId: 'plc_other' });
+		setFamilyPlace(d, 'fam_1', null);
+		expect(d.places).toEqual([]);
+	});
+
+	it('shows on the map, as a marriage or a partnership', () => {
+		d.places.push({ id: 'plc_maer', name: 'Maer', coordinates: { lat: 52.9, lon: -2.3 } });
+		d.families.push({ id: 'fam_1', partners: [{ personId: 'john' }, { personId: 'mary' }], relationship: { type: 'marriage', start: { edtf: '1883' }, place: { placeId: 'plc_maer' } }, children: [] });
+		expect(mapData(d, ['mary']).places[0].events).toEqual([{ personId: 'mary', name: 'Unnamed & Unnamed', kind: 'marriage', date: '1883' }]);
+		expect(mapData(d, ['william']).places).toEqual([]);
+	});
+});
+

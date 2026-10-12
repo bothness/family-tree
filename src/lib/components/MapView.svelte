@@ -89,7 +89,7 @@
 		const ul = el.appendChild(document.createElement('ul'));
 		for (const ev of p.events) {
 			const li = ul.appendChild(document.createElement('li'));
-			li.append(`${ev.kind === 'birth' ? 'Born' : 'Died'}${ev.date ? ` ${ev.date}` : ''}: `);
+			li.append(`${ev.kind === 'birth' ? 'Born' : ev.kind === 'death' ? 'Died' : ev.kind === 'marriage' ? 'Married' : 'Partners'}${ev.date ? ` ${ev.date}` : ''}: `);
 			const b = li.appendChild(document.createElement('button'));
 			b.className = 'linkish';
 			b.textContent = ev.name;

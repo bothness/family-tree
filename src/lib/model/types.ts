@@ -80,10 +80,15 @@ export interface Media {
 export interface PartnerRef { personId: string; status?: Status; citations?: Citation[] }
 export interface ChildRef { personId: string; relation?: ChildRelation; status?: Status; citations?: Citation[] }
 
+/** Where something happened: a place, with how sure that is. */
+export interface PlaceRef { placeId: string; detail?: string; status?: Status }
+
 export interface Relationship {
 	type?: RelType;
 	status?: Status;
 	start?: EdtfDate;
+	/** Where it began, e.g. where they married. */
+	place?: PlaceRef;
 	end?: EdtfDate;
 	endReason?: EndReason;
 }
@@ -109,7 +114,7 @@ export interface LifeEvent {
 	type: string;
 	label?: string;
 	date?: EdtfDate;
-	place?: { placeId: string; detail?: string; status?: Status };
+	place?: PlaceRef;
 	participants: Participant[];
 	familyId?: string;
 	value?: string;

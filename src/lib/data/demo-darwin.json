@@ -3294,7 +3294,11 @@
 				"end": {
 					"edtf": "1817"
 				},
-				"endReason": "death"
+				"endReason": "death",
+				"place": {
+					"placeId": "plc_london",
+					"status": "confirmed"
+				}
 			},
 			"children": [
 				{
@@ -3499,7 +3503,11 @@
 				"end": {
 					"edtf": "1882-04-19"
 				},
-				"endReason": "death"
+				"endReason": "death",
+				"place": {
+					"placeId": "plc_maer",
+					"status": "confirmed"
+				}
 			},
 			"children": [
 				{

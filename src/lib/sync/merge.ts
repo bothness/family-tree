@@ -290,6 +290,7 @@ function repair(d: Dataset, local: Dataset, remote: Dataset, conflicts: Resolved
 		if (x && !list.some((y) => y.id === id)) list.push(structuredClone(x));
 	};
 	for (const e of d.events) if (e.place) restore(d.places, (x) => x.places, e.place.placeId);
+	for (const f of d.families) if (f.relationship?.place) restore(d.places, (x) => x.places, f.relationship.place.placeId);
 	for (const p of d.people) for (const c of p.citations ?? []) restore(d.sources, (x) => x.sources, c.sourceId);
 	const sources = new Set(d.sources.map((s) => s.id));
 	for (const p of d.people) {
@@ -304,6 +305,11 @@ function repair(d: Dataset, local: Dataset, remote: Dataset, conflicts: Resolved
 		if (e.place && !places.has(e.place.placeId)) {
 			fixed('events', e.id, ['place'], 'the place was removed', e.place);
 			delete e.place;
+		}
+	for (const f of d.families)
+		if (f.relationship?.place && !places.has(f.relationship.place.placeId)) {
+			fixed('families', f.id, ['relationship', 'place'], 'the place was removed', f.relationship.place);
+			delete f.relationship.place;
 		}
 	const keptPeople = new Set(d.people.map((p) => p.id));
 	d.views = d.views.filter((v) => !v.scope?.root || keptPeople.has(v.scope.root));

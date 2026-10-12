@@ -7,7 +7,7 @@
 	import { dateUnsure, datesDisagree, edtfRange, fmtDate } from '#lib/model/edtf.ts';
 	import { birthStart, childIds, displayName, famAsChild, famsAsPartner, halfSiblings, lifeEvent, nameIsGuess, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName } from '#lib/model/queries.ts';
 	import { source, sourceTypeLabel } from '#lib/model/sources.ts';
-	import type { EdtfDate, Family, LifeEvent, NameType, Status } from '#lib/model/types.ts';
+	import type { EdtfDate, Family, LifeEvent, NameType, PlaceRef, Status } from '#lib/model/types.ts';
 
 	let { pid }: { pid: string } = $props();
 
@@ -31,10 +31,11 @@
 	const SEX = { M: 'Male', F: 'Female', U: 'Not known' } as const;
 	/** A word for how sure a fact is (none for confirmed or unknown). */
 	const sure = (s?: Status) => (s === 'likely' ? 'likely' : s === 'guess' ? 'a guess' : s === 'conflicting' ? 'sources disagree' : '');
-	const placeOf = (e?: LifeEvent) => {
-		const pl = e?.place && d.places.find((x) => x.id === e.place!.placeId);
-		return pl ? [pl.name, e!.place!.detail, pl.context].filter(Boolean).join(', ') : '';
+	const placeName = (ref?: PlaceRef) => {
+		const pl = ref && d.places.find((x) => x.id === ref.placeId);
+		return pl ? [pl.name, ref!.detail, pl.context].filter(Boolean).join(', ') : '';
 	};
+	const placeOf = (e?: LifeEvent) => placeName(e?.place);
 	const kidsOf = (f: Family) => childIds(f).sort((a, b) => birthStart(d, a) - birthStart(d, b));
 	const otherPartner = (f: Family) => partnerIds(f).find((x) => x !== pid);
 </script>
@@ -48,12 +49,16 @@
 	{#if date?.edtf}<span class:pencil={dateUnsure(date.edtf)}>{fmtDate(date.edtf)}</span>{#if datesDisagree(date.edtf)}<span class="sure">&nbsp;(sources disagree)</span>{/if}{/if}
 {/snippet}
 
+{#snippet where(ref: PlaceRef | undefined)}
+	{#if placeName(ref)}<span class:pencil={ref?.status === 'guess'}>{placeName(ref)}</span>{#if sure(ref?.status)}<span class="sure">&nbsp;({sure(ref?.status)})</span>{/if}{/if}
+{/snippet}
+
 {#snippet life(label: string, e: LifeEvent | undefined)}
 	<div class="ro-row">
 		<span class="ro-label">{label}</span>
 		<span>
 			{#if e?.date?.edtf || placeOf(e)}
-				{@render when(e?.date)}{#if e?.date?.edtf && placeOf(e)},&nbsp;{/if}{#if placeOf(e)}<span class:pencil={e?.place?.status === 'guess'}>{placeOf(e)}</span>{#if sure(e?.place?.status)}<span class="sure">&nbsp;({sure(e?.place?.status)})</span>{/if}{/if}
+				{@render when(e?.date)}{#if e?.date?.edtf && placeOf(e)},&nbsp;{/if}{@render where(e?.place)}
 			{:else}
 				<span class="hint">not recorded</span>
 			{/if}
@@ -105,9 +110,9 @@
 				{#if other}{@render personLink(other)}{:else}<span class="hint">partner not recorded</span>{/if}
 				{#if sure(r.status)}<span class="sure">&nbsp;({sure(r.status)})</span>{/if}
 			</div>
-			{#if r.start?.edtf || r.end?.edtf}
+			{#if r.start?.edtf || r.end?.edtf || placeName(r.place)}
 				<div class="hint">
-					{#if r.start?.edtf}from {@render when(r.start)}{/if}{#if r.end?.edtf}{r.start?.edtf ? ', ' : ''}{ENDED[r.endReason ?? 'unknown']} {@render when(r.end)}{/if}
+					{#if r.start?.edtf}from {@render when(r.start)}{/if}{#if placeName(r.place)}{r.start?.edtf ? ', ' : ''}in {@render where(r.place)}{/if}{#if r.end?.edtf}{r.start?.edtf || placeName(r.place) ? '; ' : ''}{ENDED[r.endReason ?? 'unknown']} {@render when(r.end)}{/if}
 				</div>
 			{/if}
 			<div class="who"><span class="hint">Children:</span> {#each kidsOf(f) as id, i (id)}{@render personLink(id)}{i < f.children.length - 1 ? ', ' : ''}{:else}<span class="hint">none recorded</span>{/each}</div>

@@ -5,9 +5,10 @@ import schema from '../../../schema/family-tree.schema.json';
 import demo from '../data/demo-darwin.json';
 import type { Dataset } from '../model/types.ts';
 import { deletePerson, emptyDataset, linkPeople, newFamily, newPerson, setLife } from '../model/mutations.ts';
-import { childIds, partnerIds, person } from '../model/queries.ts';
+import { childIds, famsAsPartner, partnerIds, person } from '../model/queries.ts';
 import { eq, merge3, normalise, stampChanges } from './merge.ts';
 import { cite, uncite } from '../model/sources.ts';
+import { setFamilyPlace } from '../model/places.ts';
 
 const base = () => normalise(demo);
 const p = (d: Dataset, id: string) => person(d, id)!;
@@ -136,6 +137,19 @@ describe('shared sources and places', () => {
 		p(c2, who).citations!.find((c) => c.sourceId === sid)!.detail = 'here';
 		p(d2, who).citations!.find((c) => c.sourceId === sid)!.detail = 'there';
 		expect(p(merge3(once, c2, d2).data, who).citations!.filter((c) => c.sourceId === sid)).toHaveLength(1);
+	});
+
+	it('keeps a place one side removed as unused while the other made it where a couple married', () => {
+		const o = base();
+		setLife(o, 'per_annie', 'death', null, 'Nowhere Green');
+		const a = structuredClone(o),
+			b = structuredClone(o);
+		setLife(a, 'per_annie', 'death', null, 'Malvern');
+		const green = b.places.find((x) => x.name === 'Nowhere Green')!.id;
+		setFamilyPlace(b, 'fam_charles_emma', green);
+		const { data } = merge3(o, a, b);
+		expect(fam(data, 'fam_charles_emma').relationship!.place!.placeId).toBe(green);
+		expect(data.places.some((x) => x.id === green)).toBe(true);
 	});
 
 	it('keeps a place one side removed as unused while the other side used it', () => {
@@ -268,7 +282,7 @@ describe('random edits on two devices', () => {
 			const ids = d.people.map((x) => x.id);
 			// Half the edits go to a few people both devices are working on, so the two sides really clash.
 			const who = r() < 0.5 ? pick(r, ['per_charles', 'per_emma', 'per_annie', 'per_george'].filter((x) => ids.includes(x))) ?? pick(r, ids) : pick(r, ids);
-			switch (Math.floor(r() * 9)) {
+			switch (Math.floor(r() * 10)) {
 				case 0:
 					linkPeople(d, pick(r, ['parent', 'partner', 'child', 'sibling'] as const), who, newPerson(d, `New ${i}`).id);
 					break;
@@ -296,6 +310,12 @@ describe('random edits on two devices', () => {
 				case 7:
 					setLife(d, who, pick(r, ['birth', 'death'] as const), null, pick(r, ['Shrewsbury', 'Down', 'Nowhere Green', '']));
 					break;
+				case 8: {
+					const f = pick(r, famsAsPartner(d, who));
+					const pl = pick(r, [...d.places.map((x) => x.id), null]);
+					if (f) setFamilyPlace(d, f.id, pl);
+					break;
+				}
 				default:
 					p(d, who).tags = [...(p(d, who).tags ?? []), `t${i % 3}`];
 			}
@@ -353,7 +373,8 @@ function problems(d: Dataset): string[] {
 	}
 	const cited = new Set(d.people.flatMap((x) => (x.citations ?? []).map((c) => c.sourceId)));
 	for (const s of d.sources) if (!cited.has(s.id)) out.push(`${s.id} is cited by no one`);
-	const used = new Set(d.events.flatMap((e) => (e.place ? [e.place.placeId] : [])));
+	const used = new Set([...d.events.flatMap((e) => (e.place ? [e.place.placeId] : [])), ...d.families.flatMap((f) => (f.relationship?.place ? [f.relationship.place.placeId] : []))]);
+	for (const f of d.families) if (f.relationship?.place && !d.places.some((x) => x.id === f.relationship!.place!.placeId)) out.push(`${f.id} has a missing place`);
 	for (const pl of d.places) if (!used.has(pl.id)) out.push(`${pl.id} is used by nothing`);
 	return out;
 }
