@@ -115,7 +115,7 @@ const steps = {
         else if (!/[?%]|^\[/.test(was)) check.push(`${what}: ${fmtDate(was)} was a guess, but it can't take a "not sure" mark; kept as it is`);
       }
       if (dt.status === "likely") likely++;
-      if (dt.status === "conflicting") check.push(`${what}: ${fmtDate(was)}, sources disagree; type the dates as "1800 or 1801"`);
+      if (dt.status === "conflicting") check.push(`${what}: ${fmtDate(was)}, sources disagree; in the app, type both dates with "or" (for example "1800 or 1801")`);
       delete dt.status;
     };
     for (const e of d.events) fix(e.date, `${(e.participants ?? []).map(x => names[x.personId] ?? x.personId).join(" & ")}, ${e.type}`);
