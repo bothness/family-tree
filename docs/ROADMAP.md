@@ -10,7 +10,13 @@ Open work only, tagged by area (Layout, Data, Interface, Shared edition, Product
 Breaking model changes go out together, with the family edition's data converted once by `scripts/migrate-0.3.mjs` rather than by code in the app.
 - [x] Names: the birth name first, `preferred` = shown on the tree, other names folded in the panel
 - [ ] Sources and links (the owner's ideas to come): add a step to the script
-- [ ] Cutover: everyone's devices show "saved" and are idle → Download backup → `node scripts/migrate-0.3.mjs backup.json` and settle its "to check by hand" list → `npm run validate backup-0.3.json` → merge and push → at once, Data → "Replace the shared tree with a backup…" with the converted file → everyone reloads (an old open tab still treats `preferred` as the main name)
+- [ ] Cutover, on a quiet day:
+  1. Dry run first with local wrangler (port 8790, `--persist-to` a scratch folder): replace from a converted backup, photos included.
+  2. Everyone's devices show "saved" and are idle. Data → Download backup.
+  3. `node scripts/migrate-0.3.mjs backup.json`, settle its "to check by hand" list, then `npm run validate backup-0.3.json`.
+  4. Merge and push; wait for the Cloudflare deploy, hard-reload and check the new build is running (other names folded into an "Also …" line). An old build would read the 0.3 file as v0.1 and label it 0.2.
+  5. At once: Data → "Replace the shared tree with a backup…" with the converted file. Everyone reloads (an old open tab still treats `preferred` as the main name).
+  6. Check: download a fresh backup and `npm run validate` it.
 - Maybe later: "+ Married name" filled in from the partner's surname and the marriage date; "née"/"later" in the timeline's tooltips
 
 ## Small follow-ups

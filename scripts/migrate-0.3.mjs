@@ -52,6 +52,9 @@ if (d.schemaVersion !== "0.2") {
   console.error(`Expected a v0.2 backup, found ${d.schemaVersion ?? "no version"}.`);
   process.exit(1);
 }
+const photos = d.mediaFiles ?? {}, missing = (d.media ?? []).filter(m => !photos[m.id]);
+console.log(`${(d.media ?? []).length - missing.length} of ${(d.media ?? []).length} photos in the file`);
+if (missing.length) console.log(`  Missing (they'd be lost on replacing the shared tree): ${missing.map(m => m.id).join(", ")}`);
 for (const [step, run] of Object.entries(steps)) {
   const { changed, check } = run(d);
   console.log(`\n${step}: ${changed.length} change(s)`);

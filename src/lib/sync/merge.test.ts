@@ -23,6 +23,11 @@ describe('merge3 basics', () => {
 		expect(merge3(o, x, x).resolved).toEqual([]);
 	});
 
+	it('takes a newer schema version from the shared tree (a one-off conversion replaced it)', () => {
+		const old = { ...base(), schemaVersion: '0.2' } as unknown as Dataset;
+		expect(merge3(old, old, base()).data.schemaVersion).toBe('0.3');
+	});
+
 	it('takes edits to different people from both sides without conflict', () => {
 		const o = base(),
 			a = base(),
