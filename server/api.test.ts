@@ -40,7 +40,7 @@ const call = (path: string, init: RequestInit = {}, who: string | null = 'owner@
 const jsonInit = (method: string, body: unknown): RequestInit => ({ method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 const put = (base: number, data: unknown, who?: string) =>
 	call('/api/tree', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ base, data }) }, who);
-const tree = (n: number) => ({ schemaVersion: '0.2', people: [{ id: `per_${n}` }], families: [], events: [], places: [], sources: [], views: [], media: [] });
+const tree = (n: number) => ({ schemaVersion: '0.3', people: [{ id: `per_${n}` }], families: [], events: [], places: [], sources: [], views: [], media: [] });
 
 describe('family edition API', () => {
 	it('says who you are, refuses strangers and the signed-out', async () => {

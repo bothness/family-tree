@@ -64,7 +64,7 @@ export interface SyncOptions {
 }
 
 const STATE_KEY = 'sync';
-const empty = (): Dataset => normalise({ schemaVersion: '0.2', people: [], families: [], events: [], places: [], sources: [], views: [], media: [] });
+const empty = (): Dataset => normalise({ schemaVersion: '0.3', people: [], families: [], events: [], places: [], sources: [], views: [], media: [] });
 
 export function createSync(o: SyncOptions) {
 	let state: State = { synced: null, unsentMedia: [] };

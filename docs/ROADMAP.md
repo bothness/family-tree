@@ -6,6 +6,13 @@ Open work only, tagged by area (Layout, Data, Interface, Shared edition, Product
 - Phases A–F are done: editing and the data model, navigation and saved views, our own tree layout, places, photos and the map, exports and the demo, and the shared family edition. V13/V14 (vertical and horizontal trees) are done too.
 - The public edition is live at https://bothness.github.io/family-tree/ and the family edition at https://mbfamilytree.pages.dev. Every push to `main` deploys both.
 
+## Release 0.3 (branch `names-model`) · Data
+Breaking model changes go out together, with the family edition's data converted once by `scripts/migrate-0.3.mjs` rather than by code in the app.
+- [x] Names: the birth name first, `preferred` = shown on the tree, other names folded in the panel
+- [ ] Sources and links (the owner's ideas to come): add a step to the script
+- [ ] Cutover: everyone's devices show "saved" and are idle → Download backup → `node scripts/migrate-0.3.mjs backup.json` and settle its "to check by hand" list → `npm run validate backup-0.3.json` → merge and push → at once, Data → "Replace the shared tree with a backup…" with the converted file → everyone reloads (an old open tab still treats `preferred` as the main name)
+- Maybe later: "+ Married name" filled in from the partner's surname and the marriage date; "née"/"later" in the timeline's tooltips
+
 ## Small follow-ups
 | Area | Item | Notes |
 |---|---|---|

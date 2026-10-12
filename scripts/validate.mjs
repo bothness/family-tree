@@ -5,7 +5,8 @@ import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
 const schema = JSON.parse(readFileSync(new URL("../schema/family-tree.schema.json", import.meta.url)));
-const data = JSON.parse(readFileSync(process.argv[2] ?? new URL("../src/lib/data/example-data.json", import.meta.url)));
+// A backup's photos (`mediaFiles`) aren't part of the schema; the app takes them off when it loads one.
+const { mediaFiles, ...data } = JSON.parse(readFileSync(process.argv[2] ?? new URL("../src/lib/data/example-data.json", import.meta.url)));
 
 // 1. Structural validation
 const ajv = new Ajv({ allErrors: true, strict: false });

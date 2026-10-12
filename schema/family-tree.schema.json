@@ -13,7 +13,7 @@
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {
-      "const": "0.2"
+      "const": "0.3"
     },
     "people": {
       "type": "array",
@@ -267,7 +267,8 @@
           "description": "Override for names that don't split into given/surname."
         },
         "preferred": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Show this name on the tree instead of the main one (the first), e.g. a married name. At most one."
         },
         "status": {
           "$ref": "#/$defs/Status"
@@ -303,6 +304,7 @@
         },
         "names": {
           "type": "array",
+          "description": "The first is the main name: the one they were born with, or the first known.",
           "items": {
             "$ref": "#/$defs/Name"
           }

@@ -1,4 +1,5 @@
-// Bring older or partial data up to schema v0.2.
+// Bring older or partial data up to schema v0.2. v0.2 → v0.3 (names) is a one-off script, scripts/migrate-0.3.mjs;
+// v0.2 data still reads correctly, just with the old name order.
 import type { Dataset } from './types.ts';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +50,7 @@ function upgradeScope(s: Loose) {
 /** Upgrade v0.1 data: probable→likely, living→deceased, marriage events→relationship.start. */
 export function migrate(input: Loose): Dataset {
 	const d = tidy(input);
-	if ((d.schemaVersion as string) === '0.2') return d;
+	if (['0.2', '0.3'].includes(d.schemaVersion as string)) return d;
 	const walk = (o: Loose): void => {
 		if (Array.isArray(o)) o.forEach(walk);
 		else if (o && typeof o === 'object')
@@ -71,6 +72,6 @@ export function migrate(input: Loose): Dataset {
 		if (f && e.date && !f.relationship?.start) f.relationship = { ...(f.relationship ?? {}), start: e.date };
 	}
 	d.events = d.events.filter((e) => !(e.type === 'marriage' && e.familyId));
-	d.schemaVersion = '0.2';
+	(d as Loose).schemaVersion = '0.2'; // v0.2 shape; scripts/migrate-0.3.mjs takes it on to v0.3
 	return d;
 }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.2",
+  "schemaVersion": "0.3",
   "people": [
     {
       "id": "per_john_smith",
@@ -14,8 +14,8 @@
     {
       "id": "per_mary_smith",
       "names": [
-        { "type": "married", "given": "Mary", "surname": "Smith", "status": "likely", "preferred": true, "date": "1883-06-02" },
-        { "type": "birth", "given": "Mary", "surname": "Walker", "status": "guess" }
+        { "type": "birth", "given": "Mary", "surname": "Walker", "status": "guess" },
+        { "type": "married", "given": "Mary", "surname": "Smith", "status": "likely", "preferred": true, "date": "1883-06-02" }
       ],
       "sex": { "value": "F", "status": "confirmed" },
       "deceased": true,
@@ -76,8 +76,8 @@
     {
       "id": "per_sarah_smith",
       "names": [
-        { "type": "married", "given": "Sarah", "surname": "Smith", "status": "likely", "preferred": true },
-        { "type": "birth", "given": "Sarah", "surname": "Wood", "status": "guess" }
+        { "type": "birth", "given": "Sarah", "surname": "Wood", "status": "guess" },
+        { "type": "married", "given": "Sarah", "surname": "Smith", "status": "likely", "preferred": true }
       ],
       "sex": { "value": "F", "status": "confirmed" },
       "deceased": true,
@@ -87,8 +87,8 @@
     {
       "id": "per_eliza_smith",
       "names": [
-        { "type": "married", "given": "Eliza", "surname": "Smith", "status": "confirmed", "preferred": true, "date": "1870" },
-        { "type": "birth", "given": "Eliza", "surname": "Brown", "status": "likely" }
+        { "type": "birth", "given": "Eliza", "surname": "Brown", "status": "likely" },
+        { "type": "married", "given": "Eliza", "surname": "Smith", "status": "confirmed", "preferred": true, "date": "1870" }
       ],
       "sex": { "value": "F", "status": "confirmed" },
       "deceased": true,
@@ -119,8 +119,8 @@
     {
       "id": "per_ellen_smith",
       "names": [
-        { "type": "married", "given": "Ellen", "surname": "Smith", "status": "confirmed", "preferred": true, "date": "1886-08" },
-        { "type": "birth", "given": "Ellen", "surname": "Clarke", "status": "confirmed" }
+        { "type": "birth", "given": "Ellen", "surname": "Clarke", "status": "confirmed" },
+        { "type": "married", "given": "Ellen", "surname": "Smith", "status": "confirmed", "preferred": true, "date": "1886-08" }
       ],
       "sex": { "value": "F", "status": "confirmed" },
       "deceased": true,

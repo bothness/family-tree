@@ -9,7 +9,7 @@ const ids = (q: string, opts?: Parameters<typeof searchPeople>[2]) => searchPeop
 beforeEach(() => {
 	d = emptyDataset();
 	d.people.push(
-		{ id: 'mary', names: [{ type: 'married', given: 'Mary', surname: 'Smith', preferred: true }, { type: 'birth', given: 'Mary', surname: 'Walker' }] },
+		{ id: 'mary', names: [{ type: 'birth', given: 'Mary', surname: 'Walker' }, { type: 'married', given: 'Mary', surname: 'Smith', preferred: true }] },
 		{ id: 'ann', names: [{ given: 'Ann', surname: 'Smith' }], knownAs: 'Annie' },
 		{ id: 'john', names: [{ given: 'John', surname: 'Smith' }] },
 		{ id: 'johanna', names: [{ given: 'Johanna', surname: 'Brennan' }] },

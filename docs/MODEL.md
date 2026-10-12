@@ -1,4 +1,4 @@
-# Family tree data model – v0.2
+# Family tree data model – v0.3
 
 Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/example-data.json` (sample data), `scripts/validate.mjs` (validator + gaps report, `npm run validate [file.json]`). Code: `src/lib/model/` (see its `CLAUDE.md`).
 
@@ -20,6 +20,10 @@ Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/exa
 - **Events are first-class with participants**, so one census or marriage record links several people, and spans (residence, occupation) appear as bars on a timeline.
 - **One graph, many views.** Separate branches simply coexist until joined; views store queries, never copies of data.
 - **Ready for multiple editors.** Opaque prefixed IDs (`per_`, `fam_`, `evt_`…; use ULIDs in the app), optional `meta` provenance, no derived data stored, and the same model works as one file, a file per entity, or SQL tables.
+
+## Changes in v0.3
+- Names: the first name in `names` is the main name, the one they were born with (or the first known), as in GEDCOM, Gramps and FamilySearch. `preferred` now means "show this name on the tree instead" (e.g. a married name; at most one). `knownAs` is for nicknames and titles ("Polly", "Sir Francis Darwin"), and a one-word `knownAs` takes the surname of the name shown.
+- Older data is converted once, outside the app, by `scripts/migrate-0.3.mjs` (a backup file in, a backup file out). The app reads v0.2 data without converting it.
 
 ## Changes in v0.2
 - `probable` renamed `likely`.

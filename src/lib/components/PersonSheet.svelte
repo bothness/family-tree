@@ -7,8 +7,8 @@
 	import PersonView from './PersonView.svelte';
 	import { edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
 	import {
-		birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, fullName, halfSiblings,
-		lifeEvent, nameIsGuess, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName, soloFam
+		birthNameNote, birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, halfSiblings,
+		lifeEvent, nameIsGuess, nameText, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName, soloFam
 	} from '#lib/model/queries.ts';
 	import { deletePerson, setChildOf, setLife } from '#lib/model/mutations.ts';
 	import { expandToInclude, type FocusOptions } from '#lib/model/focus.ts';
@@ -65,6 +65,7 @@
 	/** Parents whose certainty was changed here: their switch stays visible after being set to Confirmed. */
 	let touchedParents = $state(new Set<string>());
 	let moreOpen = $state(false);
+	let namesOpen = $state(false);
 	let todoText = $state('');
 	let urlText = $state('');
 	let urlLabel = $state('');
@@ -91,6 +92,25 @@
 		if (!main) (p.names ??= []).push({ type: 'birth' });
 		return primaryName(p)!;
 	};
+	/** Other names, folded: "Mary Smith (married, from 1883, on the tree)". */
+	const namesSummary = $derived(
+		otherNames
+			.map(({ n }) => {
+				const how = [NAME_TYPES.find(([t]) => t === (n.type ?? 'other'))?.[1].replace(/ name$/, '').toLowerCase(), n.date && `from ${fmtDate(n.date)}`, n.preferred && 'on the tree'];
+				return `${nameText(n) || '…'} (${how.filter(Boolean).join(', ')})`;
+			})
+			.join(' · ')
+	);
+	/** Show this name on the tree instead of the main one (or stop, going back to the main one). */
+	function showOnTree(n: Name, on: boolean) {
+		for (const x of p.names ?? []) delete x.preferred;
+		if (on) n.preferred = true;
+	}
+	function addName() {
+		ensureMain();
+		p.names!.push({ type: p.sex?.value === 'F' ? 'married' : 'other' });
+		namesOpen = true;
+	}
 	function setMainName(field: 'given' | 'surname', v: string) {
 		const n = ensureMain();
 		n[field] = v.trim() || undefined;
@@ -173,7 +193,7 @@
 <div class="sheet-head">
 	<div>
 		<h2 class:pencil={nameIsGuess(p)}>{displayName(p)}</h2>
-		{#if p.knownAs}<div class="sub">{fullName(p)}</div>{/if}
+		{#if birthNameNote(p)}<div class="sub">{birthNameNote(p)}</div>{/if}
 	</div>
 	<div class="head-actions">
 		<span class="split">
@@ -221,28 +241,36 @@
 </div>
 <div class="row"><span class="hint">This name is</span><StatusPicker value={main?.status} onchange={(v) => (ensureMain().status = v)} /></div>
 <label class="fld"><span>Known as (shown on the tree)</span>
-	<input type="text" value={p.knownAs ?? ''} placeholder="e.g. Annie, or a shorter name" onchange={(e) => setText('knownAs', val(e))} />
+	<input type="text" value={p.knownAs ?? ''} placeholder="e.g. Annie, or Sir John Smith" onchange={(e) => setText('knownAs', val(e))} />
 </label>
 
-{#each otherNames as { n, i } (i)}
-	<div class="oname">
-		<div class="row">
-			<select style="width:auto" value={n.type ?? 'other'} onchange={(e) => (n.type = val(e) as NameType)}>
-				{#each NAME_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
-			</select>
-			<button class="iconx" onclick={() => p.names!.splice(i, 1)} aria-label="Remove this name">×</button>
+{#if otherNames.length}
+	<details class="names" bind:open={namesOpen}>
+		<summary>Also {namesSummary}</summary>
+		<div class="names-list">
+			{#each otherNames as { n, i } (i)}
+				<div class="oname">
+					<div class="row">
+						<select style="width:auto" value={n.type ?? 'other'} onchange={(e) => (n.type = val(e) as NameType)}>
+							{#each NAME_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
+						</select>
+						<button class="iconx" onclick={() => p.names!.splice(i, 1)} aria-label="Remove this name">×</button>
+					</div>
+					<div class="row">
+						<label class="fld"><span>Given</span><input type="text" value={n.given ?? ''} onchange={(e) => (n.given = val(e).trim() || undefined)} /></label>
+						<label class="fld"><span>Surname</span><input type="text" value={n.surname ?? ''} onchange={(e) => (n.surname = val(e).trim() || undefined)} /></label>
+						<label class="fld" style="flex-basis:80px"><span>From</span><input type="text" value={fmtDate(n.date)} onchange={(e) => (n.date = parseUserDate(val(e)) || undefined)} /></label>
+					</div>
+					<div class="row"><StatusPicker value={n.status} onchange={(v) => (n.status = v)} /></div>
+					<label class="check"><input type="checkbox" checked={!!n.preferred} onchange={(e) => showOnTree(n, (e.currentTarget as HTMLInputElement).checked)} /> Show this name on the tree</label>
+				</div>
+			{/each}
 		</div>
-		<div class="row">
-			<label class="fld"><span>Given</span><input type="text" value={n.given ?? ''} onchange={(e) => (n.given = val(e).trim() || undefined)} /></label>
-			<label class="fld"><span>Surname</span><input type="text" value={n.surname ?? ''} onchange={(e) => (n.surname = val(e).trim() || undefined)} /></label>
-			<label class="fld" style="flex-basis:80px"><span>From</span><input type="text" value={fmtDate(n.date)} onchange={(e) => (n.date = parseUserDate(val(e)) || undefined)} /></label>
-		</div>
-		<div class="row"><StatusPicker value={n.status} onchange={(v) => (n.status = v)} /></div>
-	</div>
-{/each}
+	</details>
+{/if}
 <div class="row">
-	<button class="btn small" onclick={() => { ensureMain(); p.names!.push({ type: p.sex?.value === 'F' ? 'married' : 'other' }); }}>+ Another name</button>
-	<span class="hint">e.g. maiden or married name, deed poll</span>
+	<button class="btn small" onclick={addName}>+ Another name</button>
+	{#if !otherNames.length}<span class="hint">e.g. married name, deed poll</span>{/if}
 </div>
 
 <div class="row">

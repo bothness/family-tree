@@ -1,5 +1,5 @@
 {
-	"schemaVersion": "0.2",
+	"schemaVersion": "0.3",
 	"people": [
 		{
 			"id": "per_erasmus",
@@ -477,6 +477,13 @@
 				{
 					"type": "married",
 					"given": "Elizabeth",
+					"surname": "Pole",
+					"status": "confirmed",
+					"preferred": true
+				},
+				{
+					"type": "married",
+					"given": "Elizabeth",
 					"surname": "Darwin",
 					"status": "confirmed"
 				}
@@ -485,7 +492,6 @@
 				"value": "F",
 				"status": "confirmed"
 			},
-			"knownAs": "Elizabeth Pole",
 			"deceased": true,
 			"tags": [
 				"darwin"
@@ -2483,13 +2489,19 @@
 					"given": "Fredegond",
 					"surname": "Maitland",
 					"status": "confirmed"
+				},
+				{
+					"type": "married",
+					"given": "Fredegond",
+					"surname": "Shove",
+					"status": "confirmed",
+					"preferred": true
 				}
 			],
 			"sex": {
 				"value": "F",
 				"status": "confirmed"
 			},
-			"knownAs": "Fredegond Shove",
 			"deceased": true,
 			"notes": "Poet.",
 			"links": {
@@ -2723,14 +2735,15 @@
 					"type": "married",
 					"given": "Gwendolen Mary",
 					"surname": "Raverat",
-					"status": "confirmed"
+					"status": "confirmed",
+					"preferred": true
 				}
 			],
 			"sex": {
 				"value": "F",
 				"status": "confirmed"
 			},
-			"knownAs": "Gwen Raverat",
+			"knownAs": "Gwen",
 			"deceased": true,
 			"tags": [
 				"darwin"
@@ -2823,14 +2836,15 @@
 					"type": "married",
 					"given": "Margaret Elizabeth",
 					"surname": "Keynes",
-					"status": "confirmed"
+					"status": "confirmed",
+					"preferred": true
 				}
 			],
 			"sex": {
 				"value": "F",
 				"status": "confirmed"
 			},
-			"knownAs": "Margaret Keynes",
+			"knownAs": "Margaret",
 			"deceased": true,
 			"tags": [
 				"darwin"
@@ -2985,14 +2999,15 @@
 					"type": "married",
 					"given": "Frances Crofts",
 					"surname": "Cornford",
-					"status": "confirmed"
+					"status": "confirmed",
+					"preferred": true
 				}
 			],
 			"sex": {
 				"value": "F",
 				"status": "confirmed"
 			},
-			"knownAs": "Frances Cornford",
+			"knownAs": "Frances",
 			"deceased": true,
 			"tags": [
 				"darwin"
@@ -3116,14 +3131,15 @@
 					"type": "married",
 					"given": "Emma Nora",
 					"surname": "Barlow",
-					"status": "confirmed"
+					"status": "confirmed",
+					"preferred": true
 				}
 			],
 			"sex": {
 				"value": "F",
 				"status": "confirmed"
 			},
-			"knownAs": "Nora Barlow",
+			"knownAs": "Nora",
 			"deceased": true,
 			"tags": [
 				"darwin"

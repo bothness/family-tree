@@ -7,7 +7,7 @@ export const uid = (prefix: string) =>
 	`${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 export function emptyDataset(): Dataset {
-	return { schemaVersion: '0.2', people: [], families: [], events: [], places: [], sources: [], views: [], media: [] };
+	return { schemaVersion: '0.3', people: [], families: [], events: [], places: [], sources: [], views: [], media: [] };
 }
 
 export function findOrCreatePlace(d: Dataset, name: string): string | null {

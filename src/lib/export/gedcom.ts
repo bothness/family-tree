@@ -5,7 +5,7 @@
 // - expected children: `NCHI` (GEDCOM's "number of children") when more are expected than recorded
 // Not exported: saved views, places' historical names, and a name's date of use.
 import type { Dataset, EdtfDate, Family, LifeEvent, Name, Person, Status } from '../model/types.ts';
-import { childIds, displayName, lifeEvent, partnerIds, primaryName } from '../model/queries.ts';
+import { childIds, displayName, lifeEvent, partnerIds } from '../model/queries.ts';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
@@ -129,9 +129,7 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 	for (const p of d.people) {
 		o.add(0, `${indi.get(p.id)} INDI`);
 		const unsureFacts: string[] = [];
-		const names = [...(p.names ?? [])];
-		const first = primaryName(p);
-		if (first) names.sort((a, b) => (a === first ? -1 : b === first ? 1 : 0));
+		const names = p.names ?? [];
 		if (!names.length) o.add(1, 'NAME', p.placeholder ? 'Unknown //' : '//');
 		names.forEach((n, i) => {
 			o.add(1, 'NAME', `${n.given ?? ''} /${n.surname ?? ''}/`.trim());

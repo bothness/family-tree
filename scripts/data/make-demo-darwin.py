@@ -120,8 +120,15 @@ def P(pid, given, surname, sex, born=None, died=None, bplace=None, dplace=None, 
     if placeholder:
         p['placeholder'] = True
         p['names'] = [{'type': 'birth', 'given': given, 'surname': surname, 'status': 'guess'}] if given or surname else []
-    if married:
-        p['names'].append({'type': 'married', 'given': given, 'surname': married, 'status': 'confirmed'})
+    for m in [married] if isinstance(married, str) else married or []:
+        p['names'].append({'type': 'married', 'given': given, 'surname': m, 'status': 'confirmed'})
+    # Known by a married name ("Gwen Raverat"): show that name on the tree, keeping only the nickname as "known as".
+    shown = next((n for n in p['names'][1:] if knownAs and knownAs.endswith(' ' + n['surname'])), None)
+    if shown:
+        shown['preferred'] = True
+        knownAs = knownAs[: -len(shown['surname']) - 1]
+        if knownAs == given:
+            knownAs = None
     if knownAs:
         p['knownAs'] = knownAs
     if deceased:
@@ -218,7 +225,7 @@ P('earl_portmore', 'Charles', 'Colyear', 'M', '1700-08-27', '1785-07-05', knownA
   src=WP + 'Charles Colyear, 2nd Earl of Portmore')
 P('elizabeth_collier_sr', 'Elizabeth', 'Collier', 'F', stage='sketch', todo=['Find dates'])
 P('elizabeth_collier', 'Elizabeth', 'Collier', 'F', ('1747', 'likely'), ('1832-02-05', 'likely'), dplace=('breadsall', 'guess'),
-  knownAs='Elizabeth Pole', married='Darwin', tags=D, stage='in-progress',
+  knownAs='Elizabeth Pole', married=('Pole', 'Darwin'), tags=D, stage='in-progress',
   notes="Widow of Colonel Pole when she married Erasmus. The illegitimate daughter of the 2nd Earl of Portmore.",
   src='thepeerage.com; Find a Grave (death 5 Feb 1832, marriage 6 Mar 1781)', todo=['Find where she died'])
 F('portmore', 'earl_portmore', 'elizabeth_collier_sr', ['elizabeth_collier'], rtype='partnership', complete='unknown',
@@ -359,7 +366,7 @@ F('francis_florence', 'francis', 'florence_fisher', [], start='1913', end='1920'
 P('maitland', 'Frederic William', 'Maitland', 'M', '1850', '1906-12', knownAs='F. W. Maitland', stage='sketch', notes='Legal historian.')
 F('maitland_fisher', 'maitland', 'florence_fisher', ['ermengard', 'fredegond'], start='1886-07-20', end='1906-12', endReason='death')
 P('ermengard', 'Ermengard', 'Maitland', 'F', '1887', '1968', stage='sketch', notes="Francis Darwin's stepdaughter.")
-P('fredegond', 'Fredegond', 'Maitland', 'F', '1889', '1949', knownAs='Fredegond Shove', stage='sketch', notes='Poet.')
+P('fredegond', 'Fredegond', 'Maitland', 'F', '1889', '1949', knownAs='Fredegond Shove', married='Shove', stage='sketch', notes='Poet.')
 P('leonard', 'Leonard', 'Darwin', 'M', '1850-01-15', '1943-03-26', 'downe', 'forestrow', tags=D, stage='in-progress',
   notes='Soldier, politician and economist. Married twice; no children.', src=WP + 'Leonard Darwin')
 P('elizabeth_fraser', 'Elizabeth Frances', 'Fraser', 'F', None, '1898-01-13', married='Darwin', stage='sketch', todo=['Find birth date'])
@@ -401,7 +408,7 @@ P('nora', 'Emma Nora', 'Darwin', 'F', '1885', '1989', knownAs='Nora Barlow', mar
 
 used = {e['place']['placeId'] for e in events if 'place' in e}
 data = {
-    'schemaVersion': '0.2',
+    'schemaVersion': '0.3',
     'people': people,
     'families': families,
     'events': events,

@@ -30,6 +30,7 @@ export interface Name {
 	given?: string;
 	surname?: string;
 	display?: string;
+	/** Show this name on the tree instead of the main one, e.g. a married name. At most one. */
 	preferred?: boolean;
 	/** EDTF date from which this name was used. */
 	date?: string;
@@ -41,6 +42,7 @@ export interface Name {
 export interface Person {
 	id: string;
 	placeholder?: boolean;
+	/** The first is the main name: the one they were born with, or the first known. */
 	names?: Name[];
 	/** Nickname or shortened name; shown on the tree in place of the full name. */
 	knownAs?: string;
@@ -166,7 +168,7 @@ export interface View {
 }
 
 export interface Dataset {
-	schemaVersion: '0.2';
+	schemaVersion: '0.3';
 	people: Person[];
 	families: Family[];
 	events: LifeEvent[];

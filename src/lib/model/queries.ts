@@ -24,28 +24,36 @@ export const coupleFam = (d: Dataset, a: string, b: string) =>
 		return ps.length === 2 && ps.includes(a) && ps.includes(b);
 	});
 
-/** The person's main name: the preferred one, else the first. */
-export const primaryName = (p: Person | undefined): Name | undefined =>
-	p?.names?.find((n) => n.preferred) ?? p?.names?.[0];
+/** The person's main name, the one they were born with (or the first known): always the first. */
+export const primaryName = (p: Person | undefined): Name | undefined => p?.names?.[0];
 
-export function fullName(p: Person | undefined): string {
-	const n = primaryName(p);
-	if (!n) return 'Unnamed';
-	return n.display || [n.given, n.surname].filter(Boolean).join(' ') || 'Unnamed';
-}
+/** The name the tree uses: one marked to show (e.g. a married name), else the main name. */
+export const shownName = (p: Person | undefined): Name | undefined => p?.names?.find((n) => n.preferred) ?? p?.names?.[0];
 
-/** Name shown on the tree: "known as" (plus surname if it's a single word), else the full name. */
+export const nameText = (n: Name | undefined) => n?.display || [n?.given, n?.surname].filter(Boolean).join(' ');
+
+/** The shown name in full, without "known as". */
+export const fullName = (p: Person | undefined): string => nameText(shownName(p)) || 'Unnamed';
+
+/** Name shown on the tree: "known as" (plus the shown surname if it's a single word), else the shown name. */
 export function displayName(p: Person | undefined): string {
 	if (!p) return 'Unknown';
 	const k = p.knownAs?.trim();
 	if (k) {
-		const sn = primaryName(p)?.surname;
+		const sn = shownName(p)?.surname;
 		return k.includes(' ') || !sn ? k : `${k} ${sn}`;
 	}
 	return fullName(p);
 }
 
-export const nameIsGuess = (p: Person) => !!p.placeholder || !primaryName(p) || primaryName(p)!.status === 'guess';
+/** Under the shown name in the panel: the main name, when the tree shows something else. */
+export function birthNameNote(p: Person): string | undefined {
+	const main = nameText(primaryName(p));
+	if (!main || main === displayName(p)) return undefined;
+	return shownName(p) === primaryName(p) ? main : `born ${main}`;
+}
+
+export const nameIsGuess = (p: Person) => !!p.placeholder || !shownName(p) || shownName(p)!.status === 'guess';
 
 export const placeName = (d: Dataset, id: string | undefined) => d.places.find((p) => p.id === id)?.name ?? '';
 
@@ -132,7 +140,6 @@ export interface SearchHit {
 
 const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 const words = (s: string) => fold(s).split(/[\s\-'’.,()]+/).filter(Boolean);
-const nameText = (n: Name) => n.display || [n.given, n.surname].filter(Boolean).join(' ');
 
 /** How well one query word matches a list of name words: whole word 3, start of a word 2, anywhere 1, none 0. */
 function wordScore(q: string, ws: string[]): number {
