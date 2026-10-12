@@ -8,6 +8,7 @@
 // Not exported: saved views, places' historical names, and a name's date of use.
 import type { Dataset, EdtfDate, Family, LifeEvent, Name, Person, Status } from '../model/types.ts';
 import { childIds, displayName, lifeEvent, partnerIds } from '../model/queries.ts';
+import { dateUnsure, datesDisagree } from '../model/edtf.ts';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
@@ -127,7 +128,6 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 	const date = (lvl: number, dt?: EdtfDate) => {
 		if (!dt?.edtf) return;
 		o.add(lvl, 'DATE', gedcomDate(dt.edtf));
-		if (unsure(dt.status)) o.add(lvl + 1, '_STATUS', dt.status);
 	};
 
 	for (const p of d.people) {
@@ -157,7 +157,7 @@ export function toGedcom(d: Dataset, opts: GedcomOptions = {}): string {
 			o.add(1, tag, !e.date?.edtf && !e.place ? 'Y' : undefined);
 			date(2, e.date);
 			place(2, e);
-			if (unsure(e.date?.status)) unsureFacts.push(`${kind} date: ${STATUS_WORD[e.date!.status!]}`);
+			if (dateUnsure(e.date?.edtf)) unsureFacts.push(`${kind} date: ${datesDisagree(e.date!.edtf) ? STATUS_WORD.conflicting : STATUS_WORD.guess}`);
 			if (unsure(e.place?.status)) unsureFacts.push(`${kind} place: ${STATUS_WORD[e.place!.status!]}`);
 		}
 		for (const c of p.citations ?? []) {

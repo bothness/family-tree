@@ -3,7 +3,7 @@
 # Builds src/lib/data/demo-darwin.json: the Darwin–Wedgwood demo family (E4).
 # Facts from Wikipedia (Erasmus Darwin, Darwin–Wedgwood family, Josiah Wedgwood, Robert Darwin, Emma Darwin,
 # George/Francis/Leonard/Horace Darwin, Anne Darwin, Caroline Wedgwood), the Darwin Correspondence Project name
-# registers and thepeerage.com. Where sources disagree or are thin, the fact is marked likely / guess / conflicting.
+# registers and thepeerage.com. Where sources disagree or are thin, the fact is marked likely / guess (dates: '?' or one of several).
 import json, re, sys
 
 places = {
@@ -116,11 +116,8 @@ SOURCES = {  # person → the pages their facts came from (everyone else: the Da
 
 
 def date(v):
-    """'1858' → confirmed; ('1858', 'likely') → that status."""
-    if v is None:
-        return None
-    e, s = (v, 'confirmed') if isinstance(v, str) else v
-    return {'edtf': e, 'status': s}
+    """An EDTF date, which says how sure it is: '1858?' (not sure), '[1800,1801]' (sources disagree)."""
+    return None if v is None else {'edtf': v}
 
 
 def P(pid, given, surname, sex, born=None, died=None, bplace=None, dplace=None, deceased=True, knownAs=None,
@@ -227,29 +224,29 @@ P('susanna_parker', 'Susanna', 'Parker', 'F', '1772', '1856', tags=D, stage='ske
 P('henry_hadley', 'Henry', 'Hadley', 'M', stage='sketch', todo=['Find dates'])
 F('hadley_parker', 'henry_hadley', 'susanna_parker', [], start='1809', complete='unknown')
 P('mary_parker_jr', 'Mary', 'Parker', 'F', '1774', '1859', tags=D, stage='sketch')
-F('erasmus_parker', 'erasmus', 'mary_parker', ['susanna_parker', 'mary_parker_jr'], rtype='partnership', start=('1771', 'likely'),
+F('erasmus_parker', 'erasmus', 'mary_parker', ['susanna_parker', 'mary_parker_jr'], rtype='partnership', start='1771',
   note='Not married. The daughters took their mother’s surname.')
 P('joseph_day', 'Joseph', 'Day', 'M', '1745', '1811', stage='sketch', notes='Birmingham merchant.')
-F('day_parker', 'joseph_day', 'mary_parker', [], start='1782', end=('1811', 'likely'), endReason='death', complete='unknown')
+F('day_parker', 'joseph_day', 'mary_parker', [], start='1782', end='1811', endReason='death', complete='unknown')
 
 P('earl_portmore', 'Charles', 'Colyear', 'M', '1700-08-27', '1785-07-05', knownAs='2nd Earl of Portmore', stage='sketch',
   src=WP + 'Charles Colyear, 2nd Earl of Portmore')
 P('elizabeth_collier_sr', 'Elizabeth', 'Collier', 'F', stage='sketch', todo=['Find dates'])
-P('elizabeth_collier', 'Elizabeth', 'Collier', 'F', ('1747', 'likely'), ('1832-02-05', 'likely'), dplace=('breadsall', 'guess'),
+P('elizabeth_collier', 'Elizabeth', 'Collier', 'F', '1747', '1832-02-05', dplace=('breadsall', 'guess'),
   knownAs='Elizabeth Pole', married=('Pole', 'Darwin'), tags=D, stage='in-progress',
   notes="Widow of Colonel Pole when she married Erasmus. The illegitimate daughter of the 2nd Earl of Portmore.",
   src='thepeerage.com; Find a Grave (death 5 Feb 1832, marriage 6 Mar 1781)', todo=['Find where she died'])
 F('portmore', 'earl_portmore', 'elizabeth_collier_sr', ['elizabeth_collier'], rtype='partnership', complete='unknown',
   kid_status={'elizabeth_collier': 'likely'}, note='Not married. Their daughter took her mother’s name.')
-P('col_pole', 'Edward Sacheverell', 'Chandos Pole', 'M', '1718', ('1780-11-27', 'likely'), knownAs='Colonel Pole', stage='sketch',
+P('col_pole', 'Edward Sacheverell', 'Chandos Pole', 'M', '1718', '1780-11-27', knownAs='Colonel Pole', stage='sketch',
   notes='Of Radbourne Hall, Derbyshire.')
 P('sacheverell_pole', 'Sacheverell', 'Chandos Pole', 'M', tags=['pole'], stage='sketch', todo=['Find dates'])
-F('pole_collier', 'col_pole', 'elizabeth_collier', ['sacheverell_pole'], end=('1780-11-27', 'likely'), endReason='death',
+F('pole_collier', 'col_pole', 'elizabeth_collier', ['sacheverell_pole'], end='1780-11-27', endReason='death',
   complete='no', expected=(3, 'Sources say she had three children by Colonel Pole; only Sacheverell is named here.'))
 
 F('erasmus_collier', 'erasmus', 'elizabeth_collier',
   ['edward', 'violetta', 'emma_1784', 'francis_sacheverel', 'john_1787', 'henry_1789', 'harriet'],
-  start=('1781-03-06', 'likely'), end='1802-04-18', endReason='death',
+  start='1781-03-06', end='1802-04-18', endReason='death',
   note='Married at Radbourne, Derbyshire (one local history).')
 P('edward', 'Edward', 'Darwin', 'M', '1782', '1829', tags=D, stage='sketch')
 P('violetta', 'Frances Anne Violetta', 'Darwin', 'F', '1783', '1874', knownAs='Violetta Darwin', married='Galton', tags=D, stage='sketch',
@@ -265,7 +262,7 @@ P('tertius_galton', 'Samuel Tertius', 'Galton', 'M', '1783', '1844', tags=['galt
 P('francis_galton', 'Francis', 'Galton', 'M', '1822-02-16', '1911-01-17', 'birmingham', 'haslemere', tags=['galton'], stage='in-progress',
   notes='Statistician and polymath; half-cousin of Charles Darwin.',
   todo=['Add his older brothers and sisters (seven or nine children in all?)'])
-F('galton_darwin', 'tertius_galton', 'violetta', ['francis_galton'], start=('1807-03-30', 'likely'), complete='no',
+F('galton_darwin', 'tertius_galton', 'violetta', ['francis_galton'], start='1807-03-30', complete='no',
   expected=(7, 'Wikipedia lists seven children, thepeerage.com nine. Francis was the youngest.'))
 
 # ---- The Wedgwoods ----
@@ -293,7 +290,7 @@ P('bessy_allen', 'Elizabeth', 'Allen', 'F', '1764', '1846', knownAs='Bessy Allen
   todo=['Find marriage date (1792?)'])
 F('wedgwood_2', 'josiah_2', 'bessy_allen',
   ['sarah_e', 'josiah_3', 'mary_ann_1796', 'charlotte', 'henry_allen', 'frank_wedgwood', 'hensleigh', 'fanny', 'emma'],
-  start=('1792', 'likely'), end='1843-07-12', endReason='death')
+  start='1792', end='1843-07-12', endReason='death')
 P('sarah_e', 'Sarah Elizabeth', 'Wedgwood', 'F', '1793', '1880', tags=W, stage='sketch')
 P('josiah_3', 'Josiah', 'Wedgwood', 'M', '1795', '1880', knownAs='Josiah Wedgwood III', tags=W, stage='sketch',
   notes='Moved the family to Leith Hill Place, Surrey, in 1847.')
@@ -314,25 +311,25 @@ F('darwin_wedgwood', 'robert', 'susannah', ['marianne', 'caroline', 'susan', 'er
 P('marianne', 'Marianne', 'Darwin', 'F', '1798', '1858', married='Parker', tags=D, stage='sketch')
 P('henry_parker', 'Henry', 'Parker', 'M', stage='sketch', notes='Physician.', todo=['Find dates', 'Add their children'])
 F('parker_darwin', 'henry_parker', 'marianne', [], start='1824', complete='unknown')
-P('caroline', 'Caroline Sarah', 'Darwin', 'F', ('1800', 'conflicting'), '1888', married='Wedgwood', tags=D + W, stage='in-progress',
+P('caroline', 'Caroline Sarah', 'Darwin', 'F', '[1800,1801]', '1888', married='Wedgwood', tags=D + W, stage='in-progress',
   notes='Married her cousin Josiah Wedgwood III.', src='Wikipedia gives 1800; thepeerage.com 1801.',
   todo=['Settle her year of birth: 1800 or 1801?'])
 P('susan', 'Susan Elizabeth', 'Darwin', 'F', '1803', '1866', tags=D, stage='sketch')
 P('erasmus_alvey', 'Erasmus Alvey', 'Darwin', 'M', '1804', '1881', tags=D, stage='sketch', notes="Charles's elder brother; lived in London.")
 P('charles', 'Charles Robert', 'Darwin', 'M', '1809-02-12', '1882-04-19', 'shrewsbury', 'downe', knownAs='Charles Darwin', tags=D,
   stage='researched', notes='Naturalist. Sailed on HMS Beagle 1831–36; published On the Origin of Species in 1859. Lived at Down House, Kent, from 1842.')
-P('catherine', 'Emily Catherine', 'Darwin', 'F', '1810', ('1866-02-02', 'likely'), knownAs='Catherine Darwin', married='Langton',
+P('catherine', 'Emily Catherine', 'Darwin', 'F', '1810', '1866-02-02', knownAs='Catherine Darwin', married='Langton',
   tags=D, stage='sketch')
 P('charles_langton', 'Charles', 'Langton', 'M', '1801', '1886', stage='sketch', notes='Clergyman. Married two of the cousins in turn.',
   src='Darwin Correspondence Project name register')
 F('langton_wedgwood', 'charles_langton', 'charlotte', [], start='1832-03-22', end='1862', endReason='death', complete='unknown',
   note='Married at Maer.')
-F('langton_darwin', 'charles_langton', 'catherine', [], start=('1863-10-12', 'likely'), end=('1866-02-02', 'likely'), endReason='death')
+F('langton_darwin', 'charles_langton', 'catherine', [], start='1863-10-12', end='1866-02-02', endReason='death')
 
 F('wedgwood_3', 'josiah_3', 'caroline', ['sophy_1838', 'sophy_1842', 'margaret_wedgwood', 'lucy_wedgwood'],
   start='1837-08-01', kid_status={'sophy_1842': 'likely'})
 P('sophy_1838', 'Sophy Marianne', 'Wedgwood', 'F', '1838-12', '1839-01', tags=W, stage='sketch', notes='Died as a baby.')
-P('sophy_1842', 'Katherine Elizabeth Sophy', 'Wedgwood', 'F', ('1842', 'likely'), knownAs='Sophy Wedgwood', tags=W, stage='sketch',
+P('sophy_1842', 'Katherine Elizabeth Sophy', 'Wedgwood', 'F', '1842', knownAs='Sophy Wedgwood', tags=W, stage='sketch',
   src='Wikipedia and thepeerage.com differ on her name.', todo=['Find her death date'])
 P('margaret_wedgwood', 'Margaret Susan', 'Wedgwood', 'F', '1843', '1937', married='Vaughan Williams', tags=W, stage='sketch')
 P('lucy_wedgwood', 'Lucy Caroline', 'Wedgwood', 'F', '1846-12-21', '1919-06-25', tags=W, stage='sketch')
@@ -355,7 +352,7 @@ P('annie', 'Anne Elizabeth', 'Darwin', 'F', '1841-03-02', '1851-04-23', dplace='
 P('mary_eleanor', 'Mary Eleanor', 'Darwin', 'F', '1842-09-23', '1842-10-16', dplace='downe', tags=D, stage='sketch', notes='Lived 23 days.')
 P('henrietta', 'Henrietta Emma', 'Darwin', 'F', '1843', '1927', knownAs='Etty Darwin', married='Litchfield', tags=D, stage='sketch',
   notes="Edited her father's books, and her mother's letters.")
-P('richard_litchfield', 'Richard Buckley', 'Litchfield', 'M', ('1832', 'likely'), ('1903', 'likely'), stage='sketch')
+P('richard_litchfield', 'Richard Buckley', 'Litchfield', 'M', '1832', '1903', stage='sketch')
 F('litchfield_darwin', 'richard_litchfield', 'henrietta', [], start='1871')
 P('george', 'George Howard', 'Darwin', 'M', '1845-07-09', '1912-12-07', 'downe', 'cambridge', tags=D, stage='in-progress',
   notes='Astronomer and mathematician at Cambridge.', src=WP + 'George Darwin')
@@ -368,10 +365,10 @@ P('francis', 'Francis', 'Darwin', 'M', '1848-08-16', '1925-09-19', 'downe', 'cam
   notes='Botanist; worked with his father on plant movement. Married three times.', src=WP + 'Francis Darwin')
 P('amy_ruck', 'Amy Richenda', 'Ruck', 'F', '1850', '1876', married='Darwin', stage='sketch', notes='Died soon after Bernard was born.')
 F('francis_amy', 'francis', 'amy_ruck', ['bernard'], start='1874', end='1876', endReason='death')
-P('ellen_crofts', 'Ellen Wordsworth', 'Crofts', 'F', ('1856', 'likely'), '1903', married='Darwin', stage='sketch',
+P('ellen_crofts', 'Ellen Wordsworth', 'Crofts', 'F', '1856', '1903', married='Darwin', stage='sketch',
   notes='Lecturer in English literature at Newnham College.')
 F('francis_ellen', 'francis', 'ellen_crofts', ['frances'], start='1883-09', end='1903', endReason='death')
-P('florence_fisher', 'Florence Henrietta', 'Fisher', 'F', ('1864', 'likely'), '1920', married='Darwin', stage='sketch',
+P('florence_fisher', 'Florence Henrietta', 'Fisher', 'F', '1864', '1920', married='Darwin', stage='sketch',
   notes='Widow of the legal historian F. W. Maitland.')
 F('francis_florence', 'francis', 'florence_fisher', [], start='1913', end='1920', endReason='death')
 P('maitland', 'Frederic William', 'Maitland', 'M', '1850', '1906-12', knownAs='F. W. Maitland', stage='sketch', notes='Legal historian.')
@@ -406,10 +403,10 @@ P('william_robert', 'William Robert', 'Darwin', 'M', '1894', '1970', tags=D, sta
 P('leonard_1899', 'Leonard', 'Darwin', 'M', '1899', '1899', tags=D, stage='sketch', notes='Died as a baby.')
 P('bernard', 'Bernard Richard Meirion', 'Darwin', 'M', '1876', '1961', knownAs='Bernard Darwin', tags=D, stage='sketch',
   notes='Golfer and golf writer.')
-P('frances', 'Frances Crofts', 'Darwin', 'F', '1886-03-30', ('1960-08', 'conflicting'), knownAs='Frances Cornford', married='Cornford',
+P('frances', 'Frances Crofts', 'Darwin', 'F', '1886-03-30', '[1960-08-19,1960-08-30]', knownAs='Frances Cornford', married='Cornford',
   tags=D, stage='in-progress', notes='Poet.', src=WP + 'Frances Cornford gives both 19 and 30 August 1960.',
   todo=['Settle her date of death: 19 or 30 August 1960?'])
-P('francis_cornford', 'Francis Macdonald', 'Cornford', 'M', ('1874', 'likely'), ('1943', 'likely'), stage='sketch', notes='Classical scholar.')
+P('francis_cornford', 'Francis Macdonald', 'Cornford', 'M', '1874', '1943', stage='sketch', notes='Classical scholar.')
 F('cornford_darwin', 'francis_cornford', 'frances', [], start='1909', complete='unknown')
 P('erasmus_iv', 'Erasmus', 'Darwin', 'M', '1881-12-07', '1915-04-24', dplace=('ypres', 'likely'), tags=D, stage='sketch',
   notes='Killed in the Second Battle of Ypres.')

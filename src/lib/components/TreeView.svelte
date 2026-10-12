@@ -5,6 +5,7 @@
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
+	import { dateUnsure } from '#lib/model/edtf.ts';
 	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, cardSize, layoutTree, routeShown, type TreeLayout } from '#lib/layout/tree.ts';
 	import { DropdownMenu } from 'bits-ui';
 	import { SILHOUETTE, SILHOUETTE_VIEWBOX, silhouetteKey } from './Silhouette.svelte';
@@ -431,7 +432,7 @@
 					{@const p = person(app.data, n.id)!}
 					{@const guess = nameIsGuess(p)}
 					{@const dates = cardDates(app.data, n.id)}
-					{@const dateGuess = lifeEvent(app.data, n.id, 'birth')?.date?.status === 'guess' || dates === 'no dates yet'}
+					{@const dateGuess = dateUnsure(lifeEvent(app.data, n.id, 'birth')?.date?.edtf) || dates === 'no dates yet'}
 					{@const stage = p.research?.stage ?? 'none'}
 					{@const tx = app.showPhotos ? 61 : 11}
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->

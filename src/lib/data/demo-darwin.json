@@ -2861,12 +2861,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1757",
-					"status": "confirmed"
+					"edtf": "1757"
 				},
 				"end": {
-					"edtf": "1770",
-					"status": "confirmed"
+					"edtf": "1770"
 				},
 				"endReason": "death"
 			},
@@ -2915,8 +2913,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1809",
-					"status": "confirmed"
+					"edtf": "1809"
 				}
 			},
 			"children": [],
@@ -2938,8 +2935,7 @@
 				"type": "partnership",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1771",
-					"status": "likely"
+					"edtf": "1771"
 				}
 			},
 			"children": [
@@ -2973,12 +2969,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1782",
-					"status": "confirmed"
+					"edtf": "1782"
 				},
 				"end": {
-					"edtf": "1811",
-					"status": "likely"
+					"edtf": "1811"
 				},
 				"endReason": "death"
 			},
@@ -3027,8 +3021,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"end": {
-					"edtf": "1780-11-27",
-					"status": "likely"
+					"edtf": "1780-11-27"
 				},
 				"endReason": "death"
 			},
@@ -3061,12 +3054,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1781-03-06",
-					"status": "likely"
+					"edtf": "1781-03-06"
 				},
 				"end": {
-					"edtf": "1802-04-18",
-					"status": "confirmed"
+					"edtf": "1802-04-18"
 				},
 				"endReason": "death"
 			},
@@ -3126,8 +3117,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1807-03-30",
-					"status": "likely"
+					"edtf": "1807-03-30"
 				}
 			},
 			"children": [
@@ -3159,12 +3149,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1764-01-25",
-					"status": "confirmed"
+					"edtf": "1764-01-25"
 				},
 				"end": {
-					"edtf": "1795-01-03",
-					"status": "confirmed"
+					"edtf": "1795-01-03"
 				},
 				"endReason": "death"
 			},
@@ -3229,12 +3217,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1792",
-					"status": "likely"
+					"edtf": "1792"
 				},
 				"end": {
-					"edtf": "1843-07-12",
-					"status": "confirmed"
+					"edtf": "1843-07-12"
 				},
 				"endReason": "death"
 			},
@@ -3303,12 +3289,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1796-04-18",
-					"status": "confirmed"
+					"edtf": "1796-04-18"
 				},
 				"end": {
-					"edtf": "1817",
-					"status": "confirmed"
+					"edtf": "1817"
 				},
 				"endReason": "death"
 			},
@@ -3363,8 +3347,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1824",
-					"status": "confirmed"
+					"edtf": "1824"
 				}
 			},
 			"children": [],
@@ -3386,12 +3369,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1832-03-22",
-					"status": "confirmed"
+					"edtf": "1832-03-22"
 				},
 				"end": {
-					"edtf": "1862",
-					"status": "confirmed"
+					"edtf": "1862"
 				},
 				"endReason": "death"
 			},
@@ -3415,12 +3396,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1863-10-12",
-					"status": "likely"
+					"edtf": "1863-10-12"
 				},
 				"end": {
-					"edtf": "1866-02-02",
-					"status": "likely"
+					"edtf": "1866-02-02"
 				},
 				"endReason": "death"
 			},
@@ -3443,8 +3422,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1837-08-01",
-					"status": "confirmed"
+					"edtf": "1837-08-01"
 				}
 			},
 			"children": [
@@ -3487,8 +3465,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"end": {
-					"edtf": "1875-02",
-					"status": "confirmed"
+					"edtf": "1875-02"
 				},
 				"endReason": "death"
 			},
@@ -3517,12 +3494,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1839-01-29",
-					"status": "confirmed"
+					"edtf": "1839-01-29"
 				},
 				"end": {
-					"edtf": "1882-04-19",
-					"status": "confirmed"
+					"edtf": "1882-04-19"
 				},
 				"endReason": "death"
 			},
@@ -3597,12 +3572,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1877",
-					"status": "confirmed"
+					"edtf": "1877"
 				},
 				"end": {
-					"edtf": "1902",
-					"status": "confirmed"
+					"edtf": "1902"
 				},
 				"endReason": "death"
 			},
@@ -3625,8 +3598,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1871",
-					"status": "confirmed"
+					"edtf": "1871"
 				}
 			},
 			"children": [],
@@ -3648,12 +3620,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1884",
-					"status": "confirmed"
+					"edtf": "1884"
 				},
 				"end": {
-					"edtf": "1912-12-07",
-					"status": "confirmed"
+					"edtf": "1912-12-07"
 				},
 				"endReason": "death"
 			},
@@ -3702,12 +3672,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1874",
-					"status": "confirmed"
+					"edtf": "1874"
 				},
 				"end": {
-					"edtf": "1876",
-					"status": "confirmed"
+					"edtf": "1876"
 				},
 				"endReason": "death"
 			},
@@ -3736,12 +3704,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1883-09",
-					"status": "confirmed"
+					"edtf": "1883-09"
 				},
 				"end": {
-					"edtf": "1903",
-					"status": "confirmed"
+					"edtf": "1903"
 				},
 				"endReason": "death"
 			},
@@ -3770,12 +3736,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1913",
-					"status": "confirmed"
+					"edtf": "1913"
 				},
 				"end": {
-					"edtf": "1920",
-					"status": "confirmed"
+					"edtf": "1920"
 				},
 				"endReason": "death"
 			},
@@ -3798,12 +3762,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1886-07-20",
-					"status": "confirmed"
+					"edtf": "1886-07-20"
 				},
 				"end": {
-					"edtf": "1906-12",
-					"status": "confirmed"
+					"edtf": "1906-12"
 				},
 				"endReason": "death"
 			},
@@ -3837,12 +3799,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1882-07-11",
-					"status": "confirmed"
+					"edtf": "1882-07-11"
 				},
 				"end": {
-					"edtf": "1898-01-13",
-					"status": "confirmed"
+					"edtf": "1898-01-13"
 				},
 				"endReason": "death"
 			},
@@ -3865,12 +3825,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1900-11-29",
-					"status": "confirmed"
+					"edtf": "1900-11-29"
 				},
 				"end": {
-					"edtf": "1940",
-					"status": "confirmed"
+					"edtf": "1940"
 				},
 				"endReason": "death"
 			},
@@ -3893,12 +3851,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1880-01",
-					"status": "confirmed"
+					"edtf": "1880-01"
 				},
 				"end": {
-					"edtf": "1928-09-22",
-					"status": "confirmed"
+					"edtf": "1928-09-22"
 				},
 				"endReason": "death"
 			},
@@ -3937,12 +3893,10 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1911",
-					"status": "confirmed"
+					"edtf": "1911"
 				},
 				"end": {
-					"edtf": "1925",
-					"status": "confirmed"
+					"edtf": "1925"
 				},
 				"endReason": "death"
 			},
@@ -3969,8 +3923,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1917",
-					"status": "confirmed"
+					"edtf": "1917"
 				}
 			},
 			"children": [],
@@ -3992,8 +3945,7 @@
 				"type": "marriage",
 				"status": "confirmed",
 				"start": {
-					"edtf": "1909",
-					"status": "confirmed"
+					"edtf": "1909"
 				}
 			},
 			"children": [],
@@ -4005,8 +3957,7 @@
 			"id": "evt_birth_erasmus",
 			"type": "birth",
 			"date": {
-				"edtf": "1731-12-12",
-				"status": "confirmed"
+				"edtf": "1731-12-12"
 			},
 			"place": {
 				"placeId": "plc_elston",
@@ -4022,8 +3973,7 @@
 			"id": "evt_death_erasmus",
 			"type": "death",
 			"date": {
-				"edtf": "1802-04-18",
-				"status": "confirmed"
+				"edtf": "1802-04-18"
 			},
 			"place": {
 				"placeId": "plc_breadsall",
@@ -4039,8 +3989,7 @@
 			"id": "evt_birth_mary_howard",
 			"type": "birth",
 			"date": {
-				"edtf": "1740",
-				"status": "confirmed"
+				"edtf": "1740"
 			},
 			"participants": [
 				{
@@ -4052,8 +4001,7 @@
 			"id": "evt_death_mary_howard",
 			"type": "death",
 			"date": {
-				"edtf": "1770",
-				"status": "confirmed"
+				"edtf": "1770"
 			},
 			"participants": [
 				{
@@ -4065,8 +4013,7 @@
 			"id": "evt_birth_charles_1758",
 			"type": "birth",
 			"date": {
-				"edtf": "1758",
-				"status": "confirmed"
+				"edtf": "1758"
 			},
 			"participants": [
 				{
@@ -4078,8 +4025,7 @@
 			"id": "evt_death_charles_1758",
 			"type": "death",
 			"date": {
-				"edtf": "1778",
-				"status": "confirmed"
+				"edtf": "1778"
 			},
 			"place": {
 				"placeId": "plc_edinburgh",
@@ -4095,8 +4041,7 @@
 			"id": "evt_birth_erasmus_jr",
 			"type": "birth",
 			"date": {
-				"edtf": "1759",
-				"status": "confirmed"
+				"edtf": "1759"
 			},
 			"participants": [
 				{
@@ -4108,8 +4053,7 @@
 			"id": "evt_death_erasmus_jr",
 			"type": "death",
 			"date": {
-				"edtf": "1799",
-				"status": "confirmed"
+				"edtf": "1799"
 			},
 			"place": {
 				"placeId": "plc_breadsall",
@@ -4125,8 +4069,7 @@
 			"id": "evt_birth_elizabeth_1763",
 			"type": "birth",
 			"date": {
-				"edtf": "1763",
-				"status": "confirmed"
+				"edtf": "1763"
 			},
 			"participants": [
 				{
@@ -4138,8 +4081,7 @@
 			"id": "evt_death_elizabeth_1763",
 			"type": "death",
 			"date": {
-				"edtf": "1763",
-				"status": "confirmed"
+				"edtf": "1763"
 			},
 			"participants": [
 				{
@@ -4151,8 +4093,7 @@
 			"id": "evt_birth_robert",
 			"type": "birth",
 			"date": {
-				"edtf": "1766-05-30",
-				"status": "confirmed"
+				"edtf": "1766-05-30"
 			},
 			"place": {
 				"placeId": "plc_lichfield",
@@ -4168,8 +4109,7 @@
 			"id": "evt_death_robert",
 			"type": "death",
 			"date": {
-				"edtf": "1848-11-13",
-				"status": "confirmed"
+				"edtf": "1848-11-13"
 			},
 			"place": {
 				"placeId": "plc_shrewsbury",
@@ -4185,8 +4125,7 @@
 			"id": "evt_birth_william_alvey",
 			"type": "birth",
 			"date": {
-				"edtf": "1767",
-				"status": "confirmed"
+				"edtf": "1767"
 			},
 			"participants": [
 				{
@@ -4198,8 +4137,7 @@
 			"id": "evt_death_william_alvey",
 			"type": "death",
 			"date": {
-				"edtf": "1767",
-				"status": "confirmed"
+				"edtf": "1767"
 			},
 			"participants": [
 				{
@@ -4211,8 +4149,7 @@
 			"id": "evt_birth_susanna_parker",
 			"type": "birth",
 			"date": {
-				"edtf": "1772",
-				"status": "confirmed"
+				"edtf": "1772"
 			},
 			"participants": [
 				{
@@ -4224,8 +4161,7 @@
 			"id": "evt_death_susanna_parker",
 			"type": "death",
 			"date": {
-				"edtf": "1856",
-				"status": "confirmed"
+				"edtf": "1856"
 			},
 			"participants": [
 				{
@@ -4237,8 +4173,7 @@
 			"id": "evt_birth_mary_parker_jr",
 			"type": "birth",
 			"date": {
-				"edtf": "1774",
-				"status": "confirmed"
+				"edtf": "1774"
 			},
 			"participants": [
 				{
@@ -4250,8 +4185,7 @@
 			"id": "evt_death_mary_parker_jr",
 			"type": "death",
 			"date": {
-				"edtf": "1859",
-				"status": "confirmed"
+				"edtf": "1859"
 			},
 			"participants": [
 				{
@@ -4263,8 +4197,7 @@
 			"id": "evt_birth_joseph_day",
 			"type": "birth",
 			"date": {
-				"edtf": "1745",
-				"status": "confirmed"
+				"edtf": "1745"
 			},
 			"participants": [
 				{
@@ -4276,8 +4209,7 @@
 			"id": "evt_death_joseph_day",
 			"type": "death",
 			"date": {
-				"edtf": "1811",
-				"status": "confirmed"
+				"edtf": "1811"
 			},
 			"participants": [
 				{
@@ -4289,8 +4221,7 @@
 			"id": "evt_birth_earl_portmore",
 			"type": "birth",
 			"date": {
-				"edtf": "1700-08-27",
-				"status": "confirmed"
+				"edtf": "1700-08-27"
 			},
 			"participants": [
 				{
@@ -4302,8 +4233,7 @@
 			"id": "evt_death_earl_portmore",
 			"type": "death",
 			"date": {
-				"edtf": "1785-07-05",
-				"status": "confirmed"
+				"edtf": "1785-07-05"
 			},
 			"participants": [
 				{
@@ -4315,8 +4245,7 @@
 			"id": "evt_birth_elizabeth_collier",
 			"type": "birth",
 			"date": {
-				"edtf": "1747",
-				"status": "likely"
+				"edtf": "1747"
 			},
 			"participants": [
 				{
@@ -4328,8 +4257,7 @@
 			"id": "evt_death_elizabeth_collier",
 			"type": "death",
 			"date": {
-				"edtf": "1832-02-05",
-				"status": "likely"
+				"edtf": "1832-02-05"
 			},
 			"place": {
 				"placeId": "plc_breadsall",
@@ -4345,8 +4273,7 @@
 			"id": "evt_birth_col_pole",
 			"type": "birth",
 			"date": {
-				"edtf": "1718",
-				"status": "confirmed"
+				"edtf": "1718"
 			},
 			"participants": [
 				{
@@ -4358,8 +4285,7 @@
 			"id": "evt_death_col_pole",
 			"type": "death",
 			"date": {
-				"edtf": "1780-11-27",
-				"status": "likely"
+				"edtf": "1780-11-27"
 			},
 			"participants": [
 				{
@@ -4371,8 +4297,7 @@
 			"id": "evt_birth_edward",
 			"type": "birth",
 			"date": {
-				"edtf": "1782",
-				"status": "confirmed"
+				"edtf": "1782"
 			},
 			"participants": [
 				{
@@ -4384,8 +4309,7 @@
 			"id": "evt_death_edward",
 			"type": "death",
 			"date": {
-				"edtf": "1829",
-				"status": "confirmed"
+				"edtf": "1829"
 			},
 			"participants": [
 				{
@@ -4397,8 +4321,7 @@
 			"id": "evt_birth_violetta",
 			"type": "birth",
 			"date": {
-				"edtf": "1783",
-				"status": "confirmed"
+				"edtf": "1783"
 			},
 			"participants": [
 				{
@@ -4410,8 +4333,7 @@
 			"id": "evt_death_violetta",
 			"type": "death",
 			"date": {
-				"edtf": "1874",
-				"status": "confirmed"
+				"edtf": "1874"
 			},
 			"participants": [
 				{
@@ -4423,8 +4345,7 @@
 			"id": "evt_birth_emma_1784",
 			"type": "birth",
 			"date": {
-				"edtf": "1784",
-				"status": "confirmed"
+				"edtf": "1784"
 			},
 			"participants": [
 				{
@@ -4436,8 +4357,7 @@
 			"id": "evt_death_emma_1784",
 			"type": "death",
 			"date": {
-				"edtf": "1818",
-				"status": "confirmed"
+				"edtf": "1818"
 			},
 			"participants": [
 				{
@@ -4449,8 +4369,7 @@
 			"id": "evt_birth_francis_sacheverel",
 			"type": "birth",
 			"date": {
-				"edtf": "1786",
-				"status": "confirmed"
+				"edtf": "1786"
 			},
 			"participants": [
 				{
@@ -4462,8 +4381,7 @@
 			"id": "evt_death_francis_sacheverel",
 			"type": "death",
 			"date": {
-				"edtf": "1859",
-				"status": "confirmed"
+				"edtf": "1859"
 			},
 			"participants": [
 				{
@@ -4475,8 +4393,7 @@
 			"id": "evt_birth_john_1787",
 			"type": "birth",
 			"date": {
-				"edtf": "1787",
-				"status": "confirmed"
+				"edtf": "1787"
 			},
 			"participants": [
 				{
@@ -4488,8 +4405,7 @@
 			"id": "evt_death_john_1787",
 			"type": "death",
 			"date": {
-				"edtf": "1818",
-				"status": "confirmed"
+				"edtf": "1818"
 			},
 			"participants": [
 				{
@@ -4501,8 +4417,7 @@
 			"id": "evt_birth_henry_1789",
 			"type": "birth",
 			"date": {
-				"edtf": "1789",
-				"status": "confirmed"
+				"edtf": "1789"
 			},
 			"participants": [
 				{
@@ -4514,8 +4429,7 @@
 			"id": "evt_death_henry_1789",
 			"type": "death",
 			"date": {
-				"edtf": "1790",
-				"status": "confirmed"
+				"edtf": "1790"
 			},
 			"participants": [
 				{
@@ -4527,8 +4441,7 @@
 			"id": "evt_birth_harriet",
 			"type": "birth",
 			"date": {
-				"edtf": "1790",
-				"status": "confirmed"
+				"edtf": "1790"
 			},
 			"participants": [
 				{
@@ -4540,8 +4453,7 @@
 			"id": "evt_death_harriet",
 			"type": "death",
 			"date": {
-				"edtf": "1825",
-				"status": "confirmed"
+				"edtf": "1825"
 			},
 			"participants": [
 				{
@@ -4553,8 +4465,7 @@
 			"id": "evt_birth_tertius_galton",
 			"type": "birth",
 			"date": {
-				"edtf": "1783",
-				"status": "confirmed"
+				"edtf": "1783"
 			},
 			"participants": [
 				{
@@ -4566,8 +4477,7 @@
 			"id": "evt_death_tertius_galton",
 			"type": "death",
 			"date": {
-				"edtf": "1844",
-				"status": "confirmed"
+				"edtf": "1844"
 			},
 			"participants": [
 				{
@@ -4579,8 +4489,7 @@
 			"id": "evt_birth_francis_galton",
 			"type": "birth",
 			"date": {
-				"edtf": "1822-02-16",
-				"status": "confirmed"
+				"edtf": "1822-02-16"
 			},
 			"place": {
 				"placeId": "plc_birmingham",
@@ -4596,8 +4505,7 @@
 			"id": "evt_death_francis_galton",
 			"type": "death",
 			"date": {
-				"edtf": "1911-01-17",
-				"status": "confirmed"
+				"edtf": "1911-01-17"
 			},
 			"place": {
 				"placeId": "plc_haslemere",
@@ -4613,8 +4521,7 @@
 			"id": "evt_birth_josiah_1",
 			"type": "birth",
 			"date": {
-				"edtf": "1730-07-12",
-				"status": "confirmed"
+				"edtf": "1730-07-12"
 			},
 			"place": {
 				"placeId": "plc_burslem",
@@ -4630,8 +4537,7 @@
 			"id": "evt_death_josiah_1",
 			"type": "death",
 			"date": {
-				"edtf": "1795-01-03",
-				"status": "confirmed"
+				"edtf": "1795-01-03"
 			},
 			"place": {
 				"placeId": "plc_etruria",
@@ -4647,8 +4553,7 @@
 			"id": "evt_birth_sarah_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1734",
-				"status": "confirmed"
+				"edtf": "1734"
 			},
 			"participants": [
 				{
@@ -4660,8 +4565,7 @@
 			"id": "evt_death_sarah_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1815",
-				"status": "confirmed"
+				"edtf": "1815"
 			},
 			"participants": [
 				{
@@ -4673,8 +4577,7 @@
 			"id": "evt_birth_susannah",
 			"type": "birth",
 			"date": {
-				"edtf": "1765-01-03",
-				"status": "confirmed"
+				"edtf": "1765-01-03"
 			},
 			"participants": [
 				{
@@ -4686,8 +4589,7 @@
 			"id": "evt_death_susannah",
 			"type": "death",
 			"date": {
-				"edtf": "1817",
-				"status": "confirmed"
+				"edtf": "1817"
 			},
 			"participants": [
 				{
@@ -4699,8 +4601,7 @@
 			"id": "evt_birth_john_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1766",
-				"status": "confirmed"
+				"edtf": "1766"
 			},
 			"participants": [
 				{
@@ -4712,8 +4613,7 @@
 			"id": "evt_death_john_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1844",
-				"status": "confirmed"
+				"edtf": "1844"
 			},
 			"participants": [
 				{
@@ -4725,8 +4625,7 @@
 			"id": "evt_birth_richard_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1767",
-				"status": "confirmed"
+				"edtf": "1767"
 			},
 			"participants": [
 				{
@@ -4738,8 +4637,7 @@
 			"id": "evt_death_richard_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1768",
-				"status": "confirmed"
+				"edtf": "1768"
 			},
 			"participants": [
 				{
@@ -4751,8 +4649,7 @@
 			"id": "evt_birth_josiah_2",
 			"type": "birth",
 			"date": {
-				"edtf": "1769-04-03",
-				"status": "confirmed"
+				"edtf": "1769-04-03"
 			},
 			"participants": [
 				{
@@ -4764,8 +4661,7 @@
 			"id": "evt_death_josiah_2",
 			"type": "death",
 			"date": {
-				"edtf": "1843-07-12",
-				"status": "confirmed"
+				"edtf": "1843-07-12"
 			},
 			"place": {
 				"placeId": "plc_maer",
@@ -4781,8 +4677,7 @@
 			"id": "evt_birth_tom_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1771",
-				"status": "confirmed"
+				"edtf": "1771"
 			},
 			"participants": [
 				{
@@ -4794,8 +4689,7 @@
 			"id": "evt_death_tom_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1805",
-				"status": "confirmed"
+				"edtf": "1805"
 			},
 			"participants": [
 				{
@@ -4807,8 +4701,7 @@
 			"id": "evt_birth_catherine_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1774",
-				"status": "confirmed"
+				"edtf": "1774"
 			},
 			"participants": [
 				{
@@ -4820,8 +4713,7 @@
 			"id": "evt_death_catherine_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1823",
-				"status": "confirmed"
+				"edtf": "1823"
 			},
 			"participants": [
 				{
@@ -4833,8 +4725,7 @@
 			"id": "evt_birth_sarah_jr",
 			"type": "birth",
 			"date": {
-				"edtf": "1776",
-				"status": "confirmed"
+				"edtf": "1776"
 			},
 			"participants": [
 				{
@@ -4846,8 +4737,7 @@
 			"id": "evt_death_sarah_jr",
 			"type": "death",
 			"date": {
-				"edtf": "1856",
-				"status": "confirmed"
+				"edtf": "1856"
 			},
 			"participants": [
 				{
@@ -4859,8 +4749,7 @@
 			"id": "evt_birth_mary_anne_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1778",
-				"status": "confirmed"
+				"edtf": "1778"
 			},
 			"participants": [
 				{
@@ -4872,8 +4761,7 @@
 			"id": "evt_death_mary_anne_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1786",
-				"status": "confirmed"
+				"edtf": "1786"
 			},
 			"participants": [
 				{
@@ -4885,8 +4773,7 @@
 			"id": "evt_birth_bessy_allen",
 			"type": "birth",
 			"date": {
-				"edtf": "1764",
-				"status": "confirmed"
+				"edtf": "1764"
 			},
 			"participants": [
 				{
@@ -4898,8 +4785,7 @@
 			"id": "evt_death_bessy_allen",
 			"type": "death",
 			"date": {
-				"edtf": "1846",
-				"status": "confirmed"
+				"edtf": "1846"
 			},
 			"participants": [
 				{
@@ -4911,8 +4797,7 @@
 			"id": "evt_birth_sarah_e",
 			"type": "birth",
 			"date": {
-				"edtf": "1793",
-				"status": "confirmed"
+				"edtf": "1793"
 			},
 			"participants": [
 				{
@@ -4924,8 +4809,7 @@
 			"id": "evt_death_sarah_e",
 			"type": "death",
 			"date": {
-				"edtf": "1880",
-				"status": "confirmed"
+				"edtf": "1880"
 			},
 			"participants": [
 				{
@@ -4937,8 +4821,7 @@
 			"id": "evt_birth_josiah_3",
 			"type": "birth",
 			"date": {
-				"edtf": "1795",
-				"status": "confirmed"
+				"edtf": "1795"
 			},
 			"participants": [
 				{
@@ -4950,8 +4833,7 @@
 			"id": "evt_death_josiah_3",
 			"type": "death",
 			"date": {
-				"edtf": "1880",
-				"status": "confirmed"
+				"edtf": "1880"
 			},
 			"participants": [
 				{
@@ -4963,8 +4845,7 @@
 			"id": "evt_birth_mary_ann_1796",
 			"type": "birth",
 			"date": {
-				"edtf": "1796",
-				"status": "confirmed"
+				"edtf": "1796"
 			},
 			"participants": [
 				{
@@ -4976,8 +4857,7 @@
 			"id": "evt_death_mary_ann_1796",
 			"type": "death",
 			"date": {
-				"edtf": "1798",
-				"status": "confirmed"
+				"edtf": "1798"
 			},
 			"participants": [
 				{
@@ -4989,8 +4869,7 @@
 			"id": "evt_birth_charlotte",
 			"type": "birth",
 			"date": {
-				"edtf": "1797",
-				"status": "confirmed"
+				"edtf": "1797"
 			},
 			"participants": [
 				{
@@ -5002,8 +4881,7 @@
 			"id": "evt_death_charlotte",
 			"type": "death",
 			"date": {
-				"edtf": "1862",
-				"status": "confirmed"
+				"edtf": "1862"
 			},
 			"participants": [
 				{
@@ -5015,8 +4893,7 @@
 			"id": "evt_birth_henry_allen",
 			"type": "birth",
 			"date": {
-				"edtf": "1799",
-				"status": "confirmed"
+				"edtf": "1799"
 			},
 			"participants": [
 				{
@@ -5028,8 +4905,7 @@
 			"id": "evt_death_henry_allen",
 			"type": "death",
 			"date": {
-				"edtf": "1885",
-				"status": "confirmed"
+				"edtf": "1885"
 			},
 			"participants": [
 				{
@@ -5041,8 +4917,7 @@
 			"id": "evt_birth_frank_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1800",
-				"status": "confirmed"
+				"edtf": "1800"
 			},
 			"participants": [
 				{
@@ -5054,8 +4929,7 @@
 			"id": "evt_death_frank_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1888",
-				"status": "confirmed"
+				"edtf": "1888"
 			},
 			"participants": [
 				{
@@ -5067,8 +4941,7 @@
 			"id": "evt_birth_hensleigh",
 			"type": "birth",
 			"date": {
-				"edtf": "1803",
-				"status": "confirmed"
+				"edtf": "1803"
 			},
 			"participants": [
 				{
@@ -5080,8 +4953,7 @@
 			"id": "evt_death_hensleigh",
 			"type": "death",
 			"date": {
-				"edtf": "1891",
-				"status": "confirmed"
+				"edtf": "1891"
 			},
 			"participants": [
 				{
@@ -5093,8 +4965,7 @@
 			"id": "evt_birth_fanny",
 			"type": "birth",
 			"date": {
-				"edtf": "1806",
-				"status": "confirmed"
+				"edtf": "1806"
 			},
 			"participants": [
 				{
@@ -5106,8 +4977,7 @@
 			"id": "evt_death_fanny",
 			"type": "death",
 			"date": {
-				"edtf": "1832",
-				"status": "confirmed"
+				"edtf": "1832"
 			},
 			"participants": [
 				{
@@ -5119,8 +4989,7 @@
 			"id": "evt_birth_emma",
 			"type": "birth",
 			"date": {
-				"edtf": "1808-05-02",
-				"status": "confirmed"
+				"edtf": "1808-05-02"
 			},
 			"place": {
 				"placeId": "plc_maer",
@@ -5136,8 +5005,7 @@
 			"id": "evt_death_emma",
 			"type": "death",
 			"date": {
-				"edtf": "1896-10-02",
-				"status": "confirmed"
+				"edtf": "1896-10-02"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -5153,8 +5021,7 @@
 			"id": "evt_birth_marianne",
 			"type": "birth",
 			"date": {
-				"edtf": "1798",
-				"status": "confirmed"
+				"edtf": "1798"
 			},
 			"participants": [
 				{
@@ -5166,8 +5033,7 @@
 			"id": "evt_death_marianne",
 			"type": "death",
 			"date": {
-				"edtf": "1858",
-				"status": "confirmed"
+				"edtf": "1858"
 			},
 			"participants": [
 				{
@@ -5179,8 +5045,7 @@
 			"id": "evt_birth_caroline",
 			"type": "birth",
 			"date": {
-				"edtf": "1800",
-				"status": "conflicting"
+				"edtf": "[1800,1801]"
 			},
 			"participants": [
 				{
@@ -5192,8 +5057,7 @@
 			"id": "evt_death_caroline",
 			"type": "death",
 			"date": {
-				"edtf": "1888",
-				"status": "confirmed"
+				"edtf": "1888"
 			},
 			"participants": [
 				{
@@ -5205,8 +5069,7 @@
 			"id": "evt_birth_susan",
 			"type": "birth",
 			"date": {
-				"edtf": "1803",
-				"status": "confirmed"
+				"edtf": "1803"
 			},
 			"participants": [
 				{
@@ -5218,8 +5081,7 @@
 			"id": "evt_death_susan",
 			"type": "death",
 			"date": {
-				"edtf": "1866",
-				"status": "confirmed"
+				"edtf": "1866"
 			},
 			"participants": [
 				{
@@ -5231,8 +5093,7 @@
 			"id": "evt_birth_erasmus_alvey",
 			"type": "birth",
 			"date": {
-				"edtf": "1804",
-				"status": "confirmed"
+				"edtf": "1804"
 			},
 			"participants": [
 				{
@@ -5244,8 +5105,7 @@
 			"id": "evt_death_erasmus_alvey",
 			"type": "death",
 			"date": {
-				"edtf": "1881",
-				"status": "confirmed"
+				"edtf": "1881"
 			},
 			"participants": [
 				{
@@ -5257,8 +5117,7 @@
 			"id": "evt_birth_charles",
 			"type": "birth",
 			"date": {
-				"edtf": "1809-02-12",
-				"status": "confirmed"
+				"edtf": "1809-02-12"
 			},
 			"place": {
 				"placeId": "plc_shrewsbury",
@@ -5274,8 +5133,7 @@
 			"id": "evt_death_charles",
 			"type": "death",
 			"date": {
-				"edtf": "1882-04-19",
-				"status": "confirmed"
+				"edtf": "1882-04-19"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -5291,8 +5149,7 @@
 			"id": "evt_birth_catherine",
 			"type": "birth",
 			"date": {
-				"edtf": "1810",
-				"status": "confirmed"
+				"edtf": "1810"
 			},
 			"participants": [
 				{
@@ -5304,8 +5161,7 @@
 			"id": "evt_death_catherine",
 			"type": "death",
 			"date": {
-				"edtf": "1866-02-02",
-				"status": "likely"
+				"edtf": "1866-02-02"
 			},
 			"participants": [
 				{
@@ -5317,8 +5173,7 @@
 			"id": "evt_birth_charles_langton",
 			"type": "birth",
 			"date": {
-				"edtf": "1801",
-				"status": "confirmed"
+				"edtf": "1801"
 			},
 			"participants": [
 				{
@@ -5330,8 +5185,7 @@
 			"id": "evt_death_charles_langton",
 			"type": "death",
 			"date": {
-				"edtf": "1886",
-				"status": "confirmed"
+				"edtf": "1886"
 			},
 			"participants": [
 				{
@@ -5343,8 +5197,7 @@
 			"id": "evt_birth_sophy_1838",
 			"type": "birth",
 			"date": {
-				"edtf": "1838-12",
-				"status": "confirmed"
+				"edtf": "1838-12"
 			},
 			"participants": [
 				{
@@ -5356,8 +5209,7 @@
 			"id": "evt_death_sophy_1838",
 			"type": "death",
 			"date": {
-				"edtf": "1839-01",
-				"status": "confirmed"
+				"edtf": "1839-01"
 			},
 			"participants": [
 				{
@@ -5369,8 +5221,7 @@
 			"id": "evt_birth_sophy_1842",
 			"type": "birth",
 			"date": {
-				"edtf": "1842",
-				"status": "likely"
+				"edtf": "1842"
 			},
 			"participants": [
 				{
@@ -5382,8 +5233,7 @@
 			"id": "evt_birth_margaret_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1843",
-				"status": "confirmed"
+				"edtf": "1843"
 			},
 			"participants": [
 				{
@@ -5395,8 +5245,7 @@
 			"id": "evt_death_margaret_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1937",
-				"status": "confirmed"
+				"edtf": "1937"
 			},
 			"participants": [
 				{
@@ -5408,8 +5257,7 @@
 			"id": "evt_birth_lucy_wedgwood",
 			"type": "birth",
 			"date": {
-				"edtf": "1846-12-21",
-				"status": "confirmed"
+				"edtf": "1846-12-21"
 			},
 			"participants": [
 				{
@@ -5421,8 +5269,7 @@
 			"id": "evt_death_lucy_wedgwood",
 			"type": "death",
 			"date": {
-				"edtf": "1919-06-25",
-				"status": "confirmed"
+				"edtf": "1919-06-25"
 			},
 			"participants": [
 				{
@@ -5434,8 +5281,7 @@
 			"id": "evt_death_arthur_vw",
 			"type": "death",
 			"date": {
-				"edtf": "1875-02",
-				"status": "confirmed"
+				"edtf": "1875-02"
 			},
 			"participants": [
 				{
@@ -5447,8 +5293,7 @@
 			"id": "evt_birth_ralph_vw",
 			"type": "birth",
 			"date": {
-				"edtf": "1872-10-12",
-				"status": "confirmed"
+				"edtf": "1872-10-12"
 			},
 			"place": {
 				"placeId": "plc_downampney",
@@ -5464,8 +5309,7 @@
 			"id": "evt_death_ralph_vw",
 			"type": "death",
 			"date": {
-				"edtf": "1958-08-26",
-				"status": "confirmed"
+				"edtf": "1958-08-26"
 			},
 			"place": {
 				"placeId": "plc_london",
@@ -5481,8 +5325,7 @@
 			"id": "evt_birth_william",
 			"type": "birth",
 			"date": {
-				"edtf": "1839-12-27",
-				"status": "confirmed"
+				"edtf": "1839-12-27"
 			},
 			"place": {
 				"placeId": "plc_london",
@@ -5498,8 +5341,7 @@
 			"id": "evt_death_william",
 			"type": "death",
 			"date": {
-				"edtf": "1914-09-08",
-				"status": "confirmed"
+				"edtf": "1914-09-08"
 			},
 			"place": {
 				"placeId": "plc_sedbergh",
@@ -5515,8 +5357,7 @@
 			"id": "evt_birth_sara_sedgwick",
 			"type": "birth",
 			"date": {
-				"edtf": "1839",
-				"status": "confirmed"
+				"edtf": "1839"
 			},
 			"participants": [
 				{
@@ -5528,8 +5369,7 @@
 			"id": "evt_death_sara_sedgwick",
 			"type": "death",
 			"date": {
-				"edtf": "1902",
-				"status": "confirmed"
+				"edtf": "1902"
 			},
 			"participants": [
 				{
@@ -5541,8 +5381,7 @@
 			"id": "evt_birth_annie",
 			"type": "birth",
 			"date": {
-				"edtf": "1841-03-02",
-				"status": "confirmed"
+				"edtf": "1841-03-02"
 			},
 			"participants": [
 				{
@@ -5554,8 +5393,7 @@
 			"id": "evt_death_annie",
 			"type": "death",
 			"date": {
-				"edtf": "1851-04-23",
-				"status": "confirmed"
+				"edtf": "1851-04-23"
 			},
 			"place": {
 				"placeId": "plc_malvern",
@@ -5571,8 +5409,7 @@
 			"id": "evt_birth_mary_eleanor",
 			"type": "birth",
 			"date": {
-				"edtf": "1842-09-23",
-				"status": "confirmed"
+				"edtf": "1842-09-23"
 			},
 			"participants": [
 				{
@@ -5584,8 +5421,7 @@
 			"id": "evt_death_mary_eleanor",
 			"type": "death",
 			"date": {
-				"edtf": "1842-10-16",
-				"status": "confirmed"
+				"edtf": "1842-10-16"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -5601,8 +5437,7 @@
 			"id": "evt_birth_henrietta",
 			"type": "birth",
 			"date": {
-				"edtf": "1843",
-				"status": "confirmed"
+				"edtf": "1843"
 			},
 			"participants": [
 				{
@@ -5614,8 +5449,7 @@
 			"id": "evt_death_henrietta",
 			"type": "death",
 			"date": {
-				"edtf": "1927",
-				"status": "confirmed"
+				"edtf": "1927"
 			},
 			"participants": [
 				{
@@ -5627,8 +5461,7 @@
 			"id": "evt_birth_richard_litchfield",
 			"type": "birth",
 			"date": {
-				"edtf": "1832",
-				"status": "likely"
+				"edtf": "1832"
 			},
 			"participants": [
 				{
@@ -5640,8 +5473,7 @@
 			"id": "evt_death_richard_litchfield",
 			"type": "death",
 			"date": {
-				"edtf": "1903",
-				"status": "likely"
+				"edtf": "1903"
 			},
 			"participants": [
 				{
@@ -5653,8 +5485,7 @@
 			"id": "evt_birth_george",
 			"type": "birth",
 			"date": {
-				"edtf": "1845-07-09",
-				"status": "confirmed"
+				"edtf": "1845-07-09"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -5670,8 +5501,7 @@
 			"id": "evt_death_george",
 			"type": "death",
 			"date": {
-				"edtf": "1912-12-07",
-				"status": "confirmed"
+				"edtf": "1912-12-07"
 			},
 			"place": {
 				"placeId": "plc_cambridge",
@@ -5687,8 +5517,7 @@
 			"id": "evt_death_maud",
 			"type": "death",
 			"date": {
-				"edtf": "1947-02-06",
-				"status": "confirmed"
+				"edtf": "1947-02-06"
 			},
 			"participants": [
 				{
@@ -5700,8 +5529,7 @@
 			"id": "evt_birth_bessy",
 			"type": "birth",
 			"date": {
-				"edtf": "1847",
-				"status": "confirmed"
+				"edtf": "1847"
 			},
 			"participants": [
 				{
@@ -5713,8 +5541,7 @@
 			"id": "evt_death_bessy",
 			"type": "death",
 			"date": {
-				"edtf": "1926",
-				"status": "confirmed"
+				"edtf": "1926"
 			},
 			"participants": [
 				{
@@ -5726,8 +5553,7 @@
 			"id": "evt_birth_francis",
 			"type": "birth",
 			"date": {
-				"edtf": "1848-08-16",
-				"status": "confirmed"
+				"edtf": "1848-08-16"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -5743,8 +5569,7 @@
 			"id": "evt_death_francis",
 			"type": "death",
 			"date": {
-				"edtf": "1925-09-19",
-				"status": "confirmed"
+				"edtf": "1925-09-19"
 			},
 			"place": {
 				"placeId": "plc_cambridge",
@@ -5760,8 +5585,7 @@
 			"id": "evt_birth_amy_ruck",
 			"type": "birth",
 			"date": {
-				"edtf": "1850",
-				"status": "confirmed"
+				"edtf": "1850"
 			},
 			"participants": [
 				{
@@ -5773,8 +5597,7 @@
 			"id": "evt_death_amy_ruck",
 			"type": "death",
 			"date": {
-				"edtf": "1876",
-				"status": "confirmed"
+				"edtf": "1876"
 			},
 			"participants": [
 				{
@@ -5786,8 +5609,7 @@
 			"id": "evt_birth_ellen_crofts",
 			"type": "birth",
 			"date": {
-				"edtf": "1856",
-				"status": "likely"
+				"edtf": "1856"
 			},
 			"participants": [
 				{
@@ -5799,8 +5621,7 @@
 			"id": "evt_death_ellen_crofts",
 			"type": "death",
 			"date": {
-				"edtf": "1903",
-				"status": "confirmed"
+				"edtf": "1903"
 			},
 			"participants": [
 				{
@@ -5812,8 +5633,7 @@
 			"id": "evt_birth_florence_fisher",
 			"type": "birth",
 			"date": {
-				"edtf": "1864",
-				"status": "likely"
+				"edtf": "1864"
 			},
 			"participants": [
 				{
@@ -5825,8 +5645,7 @@
 			"id": "evt_death_florence_fisher",
 			"type": "death",
 			"date": {
-				"edtf": "1920",
-				"status": "confirmed"
+				"edtf": "1920"
 			},
 			"participants": [
 				{
@@ -5838,8 +5657,7 @@
 			"id": "evt_birth_maitland",
 			"type": "birth",
 			"date": {
-				"edtf": "1850",
-				"status": "confirmed"
+				"edtf": "1850"
 			},
 			"participants": [
 				{
@@ -5851,8 +5669,7 @@
 			"id": "evt_death_maitland",
 			"type": "death",
 			"date": {
-				"edtf": "1906-12",
-				"status": "confirmed"
+				"edtf": "1906-12"
 			},
 			"participants": [
 				{
@@ -5864,8 +5681,7 @@
 			"id": "evt_birth_ermengard",
 			"type": "birth",
 			"date": {
-				"edtf": "1887",
-				"status": "confirmed"
+				"edtf": "1887"
 			},
 			"participants": [
 				{
@@ -5877,8 +5693,7 @@
 			"id": "evt_death_ermengard",
 			"type": "death",
 			"date": {
-				"edtf": "1968",
-				"status": "confirmed"
+				"edtf": "1968"
 			},
 			"participants": [
 				{
@@ -5890,8 +5705,7 @@
 			"id": "evt_birth_fredegond",
 			"type": "birth",
 			"date": {
-				"edtf": "1889",
-				"status": "confirmed"
+				"edtf": "1889"
 			},
 			"participants": [
 				{
@@ -5903,8 +5717,7 @@
 			"id": "evt_death_fredegond",
 			"type": "death",
 			"date": {
-				"edtf": "1949",
-				"status": "confirmed"
+				"edtf": "1949"
 			},
 			"participants": [
 				{
@@ -5916,8 +5729,7 @@
 			"id": "evt_birth_leonard",
 			"type": "birth",
 			"date": {
-				"edtf": "1850-01-15",
-				"status": "confirmed"
+				"edtf": "1850-01-15"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -5933,8 +5745,7 @@
 			"id": "evt_death_leonard",
 			"type": "death",
 			"date": {
-				"edtf": "1943-03-26",
-				"status": "confirmed"
+				"edtf": "1943-03-26"
 			},
 			"place": {
 				"placeId": "plc_forestrow",
@@ -5950,8 +5761,7 @@
 			"id": "evt_death_elizabeth_fraser",
 			"type": "death",
 			"date": {
-				"edtf": "1898-01-13",
-				"status": "confirmed"
+				"edtf": "1898-01-13"
 			},
 			"participants": [
 				{
@@ -5963,8 +5773,7 @@
 			"id": "evt_death_mildred_massingberd",
 			"type": "death",
 			"date": {
-				"edtf": "1940",
-				"status": "confirmed"
+				"edtf": "1940"
 			},
 			"participants": [
 				{
@@ -5976,8 +5785,7 @@
 			"id": "evt_birth_horace",
 			"type": "birth",
 			"date": {
-				"edtf": "1851-05-13",
-				"status": "confirmed"
+				"edtf": "1851-05-13"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -5993,8 +5801,7 @@
 			"id": "evt_death_horace",
 			"type": "death",
 			"date": {
-				"edtf": "1928-09-22",
-				"status": "confirmed"
+				"edtf": "1928-09-22"
 			},
 			"participants": [
 				{
@@ -6006,8 +5813,7 @@
 			"id": "evt_birth_ida_farrer",
 			"type": "birth",
 			"date": {
-				"edtf": "1854",
-				"status": "confirmed"
+				"edtf": "1854"
 			},
 			"participants": [
 				{
@@ -6019,8 +5825,7 @@
 			"id": "evt_death_ida_farrer",
 			"type": "death",
 			"date": {
-				"edtf": "1946",
-				"status": "confirmed"
+				"edtf": "1946"
 			},
 			"participants": [
 				{
@@ -6032,8 +5837,7 @@
 			"id": "evt_birth_charles_waring",
 			"type": "birth",
 			"date": {
-				"edtf": "1856",
-				"status": "confirmed"
+				"edtf": "1856"
 			},
 			"participants": [
 				{
@@ -6045,8 +5849,7 @@
 			"id": "evt_death_charles_waring",
 			"type": "death",
 			"date": {
-				"edtf": "1858-06-28",
-				"status": "confirmed"
+				"edtf": "1858-06-28"
 			},
 			"place": {
 				"placeId": "plc_downe",
@@ -6062,8 +5865,7 @@
 			"id": "evt_birth_gwen",
 			"type": "birth",
 			"date": {
-				"edtf": "1885-08-26",
-				"status": "confirmed"
+				"edtf": "1885-08-26"
 			},
 			"place": {
 				"placeId": "plc_cambridge",
@@ -6079,8 +5881,7 @@
 			"id": "evt_death_gwen",
 			"type": "death",
 			"date": {
-				"edtf": "1957-02-11",
-				"status": "confirmed"
+				"edtf": "1957-02-11"
 			},
 			"place": {
 				"placeId": "plc_cambridge",
@@ -6096,8 +5897,7 @@
 			"id": "evt_death_jacques_raverat",
 			"type": "death",
 			"date": {
-				"edtf": "1925",
-				"status": "confirmed"
+				"edtf": "1925"
 			},
 			"participants": [
 				{
@@ -6109,8 +5909,7 @@
 			"id": "evt_birth_charles_galton",
 			"type": "birth",
 			"date": {
-				"edtf": "1887",
-				"status": "confirmed"
+				"edtf": "1887"
 			},
 			"participants": [
 				{
@@ -6122,8 +5921,7 @@
 			"id": "evt_death_charles_galton",
 			"type": "death",
 			"date": {
-				"edtf": "1962",
-				"status": "confirmed"
+				"edtf": "1962"
 			},
 			"participants": [
 				{
@@ -6135,8 +5933,7 @@
 			"id": "evt_birth_margaret_darwin",
 			"type": "birth",
 			"date": {
-				"edtf": "1890",
-				"status": "confirmed"
+				"edtf": "1890"
 			},
 			"participants": [
 				{
@@ -6148,8 +5945,7 @@
 			"id": "evt_death_margaret_darwin",
 			"type": "death",
 			"date": {
-				"edtf": "1974",
-				"status": "confirmed"
+				"edtf": "1974"
 			},
 			"participants": [
 				{
@@ -6161,8 +5957,7 @@
 			"id": "evt_birth_geoffrey_keynes",
 			"type": "birth",
 			"date": {
-				"edtf": "1887",
-				"status": "confirmed"
+				"edtf": "1887"
 			},
 			"participants": [
 				{
@@ -6174,8 +5969,7 @@
 			"id": "evt_death_geoffrey_keynes",
 			"type": "death",
 			"date": {
-				"edtf": "1982",
-				"status": "confirmed"
+				"edtf": "1982"
 			},
 			"participants": [
 				{
@@ -6187,8 +5981,7 @@
 			"id": "evt_birth_william_robert",
 			"type": "birth",
 			"date": {
-				"edtf": "1894",
-				"status": "confirmed"
+				"edtf": "1894"
 			},
 			"participants": [
 				{
@@ -6200,8 +5993,7 @@
 			"id": "evt_death_william_robert",
 			"type": "death",
 			"date": {
-				"edtf": "1970",
-				"status": "confirmed"
+				"edtf": "1970"
 			},
 			"participants": [
 				{
@@ -6213,8 +6005,7 @@
 			"id": "evt_birth_leonard_1899",
 			"type": "birth",
 			"date": {
-				"edtf": "1899",
-				"status": "confirmed"
+				"edtf": "1899"
 			},
 			"participants": [
 				{
@@ -6226,8 +6017,7 @@
 			"id": "evt_death_leonard_1899",
 			"type": "death",
 			"date": {
-				"edtf": "1899",
-				"status": "confirmed"
+				"edtf": "1899"
 			},
 			"participants": [
 				{
@@ -6239,8 +6029,7 @@
 			"id": "evt_birth_bernard",
 			"type": "birth",
 			"date": {
-				"edtf": "1876",
-				"status": "confirmed"
+				"edtf": "1876"
 			},
 			"participants": [
 				{
@@ -6252,8 +6041,7 @@
 			"id": "evt_death_bernard",
 			"type": "death",
 			"date": {
-				"edtf": "1961",
-				"status": "confirmed"
+				"edtf": "1961"
 			},
 			"participants": [
 				{
@@ -6265,8 +6053,7 @@
 			"id": "evt_birth_frances",
 			"type": "birth",
 			"date": {
-				"edtf": "1886-03-30",
-				"status": "confirmed"
+				"edtf": "1886-03-30"
 			},
 			"participants": [
 				{
@@ -6278,8 +6065,7 @@
 			"id": "evt_death_frances",
 			"type": "death",
 			"date": {
-				"edtf": "1960-08",
-				"status": "conflicting"
+				"edtf": "[1960-08-19,1960-08-30]"
 			},
 			"participants": [
 				{
@@ -6291,8 +6077,7 @@
 			"id": "evt_birth_francis_cornford",
 			"type": "birth",
 			"date": {
-				"edtf": "1874",
-				"status": "likely"
+				"edtf": "1874"
 			},
 			"participants": [
 				{
@@ -6304,8 +6089,7 @@
 			"id": "evt_death_francis_cornford",
 			"type": "death",
 			"date": {
-				"edtf": "1943",
-				"status": "likely"
+				"edtf": "1943"
 			},
 			"participants": [
 				{
@@ -6317,8 +6101,7 @@
 			"id": "evt_birth_erasmus_iv",
 			"type": "birth",
 			"date": {
-				"edtf": "1881-12-07",
-				"status": "confirmed"
+				"edtf": "1881-12-07"
 			},
 			"participants": [
 				{
@@ -6330,8 +6113,7 @@
 			"id": "evt_death_erasmus_iv",
 			"type": "death",
 			"date": {
-				"edtf": "1915-04-24",
-				"status": "confirmed"
+				"edtf": "1915-04-24"
 			},
 			"place": {
 				"placeId": "plc_ypres",
@@ -6347,8 +6129,7 @@
 			"id": "evt_birth_ruth",
 			"type": "birth",
 			"date": {
-				"edtf": "1883",
-				"status": "confirmed"
+				"edtf": "1883"
 			},
 			"participants": [
 				{
@@ -6360,8 +6141,7 @@
 			"id": "evt_death_ruth",
 			"type": "death",
 			"date": {
-				"edtf": "1972",
-				"status": "confirmed"
+				"edtf": "1972"
 			},
 			"participants": [
 				{
@@ -6373,8 +6153,7 @@
 			"id": "evt_birth_nora",
 			"type": "birth",
 			"date": {
-				"edtf": "1885",
-				"status": "confirmed"
+				"edtf": "1885"
 			},
 			"participants": [
 				{
@@ -6386,8 +6165,7 @@
 			"id": "evt_death_nora",
 			"type": "death",
 			"date": {
-				"edtf": "1989",
-				"status": "confirmed"
+				"edtf": "1989"
 			},
 			"participants": [
 				{

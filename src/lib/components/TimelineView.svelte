@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { app } from '#lib/app.svelte.ts';
-	import { fmtDate } from '#lib/model/edtf.ts';
+	import { dateUnsure, datesDisagree, fmtDate } from '#lib/model/edtf.ts';
 	import { cardDates, displayName, lifeEvent, nameIsGuess, NOW, partnerIds, person } from '#lib/model/queries.ts';
 	import type { EdtfDate } from '#lib/model/types.ts';
 	import { timelineRows, UNKNOWN_END_FADE } from '#lib/layout/timeline.ts';
@@ -28,7 +28,7 @@
 	}
 	const hide = () => (tip = null);
 
-	const sure = (d?: EdtfDate) => (d?.status === 'likely' ? ' (likely)' : d?.status === 'guess' ? ' (a guess)' : d?.status === 'conflicting' ? ' (sources disagree)' : '');
+	const sure = (d?: EdtfDate) => (datesDisagree(d?.edtf) ? ' (sources disagree)' : '');
 	const when = (d?: EdtfDate) => (d?.edtf ? fmtDate(d.edtf) + sure(d) : '');
 
 	/** A marriage or partnership: what it was, with whom, when, and how it ended. */
@@ -76,7 +76,7 @@
 					<!-- the name, then the years in grey as on the tree cards -->
 					<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 					<text class="tlname" class:pencil={nameIsGuess(p)} x={X(r.start)} y={y + 14} onclick={() => app.select(r.id)}
-						>{displayName(p)}<tspan class="dt" class:pencil={lifeEvent(app.data, r.id, 'birth')?.date?.status === 'guess'} dx="8">{dates}</tspan></text
+						>{displayName(p)}<tspan class="dt" class:pencil={dateUnsure(lifeEvent(app.data, r.id, 'birth')?.date?.edtf)} dx="8">{dates}</tspan></text
 					>
 					{#if r.birth && r.birth.end - r.birth.start > 0.2}
 						<rect x={X(r.birth.start)} y={by} width={(r.birth.end - r.birth.start) * px} height="8" fill="url(#fin)" />

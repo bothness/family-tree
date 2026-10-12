@@ -1,6 +1,6 @@
 // Timeline rows: one lifespan bar per person, with fuzzy ends for approximate/unrecorded dates.
 import type { Dataset, Family } from '../model/types.ts';
-import { edtfRange, type DateRange } from '../model/edtf.ts';
+import { dateUnsure, edtfRange, type DateRange } from '../model/edtf.ts';
 import { famsAsPartner, isLiving, lifeEvent, NOW, person } from '../model/queries.ts';
 
 export interface TimelineRow {
@@ -47,7 +47,7 @@ export function timelineRows(d: Dataset, ids: string[]): { rows: TimelineRow[]; 
 		rows.push({
 			id, birth, death, partnerships, living, start, solidStart, solidEnd,
 			end: living ? NOW : death ? death.end : solidEnd + UNKNOWN_END_FADE,
-			birthIsGuess: b?.date?.status === 'guess'
+			birthIsGuess: dateUnsure(b?.date?.edtf)
 		});
 	}
 	rows.sort((a, b) => a.start - b.start);

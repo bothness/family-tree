@@ -28,7 +28,7 @@ Work usually happens in one area per conversation. Each area has a guide that lo
 
 ## Product principles
 - Sketching must stay quick. Extra detail is optional and tucked away.
-- **Uncertainty is per fact** (confirmed / likely / guess), shown as ink vs pencil and solid vs dashed lines. Gaps stay visible.
+- **Uncertainty is per fact** (confirmed / likely / guess; dates by their EDTF marks, `1858?`), shown as ink vs pencil and solid vs dashed lines. Gaps stay visible.
 - Plain language in the UI ("Child of", "Someone already added"), not data-model terms.
 - Derived data is never stored.
 

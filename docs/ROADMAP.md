@@ -10,7 +10,8 @@ Open work only, tagged by area (Layout, Data, Interface, Shared edition, Product
 Breaking model changes go out together, with the family edition's data converted once by `scripts/migrate-0.3.mjs` rather than by code in the app.
 - [x] Names: the birth name first, `preferred` = shown on the tree, other names folded in the panel
 - [x] Sources: one shared model for free-text sources, links and Wikidata; free-text sources join the notes. Unused sources and places are removed
-- [ ] Certainty: dates by EDTF marks only (`?` in pencil, `~` in ink), dropping `date.status`? A certainty switch for places (already `event.place.status`); a place for marriages (`relationship.place`). Awaiting the owner's decision on dates
+- [x] Dates: certainty by EDTF marks only (`?` and "or" in pencil, `~` in ink); `date.status` dropped; "Uncertain dates?" help page
+- [ ] A place for marriages (`relationship.place`), and a certainty switch for birth, death and marriage places
 - [ ] Cutover, on a quiet day:
   1. Dry run first with local wrangler (port 8790, `--persist-to` a scratch folder): replace from a converted backup, photos included.
   2. Everyone's devices show "saved" and are idle. Data → Download backup.

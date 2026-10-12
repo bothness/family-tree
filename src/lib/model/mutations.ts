@@ -1,6 +1,6 @@
 // Changes to a Dataset. Functions mutate in place (works with Svelte 5 $state proxies) and are unit-tested.
 import type { Dataset, Family, Person, Sex, Status } from './types.ts';
-import { parseUserDate } from './edtf.ts';
+import { parseUserDate, unsureDate } from './edtf.ts';
 import { prunePlaces } from './places.ts';
 import { pruneSources } from './sources.ts';
 import { childIds, coupleFam, displayName, famAsChild, family, famsAsPartner, lifeEvent, partnerIds, person, placeName, soloFam } from './queries.ts';
@@ -24,7 +24,8 @@ export function findOrCreatePlace(d: Dataset, name: string): string | null {
 }
 
 /** Set (or clear) a birth/death date and place. Pass null to leave a part unchanged. */
-export function setLife(d: Dataset, pid: string, kind: 'birth' | 'death', dateStr: string | null, placeStr: string | null, status?: Status) {
+/** Set the date and/or place of someone's birth or death (null leaves it as it is). `unsure` marks the date "not sure". */
+export function setLife(d: Dataset, pid: string, kind: 'birth' | 'death', dateStr: string | null, placeStr: string | null, unsure = false) {
 	let e = lifeEvent(d, pid, kind);
 	const edtf = dateStr != null ? parseUserDate(dateStr) : (e?.date?.edtf ?? '');
 	const place = placeStr != null ? placeStr.trim() : e?.place ? placeName(d, e.place.placeId) : '';
@@ -38,8 +39,7 @@ export function setLife(d: Dataset, pid: string, kind: 'birth' | 'death', dateSt
 		e = d.events.at(-1)!; // the stored (proxied) copy, so later changes are tracked
 	}
 	if (edtf) {
-		e.date = { ...(e.date ?? {}), edtf };
-		if (status) e.date.status = status;
+		e.date = { ...(e.date ?? {}), edtf: unsure ? unsureDate(edtf) : edtf };
 	} else delete e.date;
 	if (place) e.place = { ...(e.place ?? {}), placeId: findOrCreatePlace(d, place)! };
 	else delete e.place;

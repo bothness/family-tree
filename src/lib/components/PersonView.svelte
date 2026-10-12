@@ -4,7 +4,7 @@
 	// for "likely" and "sources disagree"); family members are links.
 	import { app } from '#lib/app.svelte.ts';
 	import PhotoPicker from './PhotoPicker.svelte';
-	import { edtfRange, fmtDate } from '#lib/model/edtf.ts';
+	import { dateUnsure, datesDisagree, edtfRange, fmtDate } from '#lib/model/edtf.ts';
 	import { birthStart, childIds, displayName, famAsChild, famsAsPartner, halfSiblings, lifeEvent, nameIsGuess, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName } from '#lib/model/queries.ts';
 	import { source, sourceTypeLabel } from '#lib/model/sources.ts';
 	import type { EdtfDate, Family, LifeEvent, NameType, Status } from '#lib/model/types.ts';
@@ -45,7 +45,7 @@
 {/snippet}
 
 {#snippet when(date: EdtfDate | undefined)}
-	{#if date?.edtf}<span class:pencil={date.status === 'guess'}>{fmtDate(date.edtf)}</span>{#if sure(date.status)}<span class="sure">&nbsp;({sure(date.status)})</span>{/if}{/if}
+	{#if date?.edtf}<span class:pencil={dateUnsure(date.edtf)}>{fmtDate(date.edtf)}</span>{#if datesDisagree(date.edtf)}<span class="sure">&nbsp;(sources disagree)</span>{/if}{/if}
 {/snippet}
 
 {#snippet life(label: string, e: LifeEvent | undefined)}

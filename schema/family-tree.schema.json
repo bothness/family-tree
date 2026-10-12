@@ -133,7 +133,7 @@
       }
     },
     "Date": {
-      "description": "A date in EDTF (Extended Date/Time Format, ISO 8601-2). Examples: '1890', '1890-04-12', '1890~' (circa), '1890?' (uncertain), '189X' (some year in the 1890s), '../1901' (on or before 1901), '1901/1911' (a span), '[1885,1887]' (one of these years).",
+      "description": "A date in EDTF (Extended Date/Time Format, ISO 8601-2), which also says how sure it is. Examples: '1890', '1890-04-12', '1890~' (about), '1890?' (not sure), '1890%' (about, and not sure), '189X' (some year in the 1890s), '../1901' (on or before 1901), '1901/1911' (a span), '[1885,1887]' (one of these: sources disagree). Not sure and one-of dates are drawn in pencil.",
       "type": "object",
       "required": [
         "edtf"
@@ -143,9 +143,6 @@
         "edtf": {
           "type": "string",
           "minLength": 1
-        },
-        "status": {
-          "$ref": "#/$defs/Status"
         },
         "citations": {
           "type": "array",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { edtfRange, fmtDate, parseUserDate, yearOnly } from './edtf.ts';
+import { dateUnsure, datesDisagree, edtfRange, fmtDate, parseUserDate, yearOnly } from './edtf.ts';
 
 describe('parseUserDate', () => {
 	it.each([
@@ -35,6 +35,36 @@ describe('parseUserDate', () => {
 		['0 Jan 1900'],
 		['12 Foo 1809']
 	])("doesn't take %s as a date (kept as typed)", (input) => expect(parseUserDate(input)).toBe(input));
+});
+
+describe('how sure a date is, written into it', () => {
+	it.each([
+		['1858?', '1858?'],
+		['maybe 1858', '1858?'],
+		['probably 12 Feb 1809', '1809-02-12?'],
+		['12 Feb 1809?', '1809-02-12?'],
+		['c.1858?', '1858%'],
+		['maybe c.1858', '1858%'],
+		['c. Feb 1858', '1858-02~'],
+		['before 1901?', '../1901?'],
+		['1880?–1889', '1880?/1889'],
+		['1858 or 1859', '[1858,1859]'],
+		['19 or 20 Aug 1960', '[1960-08-19,1960-08-20]'],
+		['Aug or Sep 1960', '[1960-08,1960-09]'],
+		['19 Aug or 2 Sep 1960', '[1960-08-19,1960-09-02]'],
+		['1858 or someday', '1858 or someday'],
+		['maybe 1880s', 'maybe 1880s']
+	])('%s → %s', (input, out) => expect(parseUserDate(input)).toBe(out));
+
+	it('shows the marks and reads back what it shows', () => {
+		const shown = ['1858?', 'c.1858?', 'c. Feb 1858', '12 Feb 1809?', 'bef. 1901?', '1880?–1889', '1858 or 1859', '19 or 20 Aug 1960', 'Aug 1960 or Sep 1960'];
+		for (const x of shown) expect(fmtDate(parseUserDate(x))).toBe(x);
+	});
+
+	it('draws uncertain and disagreeing dates in pencil, and "about" in ink', () => {
+		expect([dateUnsure('1858?'), dateUnsure('1858%'), dateUnsure('[1858,1859]'), dateUnsure('1858~'), dateUnsure('1858'), dateUnsure(undefined)]).toEqual([true, true, true, false, false, false]);
+		expect([datesDisagree('[1858,1859]'), datesDisagree('1858?')]).toEqual([true, false]);
+	});
 });
 
 describe('fmtDate', () => {

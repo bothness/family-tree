@@ -64,13 +64,13 @@ describe('toGedcom', () => {
 	);
 	d.places.push({ id: 'plc_leeds', name: 'Leeds', context: 'West Yorkshire, England', coordinates: { lat: 53.8, lon: -1.55 } });
 	d.events.push(
-		{ id: 'e1', type: 'birth', date: { edtf: '1858~', status: 'likely' }, place: { placeId: 'plc_leeds' }, participants: [{ personId: 'per_john' }] },
-		{ id: 'e2', type: 'death', date: { edtf: '1919?', status: 'guess' }, participants: [{ personId: 'per_mary' }] }
+		{ id: 'e1', type: 'birth', date: { edtf: '1858~' }, place: { placeId: 'plc_leeds' }, participants: [{ personId: 'per_john' }] },
+		{ id: 'e2', type: 'death', date: { edtf: '1919?' }, participants: [{ personId: 'per_mary' }] }
 	);
 	d.families.push({
 		id: 'fam_1',
 		partners: [{ personId: 'per_mary', status: 'confirmed' }, { personId: 'per_john', status: 'confirmed' }],
-		relationship: { type: 'marriage', status: 'confirmed', start: { edtf: '1883-06-02', status: 'confirmed' } },
+		relationship: { type: 'marriage', status: 'confirmed', start: { edtf: '1883-06-02' } },
 		children: [{ personId: 'per_ann', relation: 'biological', status: 'likely' }],
 		childrenComplete: 'no',
 		expectedChildren: { min: 4, note: '1911 census: 4 born alive' }
@@ -116,7 +116,8 @@ describe('toGedcom', () => {
 	});
 	it('keeps certainty as _STATUS tags and a readable note', () => {
 		expect(ged).toContain('2 _STATUS likely');
-		expect(ged).toContain('2 DATE ABT 1858\r\n3 _STATUS likely');
+		expect(ged).toContain('2 DATE ABT 1858\r\n2 PLAC');
+		expect(ged).toContain('2 DATE EST 1919');
 		expect(ged).toMatch(/Certainty \(from Family Tree Builder\): name: likely; death date: a guess/);
 		expect(ged).toMatch(/1 FAMC @F1@\r\n2 PEDI birth\r\n2 _STATUS likely/);
 		expect(ged).toContain('Research: in progress.');

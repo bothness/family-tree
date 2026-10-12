@@ -49,7 +49,7 @@
 			msg = r.error;
 			return;
 		}
-		if (created && born) setLife(d, created, 'birth', born, null, unsure ? 'guess' : undefined);
+		if (created && born) setLife(d, created, 'birth', born, null, unsure);
 		onDone(r.info, oid);
 	}
 

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Uncertain dates – Family Tree Builder</title>
+		<style>
+			:root { --ink: #1f2933; --soft: #5b6670; --paper: #f4f2ee; --sheet: #fbfaf8; --rule: #d3d9d5; --accent: #2c6b5b; --pencil: #7a7f85; }
+			@media (prefers-color-scheme: dark) { :root { --ink: #e6e9ec; --soft: #a3adb6; --paper: #15191e; --sheet: #1c2128; --rule: #313842; --accent: #73c3aa; --pencil: #98a0a8; } }
+			body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+			main { max-width: 680px; margin: 0 auto; padding: 32px 16px 48px; }
+			h1 { font-size: 26px; margin: 0 0 4px; }
+			h2 { font-size: 18px; margin: 28px 0 6px; }
+			.soft { color: var(--soft); }
+			a { color: var(--accent); }
+			.table { overflow-x: auto; }
+			table { border-collapse: collapse; width: 100%; background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; }
+			th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+			th { font-size: 13px; color: var(--soft); font-weight: 600; }
+			tr:last-child td { border-bottom: 0; }
+			code { font: 14px ui-monospace, SFMono-Regular, Menlo, monospace; }
+			.pencil { color: var(--pencil); font-style: italic; }
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>Uncertain dates</h1>
+			<p class="soft">Family Tree Builder: how to write a date you're not sure of</p>
+
+			<p>
+				Type dates the way you'd say them. How sure you are goes into the date itself: a date you're not sure of is
+				drawn in <span class="pencil">pencil</span> on the tree, and one you know is in ink.
+			</p>
+
+			<h2>Dates you know</h2>
+			<div class="table">
+				<table>
+					<tr><th>You type</th><th>Shown as</th><th>Means</th></tr>
+					<tr><td>12 Feb 1809, or 12/2/1809</td><td>12 Feb 1809</td><td>That day</td></tr>
+					<tr><td>Feb 1809</td><td>Feb 1809</td><td>Some day that month</td></tr>
+					<tr><td>1809</td><td>1809</td><td>Some time that year</td></tr>
+				</table>
+			</div>
+
+			<h2>Rough dates</h2>
+			<p>For a date that's roughly right, for example worked out from an age on a certificate. These stay in ink.</p>
+			<div class="table">
+				<table>
+					<tr><th>You type</th><th>Shown as</th><th>Means</th></tr>
+					<tr><td>c.1858, about 1858, abt 1858</td><td>c.1858</td><td>About 1858, give or take a couple of years</td></tr>
+					<tr><td>1880s</td><td>1880s</td><td>Some time in the 1880s</td></tr>
+					<tr><td>before 1901</td><td>bef. 1901</td><td>On or before 1901</td></tr>
+					<tr><td>after 1901</td><td>aft. 1901</td><td>On or after 1901</td></tr>
+					<tr><td>1901–1911, or 1901 - 1911</td><td>1901–1911</td><td>Some time in that span (for a death, between two censuses)</td></tr>
+				</table>
+			</div>
+
+			<h2>Dates you're not sure of</h2>
+			<p>A guess, or something a relative half-remembers. These are drawn in <span class="pencil">pencil</span>.</p>
+			<div class="table">
+				<table>
+					<tr><th>You type</th><th>Shown as</th><th>Means</th></tr>
+					<tr><td>1858?, maybe 1858, probably 1858</td><td class="pencil">1858?</td><td>1858, but not sure</td></tr>
+					<tr><td>12 Feb 1809?</td><td class="pencil">12 Feb 1809?</td><td>That day, but not sure</td></tr>
+					<tr><td>maybe c.1858, c.1858?</td><td class="pencil">c.1858?</td><td>About 1858, and not sure even of that</td></tr>
+					<tr><td>before 1901?</td><td class="pencil">bef. 1901?</td><td>Probably before 1901</td></tr>
+				</table>
+			</div>
+
+			<h2>When sources disagree</h2>
+			<p>
+				When two records give different dates, write both with "or". It's drawn in <span class="pencil">pencil</span> and
+				noted as "sources disagree" until you settle it.
+			</p>
+			<div class="table">
+				<table>
+					<tr><th>You type</th><th>Shown as</th></tr>
+					<tr><td>1800 or 1801</td><td class="pencil">1800 or 1801</td></tr>
+					<tr><td>19 or 30 Aug 1960</td><td class="pencil">19 or 30 Aug 1960</td></tr>
+					<tr><td>Aug or Sep 1960</td><td class="pencil">Aug 1960 or Sep 1960</td></tr>
+				</table>
+			</div>
+
+			<h2>Behind the scenes</h2>
+			<p class="soft">
+				Dates are kept in EDTF, the Extended Date/Time Format (part of ISO 8601), a standard way of writing uncertain
+				dates: <code>1858~</code> about, <code>1858?</code> not sure, <code>1858%</code> both, <code>188X</code> a decade,
+				<code>../1901</code> before, <code>1901/1911</code> a span, <code>[1800,1801]</code> one of these. You can type
+				these too. The full standard is at the
+				<a href="https://www.loc.gov/standards/datetime/" rel="noopener">Library of Congress</a>.
+			</p>
+		</main>
+	</body>
+</html>

@@ -6,7 +6,7 @@
 	import PhotoPicker from './PhotoPicker.svelte';
 	import PersonView from './PersonView.svelte';
 	import SourceList from './SourceList.svelte';
-	import { edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
+	import { dateUnsure, edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
 	import {
 		birthNameNote, birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, halfSiblings,
 		lifeEvent, nameIsGuess, nameText, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName, soloFam
@@ -172,13 +172,13 @@
 	{@const e = kind === 'birth' ? birth : death}
 	<div class="row life-row">
 		<label class="fld"><span>{label}</span>
-			<input type="text" class:pencil={e?.date?.status === 'guess'} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 12 Feb 1858, c.1858, 1880s"
+			<input type="text" class:pencil={dateUnsure(e?.date?.edtf)} value={fmtDate(e?.date?.edtf)} placeholder="e.g. 12 Feb 1858, c.1858, 1858?"
 				onchange={(ev) => { setLife(d, pid, kind, val(ev), null); if (kind === 'death') p.deceased = true; }} />
 		</label>
 		<div class="fld"><span>Place</span><PlaceInput {pid} {kind} /></div>
 	</div>
-	{#if e?.date}
-		<div class="row"><span class="hint">This date is</span><StatusPicker value={e.date.status} onchange={(v) => (e.date!.status = v)} /></div>
+	{#if kind === 'birth'}
+		<a class="hint" href="./dates.html" target="_blank" rel="noopener">Uncertain dates?</a>
 	{/if}
 {/snippet}
 

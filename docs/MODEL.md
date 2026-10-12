@@ -13,7 +13,7 @@ Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/exa
 | **View** | Saved, named filter. One rule: a focus (root + up/down generations + width), tags, or a hand-picked people list | Saved views (chips under the header); filter every tab |
 
 ## Key decisions
-- **Uncertainty is per fact.** Names, dates, places, partnerships, child links and events each carry `status`: `confirmed | likely | guess | conflicting`, plus optional `citations`.
+- **Uncertainty is per fact.** Names, places, partnerships, child links and events each carry `status`: `confirmed | likely | guess | conflicting`, plus optional `citations`. Dates carry it in their EDTF (`1858?`, `[1800,1801]`).
 - **Research state is per entity**, separate from confidence: `research.stage` = `sketch | in-progress | researched`, plus free-text `todo`.
 - **Incompleteness is explicit.** `childrenComplete: yes | no | unknown` and `expectedChildren` (e.g. from the 1911 census "children born alive" column). Families may have 0–2 known partners; `placeholder` people stand in for unknowns.
 - **Dates use EDTF** (`1858~`, `1888?`, `188X`, `../1901`, `1901/1911`). The app derives sortable start/end values for timelines; these are never stored.
@@ -24,6 +24,7 @@ Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/exa
 ## Changes in v0.3
 - Names: the first name in `names` is the main name, the one they were born with (or the first known), as in GEDCOM, Gramps and FamilySearch. `preferred` now means "show this name on the tree instead" (e.g. a married name; at most one). `knownAs` is for nicknames and titles ("Polly", "Sir Francis Darwin"), and a one-word `knownAs` takes the surname of the name shown.
 - Sources: one model for what used to be free-text sources, links and the Wikidata id. A `Source` is `{ id, type, title, url?, date? }` with `type` one of `memory | record | papers | book | web | wikidata | other` (Family memory, Record or certificate, Family papers, Book or article, Web page, Wikidata, Other). It's shared, like a place: a person cites it with `citations: [{ sourceId, detail? }]`, the detail being what it tells us about them ("p. 214", "named as John's father"). In the app people only see sources; the citation is the source's line on a person plus its note. `person.sourceNotes` and `person.links` are gone (places keep `links`).
+- Dates: `status` is gone from dates; how sure a date is lives in its EDTF: `?` not sure, `%` about and not sure, `~` about, `[a,b]` one of these (sources disagree). Not sure and one-of dates are drawn in pencil, "about" in ink. Guesses were converted to `?` (`1858~` → `1858%`; spans get it on both ends; decades stay as they are), likely and confirmed dates left plain. Names, places and links keep their `status`.
 - Nothing unused is kept: a source no one cites, and a place no event uses (nor the wider area of one that is), are removed as you edit and when merging.
 - Older data is converted once, outside the app, by `scripts/migrate-0.3.mjs` (a backup file in, a backup file out). The app reads v0.2 data without converting it.
 

@@ -6,6 +6,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { cite, pruneSources, sourceFromText } from "../src/lib/model/sources.ts";
 import { prunePlaces } from "../src/lib/model/places.ts";
+import { fmtDate, unsureDate } from "../src/lib/model/edtf.ts";
 
 const nameText = n => n?.display || [n?.given, n?.surname].filter(Boolean).join(" ");
 
@@ -96,6 +97,31 @@ const steps = {
     for (const [id, note] of older) check.push(d.sources.some(s => s.id === id) ? note : note.replace(/ kept as \w+.*/, " removed: no one cites it"));
     const shared = d.sources.map(s => d.people.filter(p => p.citations?.some(c => c.sourceId === s.id)).length);
     changed.push(`${d.sources.length - before} sources made from links (${d.sources.length} in all), ${shared.filter(n => n > 1).length} shared by more than one person`);
+    return { changed, check };
+  },
+
+  // How sure a date is now lives in the date itself: a guess gets EDTF's "not sure" mark (1858 → 1858?), likely
+  // and confirmed dates stay as they are, and dates whose sources disagree are listed to rewrite ("1800 or 1801").
+  dates(d) {
+    const changed = [], check = [];
+    const names = Object.fromEntries(d.people.map(p => [p.id, p.knownAs || nameText(p.names?.[0]) || p.id]));
+    const fix = (dt, what) => {
+      if (!dt || !("status" in dt)) return;
+      const was = dt.edtf;
+      if (dt.status === "guess" && was) {
+        dt.edtf = unsureDate(was);
+        if (dt.edtf !== was) changed.push(`${what}: ${fmtDate(was)} → ${fmtDate(dt.edtf)}`);
+        else if (!/[?%]|^\[/.test(was)) check.push(`${what}: ${fmtDate(was)} was a guess, but it can't take a "not sure" mark; kept as it is`);
+      }
+      if (dt.status === "conflicting") check.push(`${what}: ${fmtDate(was)}, sources disagree; type the dates as "1800 or 1801"`);
+      delete dt.status;
+    };
+    for (const e of d.events) fix(e.date, `${(e.participants ?? []).map(x => names[x.personId] ?? x.personId).join(" & ")}, ${e.type}`);
+    for (const f of d.families) {
+      const who = (f.partners ?? []).map(x => names[x.personId] ?? x.personId).join(" & ") || f.id;
+      fix(f.relationship?.start, `${who}, start`);
+      fix(f.relationship?.end, `${who}, end`);
+    }
     return { changed, check };
   },
 

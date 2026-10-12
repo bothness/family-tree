@@ -14,8 +14,9 @@ export type SourceType = 'memory' | 'record' | 'papers' | 'book' | 'web' | 'wiki
 /** A link to a source, with what it tells us ("p. 214", "confirmed her birthday"). */
 export interface Citation { sourceId: string; detail?: string }
 
-/** A date in EDTF (ISO 8601-2), e.g. "1858~", "188X", "../1901", "1901/1911". */
-export interface EdtfDate { edtf: string; status?: Status; citations?: Citation[]; note?: string }
+/** A date in EDTF (ISO 8601-2), e.g. "1858~", "188X", "../1901", "1901/1911". How sure it is is part of it:
+ *  "1858?" (not sure), "[1858,1859]" (one of these: sources disagree). */
+export interface EdtfDate { edtf: string; citations?: Citation[]; note?: string }
 
 export interface Link { url: string; label?: string }
 export interface ExternalLinks {
