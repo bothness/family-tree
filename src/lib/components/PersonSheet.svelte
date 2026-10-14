@@ -364,7 +364,7 @@
 			{#if other && (!f.children.length || f.relationship)}
 				<div class="row"><button class="btn small danger" onclick={() => removePartnership(d, f.id)} title={f.children.length ? 'Clears the partnership; both stay parents of their children' : undefined}>Remove this relationship</button></div>
 			{:else if other}
-				<div class="hint">Recorded only as the parents of their children.</div>
+				<div class="hint">These people share children but have no recorded relationship.</div>
 			{/if}
 		</div>
 	{/each}
