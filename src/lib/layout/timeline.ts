@@ -2,7 +2,7 @@
 // that link them to someone else (a marriage, a divorce, a child's birth).
 import type { Dataset, Family } from '../model/types.ts';
 import { dateUnsure, edtfRange, type DateRange } from '../model/edtf.ts';
-import { famsAsPartner, isLiving, lifeEvent, NOW, partnerIds, person } from '../model/queries.ts';
+import { famsAsPartner, isLiving, lifeEvent, NOW, partnerIds, person, PRESUMED_DEAD_AFTER } from '../model/queries.ts';
 
 /** marriage: a marriage or partnership began. end: it ended in divorce, separation or annulment (an end by death is
  *  the end of the bar). child: a child of theirs was born. */
@@ -43,6 +43,9 @@ export const UNKNOWN_END_FADE = 18;
 /** With no birth date: the solid bar starts this many years before death (or at their first event, if earlier),
  *  after a fade-in of the same length. */
 const UNKNOWN_START = 20;
+/** With no birth or death date, someone whose first marriage or child was longer ago than this is presumed dead
+ *  (born at least this long before it, and more than PRESUMED_DEAD_AFTER years ago). */
+const FIRST_EVENT_AGE = 15;
 
 const unsure = (s?: string) => !!s && s !== 'confirmed';
 
@@ -76,14 +79,16 @@ export function timelineRows(d: Dataset, ids: string[]): { rows: TimelineRow[]; 
 			x = lifeEvent(d, id, 'death');
 		const birth = edtfRange(b?.date?.edtf),
 			death = edtfRange(x?.date?.edtf);
-		if (!birth && !death) {
+		const events = timelineEvents(d, id);
+		// Anyone with at least one date is on the timeline: a birth, a death, or a marriage, divorce or child's birth.
+		if (!birth && !death && !events.length) {
 			undated.push(id);
 			continue;
 		}
-		const events = timelineEvents(d, id);
-		const living = !death && isLiving(d, p);
+		const first = Math.min(...events.map((e) => e.range.start));
+		const living = !death && isLiving(d, p) && (!!birth || first > NOW - PRESUMED_DEAD_AFTER + FIRST_EVENT_AGE);
 		// Without a birth or death date, the solid bar still covers all their dated events, then fades.
-		const solidStart = birth ? birth.end : Math.min(death!.start - UNKNOWN_START, ...events.map((e) => e.range.start));
+		const solidStart = birth ? birth.end : death ? Math.min(death.start - UNKNOWN_START, first) : first;
 		const start = birth ? birth.start : solidStart - UNKNOWN_START;
 		const lastKnown = Math.max(solidStart, ...events.map((e) => e.range.end));
 		const solidEnd = living ? NOW : death ? death.start : lastKnown;

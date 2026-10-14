@@ -72,4 +72,23 @@ describe('timeline events', () => {
 		d.families = d.families.filter((f) => f.id !== 'f2');
 		expect(timelineRows(d, ['cal']).rows[0].solidStart).toBe(1970);
 	});
+
+	it('includes people whose only dates are their events, fading at both ends', () => {
+		const d = family();
+		d.events = d.events.filter((e) => e.id !== 'b_bob');
+		const { rows, undated } = timelineRows(d, ['bob', 'nodate']);
+		expect(undated).toEqual(['nodate']);
+		const bob = rows[0];
+		expect([bob.living, bob.start, bob.solidStart, bob.solidEnd, bob.end]).toEqual([false, 1900, 1920, 1951, 1969]);
+	});
+
+	it('presumes someone with only recent events is living', () => {
+		const d = family();
+		d.events = d.events.filter((e) => !['b_ann', 'b_bob', 'b_kid'].includes(e.id));
+		d.families[0].relationship!.start = { edtf: '2010' };
+		d.families[0].relationship!.end = undefined;
+		d.families[1].relationship!.start = undefined;
+		d.families[1].children = [];
+		expect(timelineRows(d, ['ann']).rows[0].living).toBe(true);
+	});
 });
