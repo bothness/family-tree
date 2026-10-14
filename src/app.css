@@ -157,7 +157,7 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 .stepper button:disabled{opacity:.35;cursor:default}
 .step{display:inline-flex;align-items:center;gap:8px}
 .legend{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
-.legend .pen{font-family:var(--f-pencil);font-size:17px;color:var(--pencil)}
+.legend .pen{font-family:var(--f-pencil);font-size:17px;line-height:1;color:var(--pencil)} /* no taller than the text beside it */
 .legend .ink{font-family:var(--f-name);color:var(--ink)}
 
 .work{flex:1;display:flex;min-height:0}

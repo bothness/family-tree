@@ -518,7 +518,7 @@
 		<div class="tree-legend" class:open={legendOpen}>
 			<div class="legend" id="tree-legend">
 				<span><span class="ink">Ink</span> = confirmed</span><span><span class="pen">pencil</span> = guess</span>
-				<span>dashed line = uncertain or adoptive link</span><span>/ = divorced/separated</span>
+				<span>dashed line = uncertain or adoptive link</span><span>/ = divorced or separated</span>
 				<span class="stage-key" title="The dot on each card: empty = a sketch, half-filled = being researched, filled = researched, grey = not set">
 					<svg viewBox="0 0 12 12" aria-hidden="true"><circle class="stage in-progress" cx="6" cy="6" r="4.5" /></svg> = research progress
 				</span>

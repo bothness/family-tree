@@ -26,7 +26,8 @@ export function gaps(d: Dataset): Record<string, Gap[]> {
 			else if (dateUnsure(x?.date?.edtf)) add(p.id, 'guess', `${datesDisagree(x!.date!.edtf) ? 'Sources disagree on the death date' : 'Death date is a guess'} (${fmtDate(x!.date!.edtf)})`);
 			if (!p.deceased && !x && !isLiving(d, p)) add(p.id, 'check', 'Born over 110 years ago – mark as deceased?');
 		}
-		p.research?.todo?.forEach((t) => add(p.id, 'todo', t));
+		// Someone marked as researched drops their to-dos from the list (they're kept on the person).
+		if (p.research?.stage !== 'researched') p.research?.todo?.forEach((t) => add(p.id, 'todo', t));
 	}
 	for (const f of d.families) {
 		const ps = partnerIds(f);
