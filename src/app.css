@@ -60,6 +60,13 @@ button{cursor:pointer}
 .map-pop .linkish{font-size:13px}
 .maplibregl-popup-content{background:var(--sheet);color:var(--ink);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 .maplibregl-popup-tip{border-top-color:var(--sheet)!important;border-bottom-color:var(--sheet)!important}
+/* hovering a line from an open place: styled like the timeline's tooltips */
+.map-tip{pointer-events:none}
+.map-tip .maplibregl-popup-content{background:var(--ink);color:var(--paper);padding:6px 10px;font-family:var(--f-ui);font-size:13px;line-height:1.35;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.map-tip .maplibregl-popup-tip{border-top-color:var(--ink)!important;border-bottom-color:var(--ink)!important}
+.map-tip-body{display:grid;gap:5px}
+.map-tip-body b{font-family:var(--f-name);font-size:14px}
+.map-tip-body .who{display:grid;gap:1px}
 /* photos (V10) */
 .sil-bg{fill:var(--paper)}
 .sil{fill:var(--rule)}
