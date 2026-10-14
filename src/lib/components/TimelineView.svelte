@@ -21,11 +21,11 @@
 	const mid = (i: number) => 30 + i * ROW + 26;
 
 	/** Each kind of event has its own symbol, centred on 0,0: a ring for a marriage, a diamond for a divorce or
-	 *  separation, a downward triangle for a child's birth. The legend draws the same shapes. */
+	 *  separation, an upward triangle for a child's birth. The legend draws the same shapes. */
 	const SHAPE: Record<TimelineEventKind, string> = {
-		marriage: 'M-4.5 0a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z',
-		end: 'M0 -5.5L5.5 0L0 5.5L-5.5 0Z',
-		child: 'M-5 -4H5L0 5Z'
+		marriage: 'M-3.8 0a3.8 3.8 0 1 0 7.6 0a3.8 3.8 0 1 0 -7.6 0Z',
+		end: 'M0 -4.6L4.6 0L0 4.6L-4.6 0Z',
+		child: 'M-4.2 3.4H4.2L0 -4.2Z'
 	};
 
 	// Tooltips for events, on hover or keyboard focus, drawn above the symbol, with a thin line down (or up) to the
@@ -42,7 +42,7 @@
 		if (j === undefined || j === i) return void (link = null);
 		// From the edge of this symbol to the edge of the other one (the same event on a partner's row) or of the child's bar.
 		const down = j > i ? 1 : -1;
-		link = { x: X(ev.at), y1: mid(i) + down * 5.5, y2: mid(j) - down * (ev.kind === 'child' ? 4 : 5.5), unsure: ev.linkUnsure };
+		link = { x: X(ev.at), y1: mid(i) + down * 4.6, y2: mid(j) - down * (ev.kind === 'child' ? 4 : 4.6), unsure: ev.linkUnsure };
 	}
 	const hide = () => ((tip = null), (link = null));
 
