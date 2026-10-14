@@ -1,5 +1,6 @@
 <script lang="ts">
-	// The bar under the header: saved views (V5/V6) as chips, the focus controls (V3/V4), and hand-picking.
+	// The bar under the header: saved views (V5/V6) as chips, the focus controls (V3/V4), and hand-picking. (The
+	// tree's legend is drawn on the tree, in TreeView.)
 	import { DropdownMenu, Popover } from 'bits-ui';
 	import { app } from '#lib/app.svelte.ts';
 	import { displayName, person } from '#lib/model/queries.ts';
@@ -92,7 +93,7 @@
 		<div class="views" role="group" aria-label="Views">
 			{#if app.activeFocus}
 				{@const f = app.activeFocus}
-				<button class="chip focus-chip phone-only" aria-expanded={focusOpen} onclick={() => (focusOpen = !focusOpen)}>
+				<button class="chip focus-chip narrow-only" aria-expanded={focusOpen} onclick={() => (focusOpen = !focusOpen)}>
 					Focus: {displayName(person(app.data, f.id)).split(' ')[0]} ↑{depth(f.up)} ↓{depth(f.down)}
 				</button>
 			{/if}
@@ -155,13 +156,6 @@
 			</DropdownMenu.Root>{/if}
 			<button class="linkish reset" onclick={() => app.reset()} disabled={app.blank} title="Clear the view and selection, and start again from a search">Reset</button>
 		</div>
-		<div class="legend">
-			<span><span class="ink">Ink</span> = confirmed</span><span><span class="pen">pencil</span> = guess</span>
-			<span>dashed line = likely, guessed or adoptive link</span><span>/ = divorced or separated</span>
-			<span class="stage-key" title="The dot on each card: empty = a sketch, half-filled = being researched, filled = researched, grey = not set">
-				<svg viewBox="0 0 12 12" aria-hidden="true"><circle class="stage in-progress" cx="6" cy="6" r="4.5" /></svg> = research progress
-			</span>
-		</div>
 	</div>
 
 	{#if app.activeFocus}
@@ -169,11 +163,11 @@
 		<!-- On phones this is a sheet, opened from the Focus chip (above) and closed with the × or a tap outside. -->
 		<div class="bar focusbar" class:open={focusOpen} role="group" aria-label="Focus">
 			<span class="focus-who">Focused on <button class="linkish" onclick={() => app.centreOn(f.id)}>{displayName(person(app.data, f.id))}</button></span>
-			<button class="x phone-only" onclick={() => (focusOpen = false)} aria-label="Close">×</button>
-			<span class="step"><span class="phone-only">Generations up</span><span class="stepper" title="Generations of ancestors shown">
+			<button class="x narrow-only" onclick={() => (focusOpen = false)} aria-label="Close">×</button>
+			<span class="step"><span class="narrow-only">Generations up</span><span class="stepper" title="Generations of ancestors shown">
 				<button aria-label="Fewer generations up" disabled={f.up === 0} onclick={() => fewer('up')}>−</button><span aria-label="Generations up">↑{depth(f.up)}</span><button aria-label="More generations up" disabled={!isFinite(f.up)} onclick={() => app.adjustFocus({ up: f.up + 1 })}>+</button>
 			</span></span>
-			<span class="step"><span class="phone-only">Generations down</span><span class="stepper" title="Generations of descendants shown">
+			<span class="step"><span class="narrow-only">Generations down</span><span class="stepper" title="Generations of descendants shown">
 				<button aria-label="Fewer generations down" disabled={f.down === 0} onclick={() => fewer('down')}>−</button><span aria-label="Generations down">↓{depth(f.down)}</span><button aria-label="More generations down" disabled={!isFinite(f.down)} onclick={() => app.adjustFocus({ down: f.down + 1 })}>+</button>
 			</span></span>
 			<span class="seg" role="group" aria-label="Who to show">

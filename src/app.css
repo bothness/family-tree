@@ -25,13 +25,20 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+/* Header, by width (the halves .top-a and .top-b are rows of their own below 900px, and melt into one row above):
+   1200 and up: one row, "Research to-do" and "+ New person".
+   900–1199: one row, "To-do"; "+" alone up to 1099.
+   480–899: two rows, name and buttons, then tabs and the search box; the views and focus as on phones.
+   Under 480: phones, the search behind a magnifier. */
 .top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:10px 16px;background:var(--sheet);border-bottom:1px solid var(--rule)}
-.brand{font-family:var(--f-name);font-weight:600;font-size:21px;letter-spacing:.01em}
-.tabs{display:flex;gap:2px;background:var(--paper);border-radius:8px;padding:3px}
-.tabs button{border:0;background:none;padding:5px 12px;border-radius:6px;color:var(--ink-soft);font-weight:500}
+.top-a,.top-b{display:contents}
+.brand{font-family:var(--f-name);font-weight:600;font-size:21px;letter-spacing:.01em;order:0;flex:none;white-space:nowrap}
+.tabs{display:flex;gap:2px;background:var(--paper);border-radius:8px;padding:3px;order:1;flex:none}
+.tabs button{border:0;background:none;padding:5px 12px;border-radius:6px;color:var(--ink-soft);font-weight:500;white-space:nowrap}
 .tabs button[aria-pressed="true"]{background:var(--sheet);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .tabs .count{font-size:12px;background:var(--warn-soft);color:var(--warn);border-radius:9px;padding:0 6px;margin-left:4px}
-.actions{display:flex;gap:8px;margin-left:auto}
+.actions{display:flex;gap:8px;margin-left:auto;align-items:center;order:3;flex:none;white-space:nowrap}
+.todo-short{display:none}
 .btn{border:1px solid var(--rule);background:var(--sheet);border-radius:7px;padding:5px 11px;font-weight:500}
 .btn:hover{border-color:var(--ink-soft)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--sheet)}
@@ -39,7 +46,7 @@ button{cursor:pointer}
 .btn.danger{color:var(--warn);border-color:var(--warn-soft)}
 
 /* search (Bits UI combobox; unstyled, so all looks come from here) */
-.search{flex:0 1 260px;min-width:160px}
+.search{flex:1 1 140px;min-width:140px;max-width:260px;order:2} /* the one part of the row that gives */
 .search-input{width:100%;background:var(--paper);border:1px solid var(--rule);border-radius:7px;padding:5px 10px}
 .search-pop{z-index:20;min-width:var(--bits-floating-anchor-width,240px);max-width:min(420px,calc(100vw - 32px));max-height:min(360px,60vh);overflow:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:4px}
 .search-item{display:flex;align-items:baseline;gap:6px;padding:6px 9px;border-radius:6px;cursor:pointer}
@@ -106,7 +113,10 @@ button{cursor:pointer}
 .chip{border:1px solid var(--rule);background:transparent;border-radius:999px;padding:2px 11px;font-size:14px;color:var(--ink-soft)}
 .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 /* saved views */
-.views{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* One row at every width, scrolling sideways when the chips don't fit. */
+.views{display:flex;align-items:center;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;padding:3px 2px;margin:-3px -2px}
+.views::-webkit-scrollbar{display:none}
+.views > *{flex:none;white-space:nowrap}
 .chip-group{display:inline-flex;align-items:center}
 .chip-group .chip{border-top-right-radius:0;border-bottom-right-radius:0}
 .chip-more{border:1px solid var(--rule);border-left:0;background:transparent;border-radius:0 999px 999px 0;padding:2px 8px 2px 6px;font-size:14px;color:var(--ink-soft);line-height:inherit}
@@ -146,7 +156,7 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 .stepper button:hover:not(:disabled){background:var(--paper);color:var(--ink)}
 .stepper button:disabled{opacity:.35;cursor:default}
 .step{display:inline-flex;align-items:center;gap:8px}
-.legend{margin-left:auto;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
+.legend{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
 .legend .pen{font-family:var(--f-pencil);font-size:17px;color:var(--pencil)}
 .legend .ink{font-family:var(--f-name);color:var(--ink)}
 
@@ -159,7 +169,18 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 .canvas{position:absolute;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 .canvas.panning{cursor:grabbing}
 .canvas svg{display:block}
-.zoombar{position:absolute;right:12px;bottom:12px;display:flex;gap:6px;cursor:default;max-width:calc(100% - 24px);overflow-x:auto;scrollbar-width:none;padding:2px}
+.zoombar{position:absolute;right:12px;bottom:12px;display:flex;gap:6px;cursor:default;max-width:calc(100% - 110px);overflow-x:auto;scrollbar-width:none;padding:2px}
+/* The tree's legend, bottom left: a card when the canvas is wide enough, otherwise a Legend button that opens it. */
+.canvas{container-type:inline-size}
+.tree-legend{position:absolute;left:12px;bottom:14px;display:grid;justify-items:start;gap:6px;cursor:default;max-width:calc(100% - 24px)}
+.tree-legend .legend{display:none;align-items:center;row-gap:4px;background:var(--sheet);border:1px solid var(--rule);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:5px 11px}
+.tree-legend.open .legend{display:flex}
+.legend-btn{padding:5px 11px;font-weight:500;color:var(--ink-soft)}
+.legend-btn[aria-expanded="true"],.legend-btn:hover{color:var(--ink)}
+@container (min-width:1100px){
+  .tree-legend .legend{display:flex}
+  .tree-legend .legend-btn{display:none}
+}
 .zoombar::-webkit-scrollbar{display:none}
 .zgroup{flex:none}
 /* Touch screens pinch to zoom, so the zoom buttons go (and the rest of the bar fits). */
@@ -343,38 +364,35 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .export-groups{display:flex;flex-wrap:wrap;gap:10px 28px}
 .export-group{display:grid;gap:6px;align-content:start}
 
-/* phones only: the search magnifier, the Focus chip, labels in the focus sheet (shown under 760px) */
-.phone-only,.search-toggle{display:none}
+/* Below 900px only: the Focus chip and the labels in the focus sheet; under 480px, the search magnifier. */
+.narrow-only,.search-toggle{display:none}
 .ibtn{border:1px solid var(--rule);background:var(--sheet);border-radius:7px;width:34px;height:33px;place-items:center;padding:0;color:var(--ink-soft)}
 .ibtn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 .ibtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .chip.focus-chip{border-color:var(--ink);color:var(--ink);font-weight:500}
 .chip.focus-chip::after{content:" ▾";font-size:11px}
-@media (max-width:760px){
-  .legend:not(.tl-key){display:none}
-  .sheet{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:78%;border-left:0;border-top:1px solid var(--rule);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:10}
-  .actions{margin-left:0}
-  /* Phone: keep the header and views short, so the tree gets the screen. Row one is the name, + and Data (and
-     Saved); row two the tabs and a magnifier that opens the search on a third row. The view chips scroll sideways
-     in one row, and the focus controls fold into a Focus chip that opens them as a sheet. */
-  .wide-only{display:none}
-  .phone-only{display:revert}
-  .top{padding:8px 12px;gap:6px 8px}
-  /* The name gives way first: on a narrow screen (or with larger text) it wraps onto two lines, rather than
-     the buttons dropping to a row of their own; never narrower than its longest word, so nothing overlaps. */
-  .brand{font-size:17px;line-height:1.15;flex:1 1 0;min-width:min-content}
-  .actions{order:1;margin-left:auto;align-items:center}
+@media (max-width:1199px){
+  .todo-long{display:none}
+  .todo-short{display:inline}
+}
+@media (max-width:559px),(min-width:900px) and (max-width:1099px){
+  .new-long{display:none}
   .btn.new{font-size:19px;line-height:21px}
+}
+/* Two rows from here down: name and buttons; tabs and the search box. The focus controls fold into a Focus chip
+   that opens them as a sheet. */
+@media (max-width:899px){
+  .narrow-only{display:revert}
+  .top{display:grid;gap:6px;padding:8px 12px}
+  .top-a,.top-b{display:flex;align-items:center;gap:8px;min-width:0}
+  /* The name gives way first: if the buttons (say with the backup reminder) leave too little room, it wraps onto
+     two lines rather than the buttons dropping; never narrower than its longest word, so nothing overlaps. */
+  .brand{line-height:1.15;flex:1 1 0;min-width:min-content;white-space:normal}
+  .actions{margin-left:0}
   .actions button.sync-status{padding:4px 0 4px 2px}
-  .tabs{order:2;flex:1;justify-content:space-between}
   .tabs button{padding:5px 9px;white-space:nowrap}
-  .search-toggle{display:inline-grid;order:2}
-  .search{order:3;flex:1 1 100%}
-  .search:not(.open){display:none}
+  .search{flex:1 1 auto;min-width:0;max-width:none}
   .bar{padding:6px 12px}
-  .views{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-  .views::-webkit-scrollbar{display:none}
-  .views > *{flex:none;white-space:nowrap}
   .focusbar{display:none}
   .focusbar.open{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--sheet);border-bottom:0;border-top:1px solid var(--rule);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px));gap:14px 10px;font-size:15px}
   .focusbar.open .focus-who{flex:1;font-size:16px}
@@ -383,6 +401,18 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
   .focusbar.open .stepper button{padding:8px 14px}
   .focusbar.open .seg{flex:1 1 100%}
   .focusbar.open .seg button{flex:1;padding:8px 6px;font-size:14px}
+}
+/* Phones: the tabs fill their row and the search hides behind a magnifier, opening on a row of its own. */
+@media (max-width:479px){
+  .brand{font-size:17px}
+  .top-b{flex-wrap:wrap}
+  .tabs{flex:1;justify-content:space-between}
+  .search-toggle{display:inline-grid;order:2}
+  .search{flex:1 1 100%}
+  .search:not(.open){display:none}
+}
+@media (max-width:760px){
+  .sheet{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:78%;border-left:0;border-top:1px solid var(--rule);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:10}
   .map-note{bottom:44px}
 }
 @media (prefers-reduced-motion:no-preference){.sheet{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(8px)}}}

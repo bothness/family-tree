@@ -124,6 +124,8 @@
 
 	// ---- camera (V1) ----
 	let box: HTMLDivElement | undefined = $state();
+	/** The legend behind its button, on a canvas too narrow to show it all the time. */
+	let legendOpen = $state(false);
 	let vw = $state(0),
 		vh = $state(0);
 	const fitAll = () => fit(layout.bounds, vw, vh);
@@ -337,7 +339,7 @@
 	/** A click on the empty canvas (not a card, placeholder, marker or control; drags never get here) closes the
 	 *  person panel. */
 	function clickBackground(e: MouseEvent) {
-		if ((e.target as Element).closest('g.node, g.ghost, g.edge, .zoombar, button, a')) return;
+		if ((e.target as Element).closest('g.node, g.ghost, g.edge, .zoombar, .tree-legend, button, a')) return;
 		if (app.selected && !app.picked) app.select(null);
 	}
 
@@ -511,6 +513,18 @@
 				{/each}
 			</g>
 		</svg>
+		<!-- The legend: a card in the tree's bottom-left corner when there's room, otherwise behind a "Legend" button
+		     in the same corner (a container query on the canvas decides, so an open person panel counts). -->
+		<div class="tree-legend" class:open={legendOpen}>
+			<div class="legend" id="tree-legend">
+				<span><span class="ink">Ink</span> = confirmed</span><span><span class="pen">pencil</span> = guess</span>
+				<span>dashed line = uncertain or adoptive link</span><span>/ = divorced/separated</span>
+				<span class="stage-key" title="The dot on each card: empty = a sketch, half-filled = being researched, filled = researched, grey = not set">
+					<svg viewBox="0 0 12 12" aria-hidden="true"><circle class="stage in-progress" cx="6" cy="6" r="4.5" /></svg> = research progress
+				</span>
+			</div>
+			<button type="button" class="zgroup legend-btn" aria-expanded={legendOpen} aria-controls="tree-legend" onclick={() => (legendOpen = !legendOpen)}>Legend</button>
+		</div>
 		<div class="zoombar" role="toolbar" aria-label="Tree controls">
 			<div class="zgroup zoom" role="group" aria-label="Zoom">
 				<button type="button" onclick={() => zoomBy(0.8)} aria-label="Zoom out" title="Zoom out (−)">−</button>
