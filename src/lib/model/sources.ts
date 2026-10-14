@@ -50,6 +50,11 @@ export function sourceFromText(text: string): Omit<Source, 'id'> {
 	if (wd) return { type: 'wikidata', title: `Wikidata ${wd[1]}`, url };
 	const wp = host.endsWith('wikipedia.org') && u.pathname.match(/^\/wiki\/(.+)$/);
 	if (wp) return { type: 'web', title: `Wikipedia: ${decodeURIComponent(wp[1]).replace(/_/g, ' ')}`, url };
+	// Some sites put who the page is about in the address (a page's own title can't be read from the browser).
+	const wt = host.endsWith('wikitree.com') && u.pathname.match(/^\/wiki\/([^/]+-\d+)$/);
+	if (wt) return { type: 'web', title: `WikiTree: ${decodeURIComponent(wt[1])}`, url };
+	const fg = host.endsWith('findagrave.com') && u.pathname.match(/\/memorial\/\d+\/([^/]+)/);
+	if (fg) return { type: 'web', title: `Find a Grave: ${fg[1].split('-').filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ')}`, url };
 	const rec = RECORD_SITES.find(([r]) => r.test(host));
 	if (rec) return { type: 'record', title: rec[1], url };
 	const web = WEB_SITES.find(([r]) => r.test(host));

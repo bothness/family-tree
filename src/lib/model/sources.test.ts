@@ -16,7 +16,9 @@ describe('sourceFromText', () => {
 		expect(sourceFromText('https://www.wikidata.org/wiki/Q1035')).toEqual({ type: 'wikidata', title: 'Wikidata Q1035', url: 'https://www.wikidata.org/wiki/Q1035' });
 		expect(sourceFromText('https://en.wikipedia.org/wiki/Emma_Darwin')).toMatchObject({ type: 'web', title: 'Wikipedia: Emma Darwin' });
 		expect(sourceFromText('https://www.findmypast.co.uk/transcript?id=GBC/1891/123')).toMatchObject({ type: 'record', title: 'Findmypast' });
-		expect(sourceFromText('www.wikitree.com/wiki/Darwin-11')).toMatchObject({ type: 'web', title: 'WikiTree', url: 'https://www.wikitree.com/wiki/Darwin-11' });
+		expect(sourceFromText('www.wikitree.com/wiki/Darwin-11')).toMatchObject({ type: 'web', title: 'WikiTree: Darwin-11', url: 'https://www.wikitree.com/wiki/Darwin-11' });
+		expect(sourceFromText('https://www.wikitree.com/genealogy/DARWIN')).toMatchObject({ title: 'WikiTree' });
+		expect(sourceFromText('https://www.findagrave.com/memorial/1234/charles-robert-darwin')).toMatchObject({ type: 'web', title: 'Find a Grave: Charles Robert Darwin' });
 		expect(sourceFromText('https://example.org/family/page')).toMatchObject({ type: 'web', title: 'example.org' });
 	});
 

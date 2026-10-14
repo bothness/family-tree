@@ -138,7 +138,7 @@
 		{#if p.notes}<div class="lbl">Biography and notes</div><p class="ro-text">{p.notes}</p>{/if}
 		{#if p.citations?.length}
 			<div class="lbl">Sources</div>
-			<ul class="srclist">
+			<ul class="srclist plain">
 				{#each p.citations as c (c.sourceId)}
 					{@const s = source(d, c.sourceId)}
 					{#if s}

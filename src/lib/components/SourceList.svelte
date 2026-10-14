@@ -23,8 +23,11 @@
 	const val = (e: Event) => (e.currentTarget as HTMLInputElement).value;
 	let chosen = false;
 	let input = $state<HTMLInputElement | null>(null);
+	// A source just made from what was typed opens with its name selected, ready to be typed over.
+	let fresh: string | null = null;
 	function add(from: string | ReturnType<typeof sourceFromText>) {
 		editing = cite(d, pid, from);
+		fresh = typeof from === 'string' ? null : editing;
 		open = false;
 		// Empty the box after the list has closed (which puts the chosen item's name in it).
 		setTimeout(() => {
@@ -71,24 +74,40 @@
 		uncite(d, pid, sid);
 	}
 	const others = (sid: string) => sourceUsers(d, sid).filter((x) => x !== pid);
+	const selectIfFresh = (el: HTMLInputElement, sid: string) => {
+		if (sid !== fresh) return;
+		fresh = null;
+		el.focus();
+		el.select();
+	};
+	const site = (url: string) => {
+		try {
+			return new URL(url).hostname.replace(/^www\./, '');
+		} catch {
+			return url;
+		}
+	};
 </script>
 
+<!-- Each source is a card: tapping it opens it in place to edit; the web link is a separate pill. -->
 <ul class="srclist">
 	{#each p.citations ?? [] as c (c.sourceId)}
 		{@const s = source(d, c.sourceId)}
 		{#if s}
-			<li>
-				<div class="src-line">
-					<button class="linkish src-title" aria-expanded={editing === s.id} onclick={() => (editing = editing === s.id ? null : s.id)}>{s.title}</button>
-					{#if s.url}<a href={s.url} target="_blank" rel="noopener" aria-label="Open {s.title}">↗</a>{/if}
-					<span class="src-type">{sourceTypeLabel(s.type)}{#if s.date} · {fmtDate(s.date)}{/if}</span>
-					<button class="del" aria-label="Remove this source from {displayName(p)}" onclick={() => remove(s.id)}>×</button>
-				</div>
-				{#if c.detail && editing !== s.id}<div class="src-detail">{c.detail}</div>{/if}
+			<li class:open={editing === s.id}>
+				<button class="src-head" aria-expanded={editing === s.id} onclick={() => (editing = editing === s.id ? null : s.id)}>
+					<span class="src-txt">
+						<span class="src-title">{s.title}</span>
+						<span class="src-type">{sourceTypeLabel(s.type)}{#if s.date} · {fmtDate(s.date)}{/if}</span>
+						{#if c.detail && editing !== s.id}<span class="src-detail">{c.detail}</span>{/if}
+					</span>
+					<svg class="src-chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" /></svg>
+				</button>
+				{#if s.url}<a class="src-site" href={s.url} target="_blank" rel="noopener">{site(s.url)} ↗</a>{/if}
 				{#if editing === s.id}
-					<div class="oname">
+					<div class="src-body">
 						<div class="row">
-							<label class="fld" style="flex:2 1 180px"><span>Source name</span><input type="text" value={s.title} onchange={(e) => setField(s.id, 'title', val(e))} /></label>
+							<label class="fld" style="flex:2 1 180px"><span>Source name</span><input type="text" value={s.title} use:selectIfFresh={s.id} onchange={(e) => setField(s.id, 'title', val(e))} /></label>
 							<label class="fld" style="flex:1 1 120px"><span>Kind</span>
 								<select value={s.type} onchange={(e) => (s.type = val(e) as SourceType)}>
 									{#each SOURCE_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
@@ -105,7 +124,10 @@
 						<label class="fld"><span>What it tells us about {displayName(p)} (optional)</span>
 							<input type="text" value={c.detail ?? ''} placeholder="e.g. p. 214, or confirmed her birthday" onchange={(e) => setDetail(s.id, val(e))} />
 						</label>
-						<div class="row"><button class="btn small" onclick={() => (editing = null)}>Close source</button></div>
+						<div class="row">
+							<button class="btn small danger" onclick={() => remove(s.id)} title="Takes it off {displayName(p)}; it stays in the tree while others use it">Remove this source</button>
+							<button class="btn small" style="margin-left:auto" onclick={() => (editing = null)}>Done</button>
+						</div>
 					</div>
 				{/if}
 			</li>
