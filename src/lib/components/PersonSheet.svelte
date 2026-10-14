@@ -234,51 +234,54 @@
 	{@render outOfView(pid, app.activeFocus ? `The focus on ${displayName(person(d, app.activeFocus.id))} doesn't include ${displayName(p)}.` : `${displayName(p)} isn't in the view “${app.activeView?.name ?? ''}”.`)}
 {/if}
 
-<div class="row">
-	<label class="fld"><span>Given names</span><input type="text" class:pencil={main?.status === 'guess'} value={main?.given ?? ''} onchange={(e) => setMainName('given', val(e))} /></label>
-	<label class="fld"><span>Surname</span><input type="text" class:pencil={main?.status === 'guess'} value={main?.surname ?? ''} onchange={(e) => setMainName('surname', val(e))} /></label>
-</div>
-<div class="row"><span class="hint">This name is</span><StatusPicker value={main?.status} onchange={(v) => (ensureMain().status = v)} /></div>
-<label class="fld"><span>Known as (shown on the tree)</span>
-	<input type="text" value={p.knownAs ?? ''} placeholder="e.g. Annie, or Sir John Smith" onchange={(e) => setText('knownAs', val(e))} />
-</label>
+<!-- Names and sex: a block like the others below, without the rule above it. -->
+<div class="blk first">
+	<div class="row">
+		<label class="fld"><span>Given names</span><input type="text" class:pencil={main?.status === 'guess'} value={main?.given ?? ''} onchange={(e) => setMainName('given', val(e))} /></label>
+		<label class="fld"><span>Surname</span><input type="text" class:pencil={main?.status === 'guess'} value={main?.surname ?? ''} onchange={(e) => setMainName('surname', val(e))} /></label>
+	</div>
+	<div class="row"><span class="hint">This name is</span><StatusPicker value={main?.status} onchange={(v) => (ensureMain().status = v)} /></div>
+	<label class="fld"><span>Known as (shown on the tree)</span>
+		<input type="text" value={p.knownAs ?? ''} placeholder="e.g. Annie, or Sir John Smith" onchange={(e) => setText('knownAs', val(e))} />
+	</label>
 
-{#if otherNames.length}
-	<details class="names" bind:open={namesOpen}>
-		<summary>Also {namesSummary}</summary>
-		<div class="names-list">
-			{#each otherNames as { n, i } (i)}
-				<div class="oname">
-					<div class="row">
-						<select style="width:auto" value={n.type ?? 'other'} onchange={(e) => (n.type = val(e) as NameType)}>
-							{#each NAME_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
-						</select>
-						<button class="iconx" onclick={() => p.names!.splice(i, 1)} aria-label="Remove this name">×</button>
+	{#if otherNames.length}
+		<details class="names" bind:open={namesOpen}>
+			<summary>Also {namesSummary}</summary>
+			<div class="names-list">
+				{#each otherNames as { n, i } (i)}
+					<div class="oname">
+						<div class="row">
+							<select style="width:auto" value={n.type ?? 'other'} onchange={(e) => (n.type = val(e) as NameType)}>
+								{#each NAME_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
+							</select>
+							<button class="iconx" onclick={() => p.names!.splice(i, 1)} aria-label="Remove this name">×</button>
+						</div>
+						<div class="row">
+							<label class="fld"><span>Given</span><input type="text" value={n.given ?? ''} onchange={(e) => (n.given = val(e).trim() || undefined)} /></label>
+							<label class="fld"><span>Surname</span><input type="text" value={n.surname ?? ''} onchange={(e) => (n.surname = val(e).trim() || undefined)} /></label>
+							<label class="fld" style="flex-basis:80px"><span>From</span><input type="text" value={fmtDate(n.date)} onchange={(e) => (n.date = parseUserDate(val(e)) || undefined)} /></label>
+						</div>
+						<div class="row"><StatusPicker value={n.status} onchange={(v) => (n.status = v)} /></div>
+						<label class="check"><input type="checkbox" checked={!!n.preferred} onchange={(e) => showOnTree(n, (e.currentTarget as HTMLInputElement).checked)} /> Show this name on the tree</label>
 					</div>
-					<div class="row">
-						<label class="fld"><span>Given</span><input type="text" value={n.given ?? ''} onchange={(e) => (n.given = val(e).trim() || undefined)} /></label>
-						<label class="fld"><span>Surname</span><input type="text" value={n.surname ?? ''} onchange={(e) => (n.surname = val(e).trim() || undefined)} /></label>
-						<label class="fld" style="flex-basis:80px"><span>From</span><input type="text" value={fmtDate(n.date)} onchange={(e) => (n.date = parseUserDate(val(e)) || undefined)} /></label>
-					</div>
-					<div class="row"><StatusPicker value={n.status} onchange={(v) => (n.status = v)} /></div>
-					<label class="check"><input type="checkbox" checked={!!n.preferred} onchange={(e) => showOnTree(n, (e.currentTarget as HTMLInputElement).checked)} /> Show this name on the tree</label>
-				</div>
+				{/each}
+			</div>
+		</details>
+	{/if}
+	<div class="row">
+		<button class="btn small" onclick={addName}>+ Another name</button>
+		{#if !otherNames.length}<span class="hint">e.g. married name, deed poll</span>{/if}
+	</div>
+
+	<div class="row">
+		<span class="hint">Sex</span>
+		<span class="seg" role="group">
+			{#each [['M', 'Male'], ['F', 'Female'], ['U', 'Not known']] as [v, l] (v)}
+				<button type="button" aria-pressed={(p.sex?.value ?? 'U') === v} onclick={() => (p.sex = { ...(p.sex ?? {}), value: v as Sex })}>{l}</button>
 			{/each}
-		</div>
-	</details>
-{/if}
-<div class="row">
-	<button class="btn small" onclick={addName}>+ Another name</button>
-	{#if !otherNames.length}<span class="hint">e.g. married name, deed poll</span>{/if}
-</div>
-
-<div class="row">
-	<span class="hint">Sex</span>
-	<span class="seg" role="group">
-		{#each [['M', 'Male'], ['F', 'Female'], ['U', 'Not known']] as [v, l] (v)}
-			<button type="button" aria-pressed={(p.sex?.value ?? 'U') === v} onclick={() => (p.sex = { ...(p.sex ?? {}), value: v as Sex })}>{l}</button>
-		{/each}
-	</span>
+		</span>
+	</div>
 </div>
 
 <div class="blk">
@@ -402,11 +405,14 @@
 <!-- Research: its own section (its stage is the dot on the tree cards), between Family and the notes. -->
 <div class="blk">
 	<div class="lbl">Research</div>
-	<span class="seg" role="group" aria-label="Research stage">
-		{#each STAGES as [v, l] (v)}
-			<button type="button" aria-pressed={p.research?.stage === v} onclick={() => ((p.research ??= {}).stage = v)}>{l}</button>
-		{/each}
-	</span>
+	<div class="row">
+		<span class="hint">Progress</span>
+		<span class="seg" role="group" aria-label="Research progress">
+			{#each STAGES as [v, l] (v)}
+				<button type="button" aria-pressed={p.research?.stage === v} onclick={() => ((p.research ??= {}).stage = v)}>{l}</button>
+			{/each}
+		</span>
+	</div>
 	<ul class="evlist">
 		{#each p.research?.todo ?? [] as t, i (i)}
 			<li><span class="grow">☐ {t}</span><button class="del" aria-label="Remove" onclick={() => p.research!.todo!.splice(i, 1)}>×</button></li>

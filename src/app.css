@@ -284,7 +284,10 @@ svg text{font-family:var(--f-ui)}
 .blk .outofview{margin:4px 0 0}
 .sheet-head .x,.focusbar .x{border:0;background:none;font-size:30px;line-height:1;color:var(--ink-soft);padding:2px 8px;margin:-6px -8px 0 0;min-width:40px;min-height:40px;border-radius:8px}
 .sheet-head .x:hover,.focusbar .x:hover{color:var(--ink);background:var(--paper)}
-.blk{border-top:1px solid var(--rule);padding-top:12px;margin-top:12px;display:grid;gap:9px}
+/* Sections of the person panel. One gap throughout (as in the partner and parents boxes), so nothing is tighter
+   or looser than its neighbours. */
+.blk{border-top:1px solid var(--rule);padding-top:12px;margin-top:12px;display:grid;gap:7px}
+.blk.first{border-top:0;padding-top:0;margin-top:0}
 .lbl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row > *{min-width:0}
@@ -298,12 +301,14 @@ input.pencil{font-family:var(--f-pencil);font-size:19px;color:var(--pencil);padd
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .seg button[aria-pressed="true"].g{background:var(--pencil)}
 .hint{font-size:13px;color:var(--ink-soft)}
-.rels{display:grid;gap:4px}
-.rels .who{display:flex;flex-wrap:wrap;gap:4px;align-items:baseline}
+.rels{display:grid;gap:7px}
 .plink{border:0;background:none;padding:0;color:var(--accent);font:inherit;text-decoration:underline;text-underline-offset:2px}
 .plink.pencil{font-family:var(--f-pencil);font-size:18px;color:var(--pencil)}
 .addform{background:var(--paper);border-radius:8px;padding:10px;display:grid;gap:8px}
 .check{display:flex;gap:6px;align-items:center;font-size:14px}
+/* Ticked boxes in ink, like a selected Confirmed / Likely / Guess switch (the browser picks a contrasting tick). */
+input[type="checkbox"]{accent-color:var(--ink)}
+.check input{width:15px;height:15px;margin:0}
 details.more{border-top:1px solid var(--rule);margin-top:14px;padding-top:10px}
 details.more summary{cursor:pointer;font-weight:700;color:var(--ink-soft)}
 details.more summary span{font-weight:400;font-size:13px}
