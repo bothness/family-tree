@@ -233,6 +233,8 @@ svg text{font-family:var(--f-ui)}
 .evd.guess{fill:var(--sheet)}
 .whisk{stroke:var(--accent);stroke-width:1.2}
 .tlname{font-family:var(--f-name);font-weight:600;font-size:14px;fill:var(--ink);cursor:pointer}
+.tlbar{cursor:pointer}
+.tlhit{fill:transparent}
 .tlname.pencil{font-family:var(--f-pencil);font-weight:500;font-size:17px;fill:var(--pencil)}
 .tlname .dt{font-family:var(--f-ui);font-weight:400}
 .tlname .dt.pencil{font-family:var(--f-pencil)}

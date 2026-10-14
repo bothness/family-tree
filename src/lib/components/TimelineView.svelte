@@ -15,7 +15,7 @@
 	let zoomPx = $state<number | null>(null);
 	const px = $derived(zoomPx ?? Math.max(4, Math.min(12, (width - 72) / Math.max(1, hi - lo))));
 	const W = $derived((hi - lo) * px + 40);
-	const ROW = 46;
+	const ROW = 40;
 	const H = $derived(30 + tl.rows.length * ROW);
 	const X = (y: number) => 20 + (y - lo) * px;
 	const ticks = $derived(timeTicks(lo, hi, px));
@@ -216,7 +216,7 @@
 
 <!-- A click on the timeline's background (not a name, circle or link) closes the person panel. -->
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="tl" bind:clientWidth={width} bind:this={box} onclick={(e) => !(e.target as Element).closest('.tlname, .tev, button, a') && app.selected && app.select(null)}>
+<div class="tl" bind:clientWidth={width} bind:this={box} onclick={(e) => !(e.target as Element).closest('.tlname, .tlbar, .tev, button, a') && app.selected && app.select(null)}>
 	{#if !tl.rows.length}
 		<div class="empty">Add a birth year to anyone and they'll appear here.</div>
 	{:else}
@@ -255,25 +255,30 @@
 						{@const dates = cardDates(app.data, r.id)}
 						<!-- the name, then the years in grey as on the tree cards -->
 						<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-						<text class="tlname" class:pencil={nameIsGuess(p)} x={X(r.start)} y={y + 14} onclick={() => app.select(r.id)}
+						<text class="tlname" class:pencil={nameIsGuess(p)} x={X(r.start)} y={y + 16} onclick={() => app.select(r.id)}
 							>{displayName(p)}<tspan class="dt" class:pencil={dateUnsure(lifeEvent(app.data, r.id, 'birth')?.date?.edtf)} dx="8">{dates}</tspan></text
 						>
-						{#if r.birth && r.birth.end - r.birth.start > 0.2}
-							<rect x={X(r.birth.start)} y={by} width={(r.birth.end - r.birth.start) * px} height="8" fill="url(#fin)" />
-						{/if}
-						{#if !r.birth}
-							<rect x={X(r.start)} y={by} width={(r.solidStart - r.start) * px} height="8" fill="url(#fin)" />
-						{/if}
-						{#if r.solidEnd > r.solidStart}
-							<rect class="life" class:guess={r.birthIsGuess} x={X(r.solidStart)} y={by} width={(r.solidEnd - r.solidStart) * px} height="8" />
-						{/if}
-						{#if r.death}
-							{#if r.death.end - r.death.start > 0.2}
-								<rect x={X(r.death.start)} y={by} width={(r.death.end - r.death.start) * px} height="8" fill="url(#fout)" />
+						<!-- the bar opens the person, like their name; an invisible strip makes it easier to hit -->
+						<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+						<g class="tlbar" onclick={() => app.select(r.id)}>
+							<rect class="tlhit" x={X(r.start)} y={by - 4} width={(r.end - r.start) * px} height="16" />
+							{#if r.birth && r.birth.end - r.birth.start > 0.2}
+								<rect x={X(r.birth.start)} y={by} width={(r.birth.end - r.birth.start) * px} height="8" fill="url(#fin)" />
 							{/if}
-						{:else if !r.living}
-							<rect x={X(r.solidEnd)} y={by} width={UNKNOWN_END_FADE * px} height="8" fill="url(#foutp)" />
-						{/if}
+							{#if !r.birth}
+								<rect x={X(r.start)} y={by} width={(r.solidStart - r.start) * px} height="8" fill="url(#fin)" />
+							{/if}
+							{#if r.solidEnd > r.solidStart}
+								<rect class="life" class:guess={r.birthIsGuess} x={X(r.solidStart)} y={by} width={(r.solidEnd - r.solidStart) * px} height="8" />
+							{/if}
+							{#if r.death}
+								{#if r.death.end - r.death.start > 0.2}
+									<rect x={X(r.death.start)} y={by} width={(r.death.end - r.death.start) * px} height="8" fill="url(#fout)" />
+								{/if}
+							{:else if !r.living}
+								<rect x={X(r.solidEnd)} y={by} width={UNKNOWN_END_FADE * px} height="8" fill="url(#foutp)" />
+							{/if}
+						</g>
 						<!-- children's births first, so the rings and diamonds stay on top where they meet -->
 						{#each [...r.events].sort((a, b) => +(a.kind !== 'child') - +(b.kind !== 'child')) as ev (ev.kind + ev.family.id + (ev.other ?? ''))}
 							{@const t = eventTip(ev)}
