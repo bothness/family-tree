@@ -46,7 +46,7 @@ From a review at phone width (390px) on 10 Oct, with the demo loaded. These are 
 | M12 | **Open at a readable size** | On phones, start centred on the focus person at a size where names can be read, instead of fitting the whole tree; Fit still shows everything |
 | M13 | **Double-tap to zoom** | Double-tap zooms in on that spot; a two-finger tap zooms out |
 | M14 | **Family card view** | A phone-first alternative to the tree: one person in the middle, parents above, partners beside and children below as lists to tap through (like Ancestry's app). A new view rather than a change to the layout |
-| M15 | **Timeline: names stay put** | Names pinned on the left while the years scroll, and pinch to stretch the time axis |
+| M15 | **Timeline: names stay put** | Names pinned on the left while the years scroll (pinch to stretch the time axis is done) |
 
 ## Public, browser-only edition · Product
 Already built as a build setting of the same app (the GitHub Pages site): browser storage on IndexedDB behind `DataStore`, backups with photos, persistent storage and backup reminders, privacy wording, static deploy. Still to think about before inviting the public:

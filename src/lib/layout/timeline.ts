@@ -101,3 +101,14 @@ export function timelineRows(d: Dataset, ids: string[]): { rows: TimelineRow[]; 
 	rows.sort((a, b) => a.start - b.start);
 	return { rows, undated };
 }
+
+/** Pixels per year the timeline can zoom between (the time axis only; rows keep their height). */
+export const MIN_PX = 1.5, MAX_PX = 80;
+
+/** Year marks for the axis: the smallest round step (1, 2, 5, 10, 20, 50, 100 years) whose labels don't crowd. */
+export function timeTicks(lo: number, hi: number, px: number, minGap = 44): number[] {
+	const step = [1, 2, 5, 10, 20, 50, 100].find((s) => s * px >= minGap) ?? 100;
+	const out: number[] = [];
+	for (let y = Math.ceil(lo / step) * step; y <= hi; y += step) out.push(y);
+	return out;
+}

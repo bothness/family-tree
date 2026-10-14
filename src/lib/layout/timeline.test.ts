@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { emptyDataset } from '../model/mutations.ts';
 import type { Dataset } from '../model/types.ts';
-import { timelineEvents, timelineRows } from './timeline.ts';
+import { timeTicks, timelineEvents, timelineRows } from './timeline.ts';
 
 function family(): Dataset {
 	const d = emptyDataset();
@@ -90,5 +90,13 @@ describe('timeline events', () => {
 		d.families[1].relationship!.start = undefined;
 		d.families[1].children = [];
 		expect(timelineRows(d, ['ann']).rows[0].living).toBe(true);
+	});
+});
+
+describe('timeline axis', () => {
+	it('marks round years, further apart as the axis is squeezed', () => {
+		expect(timeTicks(1800, 1850, 5)).toEqual([1800, 1810, 1820, 1830, 1840, 1850]);
+		expect(timeTicks(1800, 1810, 30)).toEqual([1800, 1802, 1804, 1806, 1808, 1810]);
+		expect(timeTicks(1795, 1905, 1.5)).toEqual([1800, 1850, 1900]);
 	});
 });

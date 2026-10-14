@@ -188,7 +188,7 @@
 		{:else if app.tab === 'map' && !(app.blank && app.data.people.length)}
 			<MapView />
 		{:else}
-			<div class="pad">
+			<div class="pad" class:tl-pad={app.tab === 'timeline' && !(app.blank && app.data.people.length)}>
 				{#if app.blank && app.data.people.length}
 					<BlankPrompt />
 				{:else if app.tab === 'timeline'}
