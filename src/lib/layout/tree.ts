@@ -3,11 +3,11 @@
 // generations stack down the page, then everything flipped across the diagonal (x ↔ y). All the rules, and the
 // checks, therefore hold for both directions.
 import type { Dataset } from '../model/types.ts';
-import { cardSize, layoutPositions, type Box, type BranchLabel, type CardSize, type GhostBox, type NodeBox } from './positions.ts';
+import { cardSize, layoutPositions, type Box, type Branch, type BranchLabel, type CardSize, type GhostBox, type NodeBox } from './positions.ts';
 import { pathOf, routeConnectors, type Anchor, type Line } from './connectors.ts';
 
 export { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, cardSize } from './positions.ts';
-export type { Anchor, Box, BranchLabel, CardSize, GhostBox, Line, NodeBox };
+export type { Anchor, Box, Branch, BranchLabel, CardSize, GhostBox, Line, NodeBox };
 export type { LineStyle } from './connectors.ts';
 
 export interface TreeLayout {
@@ -31,14 +31,14 @@ export interface TreeLayout {
 /** Lay out the given groups of people. `root`: the focus person, kept at x = 0 so the view grows around them
  *  (y = 0 in a left-to-right tree). `size`: the cards as drawn (a number is a card width at the normal height).
  *  `across`: generations left to right instead of top to bottom. */
-export function layoutTree(d: Dataset, branches: { label: string; ids: string[] }[], root?: string, size?: number | CardSize, across = false): TreeLayout {
+export function layoutTree(d: Dataset, branches: Branch[], root?: string, size?: number | CardSize, across = false): TreeLayout {
 	const S = typeof size === 'number' ? cardSize(size) : (size ?? cardSize());
 	const L = sideways(d, branches, root, across ? turn(S) : S);
 	return across ? flip(L) : L;
 }
 
 /** The layout as worked out (for a left-to-right tree, before flipping): what the layout checks look at. */
-export function sideways(d: Dataset, branches: { label: string; ids: string[] }[], root: string | undefined, S: CardSize): TreeLayout {
+export function sideways(d: Dataset, branches: Branch[], root: string | undefined, S: CardSize): TreeLayout {
 	const p = layoutPositions(d, branches, root, S);
 	return { ...p, ...routeConnectors(d, p.nodes, p.ghosts, p.size) };
 }

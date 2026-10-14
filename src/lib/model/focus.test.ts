@@ -117,12 +117,21 @@ describe('focusSet: edges', () => {
 	});
 
 	it('returns nothing for an unknown person', () => {
-		expect(focusSet(d, 'nobody', { up: 1, down: 1, width: 'all' })).toEqual({ ids: new Set(), edges: [], reach: { up: 0, down: 0 } });
+		expect(focusSet(d, 'nobody', { up: 1, down: 1, width: 'all' })).toEqual({ ids: new Set(), edges: [], reach: { up: 0, down: 0 }, noPlaceholders: new Set() });
 	});
 
 	it('reports how far the direct line actually reaches', () => {
 		expect(focusSet(d, 'me', { up: Infinity, down: Infinity, width: 'all' }).reach).toEqual({ up: 2, down: 2 });
 		expect(focusSet(d, 'me', { up: 1, down: 0, width: 'direct' }).reach).toEqual({ up: 1, down: 0 });
+	});
+});
+
+describe('focusSet: brothers and sisters still expected', () => {
+	it('leaves out the placeholders for the direct line\'s missing brothers and sisters in a direct view only', () => {
+		expect([...focusSet(d, 'me', { up: 2, down: 1, width: 'direct' }).noPlaceholders].sort()).toEqual(['f_gp', 'f_mgf', 'f_parents']);
+		// (Missing children of the focus person or their descendants are children, which that view shows.)
+		expect(focusSet(d, 'me', { up: 2, down: 1, width: 'direct' }).noPlaceholders.has('f_me')).toBe(false);
+		for (const width of ['siblings', 'all'] as const) expect(focusSet(d, 'me', { up: 2, down: 1, width }).noPlaceholders.size).toBe(0);
 	});
 });
 

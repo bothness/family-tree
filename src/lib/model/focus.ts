@@ -29,6 +29,10 @@ export interface FocusResult {
 	edges: FocusEdge[];
 	/** How many generations up and down the direct line actually reaches (useful when up/down are Infinity). */
 	reach: { up: number; down: number };
+	/** Families whose "more expected" placeholder isn't shown: in a direct-line view, the families the focus person
+	 *  and their ancestors were born into (their missing children would be brothers and sisters, which that view
+	 *  leaves out). */
+	noPlaceholders: Set<string>;
 }
 
 export const DEFAULT_FOCUS: FocusOptions = { up: 2, down: 1, width: 'siblings' };
@@ -36,7 +40,7 @@ export const DEFAULT_FOCUS: FocusOptions = { up: 2, down: 1, width: 'siblings' }
 export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResult {
 	const ids = new Set<string>(),
 		gen = new Map<string, number>();
-	if (!person(d, rootId)) return { ids, edges: [], reach: { up: 0, down: 0 } };
+	if (!person(d, rootId)) return { ids, edges: [], reach: { up: 0, down: 0 }, noPlaceholders: new Set() };
 	const add = (id: string, g: number) => {
 		if (!person(d, id) || ids.has(id)) return false;
 		ids.add(id);
@@ -116,7 +120,8 @@ export function focusSet(d: Dataset, rootId: string, o: FocusOptions): FocusResu
 		if (hidden) edges.push({ dir: 'down', familyId: f.id, hidden });
 	}
 	const gens = [...directLine].map((id) => gen.get(id)!);
-	return { ids, edges, reach: { up: -Math.min(0, ...gens), down: Math.max(0, ...gens) } };
+	const noPlaceholders = new Set(o.width === 'direct' ? ancestors.flatMap((a) => famAsChild(d, a)?.id ?? []) : []);
+	return { ids, edges, reach: { up: -Math.min(0, ...gens), down: Math.max(0, ...gens) }, noPlaceholders };
 }
 
 const WIDTH_ORDER: FocusWidth[] = ['direct', 'siblings', 'all'];

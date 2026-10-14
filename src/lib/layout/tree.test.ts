@@ -412,3 +412,21 @@ describe('in-law families joining further down', () => {
 			expect(checkLayout(d6, L, d6.people.map((p) => p.id))).toEqual([]);
 		});
 });
+
+describe('brothers and sisters still expected, in a focus view', () => {
+	// An only child whose parents are known to have had more children, with a child of their own also expected.
+	const d7: Dataset = emptyDataset();
+	for (const id of ['dad', 'mum', 'me', 'kid']) d7.people.push({ id, names: [{ given: id }] });
+	d7.families.push(
+		{ id: 'f_parents', partners: [{ personId: 'dad' }, { personId: 'mum' }], children: [{ personId: 'me' }], childrenComplete: 'no', expectedChildren: { min: 3 } },
+		{ id: 'f_me', partners: [{ personId: 'me' }], children: [{ personId: 'kid' }], childrenComplete: 'no' }
+	);
+	const placeholders = (width: 'direct' | 'siblings') => {
+		const f = focusSet(d7, 'me', { up: 1, down: 1, width });
+		return layoutTree(d7, [{ label: '', ids: [...f.ids], noPlaceholders: f.noPlaceholders }], 'me').ghosts.map((g) => g.familyId).sort();
+	};
+	it('shows them like other brothers and sisters: not on the direct line, but with siblings', () => {
+		expect(placeholders('direct')).toEqual(['f_me']);
+		expect(placeholders('siblings')).toEqual(['f_me', 'f_parents']);
+	});
+});

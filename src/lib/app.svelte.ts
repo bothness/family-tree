@@ -124,7 +124,7 @@ class AppState {
 	visibleBranches = $derived.by(() => {
 		if (this.picked) return this.branches;
 		if (this.blank) return [];
-		if (this.focusView) return [{ label: '', ids: [...this.focusView.ids] }];
+		if (this.focusView) return [{ label: '', ids: [...this.focusView.ids], noPlaceholders: this.focusView.noPlaceholders }];
 		if (this.activeView && viewKind(this.activeView) !== 'focus') return labelled(this.data, components(this.data, viewMembers(this.data, this.activeView)));
 		return this.branches;
 	});

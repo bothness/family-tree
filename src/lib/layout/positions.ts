@@ -93,7 +93,7 @@ const SEEDS = 3,
 const relStart = (f: Family) => edtfRange(f.relationship?.start?.edtf)?.start ?? Infinity;
 const byBirth = (d: Dataset) => (a: string, b: string) => birthStart(d, a) - birthStart(d, b) || a.localeCompare(b);
 
-function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S: CardSize) {
+function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S: CardSize, noPlaceholders?: Set<string>) {
 	const W = S.w,
 		GHOST = S.ghost;
 	const inC = new Set(ids);
@@ -155,10 +155,11 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	const cardLeft = (u: Unit, id: string) => u.members.indexOf(id) * (W + CARD_GAP);
 
 	// Placeholders for missing children: only under visible parents, and only when every known child is in view
-	// (otherwise the edge of a focus would look like a research gap).
+	// (otherwise the edge of a focus would look like a research gap), and not where the view leaves such people out
+	// (`noPlaceholders`: brothers and sisters in a direct-line view).
 	for (const fm of fams) {
 		const { f, ps, cs } = fm;
-		if (f.childrenComplete !== 'no' || (!ps.length && partnerIds(f).length) || cs.length < childIds(f).length) continue;
+		if (f.childrenComplete !== 'no' || (!ps.length && partnerIds(f).length) || cs.length < childIds(f).length || noPlaceholders?.has(f.id)) continue;
 		const g = cs.length ? gen.get(cs[0])! : gen.get(ps[0])! + 1;
 		const u: Unit = { key: `ghost:${f.id}`, g, members: [], ghost: f, w: GHOST, x: 0, placed: false };
 		units.push(u);
@@ -716,14 +717,18 @@ export function isotonic(want: { x: number; wt: number }[], gaps: number[], tied
 	return out;
 }
 
+/** A group of people to lay out: a branch of the tree, or everyone in a focus view. `noPlaceholders`: families whose
+ *  "more expected" placeholder isn't shown (their missing children are people the view leaves out). */
+export interface Branch { label: string; ids: string[]; noPlaceholders?: Set<string> }
+
 /** Lay out each group of people (focus view: one group, with the focus person at x = 0), side by side. */
-export function layoutPositions(d: Dataset, branches: { label: string; ids: string[] }[], root?: string, S: CardSize = cardSize()): Positions {
+export function layoutPositions(d: Dataset, branches: Branch[], root?: string, S: CardSize = cardSize()): Positions {
 	const W = S.w;
 	const out: Positions = { nodes: [], ghosts: [], labels: [], bounds: { x: 0, y: 0, w: 0, h: 0 }, cardW: W, size: S };
 	let right = -Infinity;
 	for (const b of branches) {
 		if (!b.ids.length) continue;
-		const L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined, S);
+		const L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined, S, b.noPlaceholders);
 		const lefts = [...L.nodes.map((n) => n.x), ...L.ghosts.map((g) => g.x)];
 		const dx = right === -Infinity ? 0 : right + COMP_GAP - Math.min(...lefts);
 		for (const n of L.nodes) out.nodes.push({ ...n, x: n.x + dx });
