@@ -134,9 +134,16 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 		b.hi = Math.max(...xs);
 	}
 
-	// V8: in each gap between rows, buses whose spans overlap get different heights (greedy interval colouring).
+	// V8: in each gap between rows, buses whose spans overlap get different heights. Which goes above decides the
+	// hops: a bus higher up hops over the other's line down from its parents, a bus lower down over the other's
+	// lines down to its children. So the buses are put in the order with fewest hops (starting from the greedy
+	// interval colouring, swapping neighbours while that helps), then each sits just above those it overlaps below it.
 	const byGap = new Map<number, Bus[]>();
 	for (const b of buses) (byGap.get(b.top) ?? byGap.set(b.top, []).get(b.top)!).push(b);
+	const overlap = (a: Bus, b: Bus) => a.lo < b.hi + HOP_R * 2 && b.lo < a.hi + HOP_R * 2;
+	const inside = (x: number, b: Bus) => x > b.lo + HOP_R && x < b.hi - HOP_R;
+	/** Hops when `up` sits above `down`. */
+	const hopsOver = (up: Bus, down: Bus) => (down.ax != null && inside(down.ax, up) ? 1 : 0) + up.targets.filter((t) => inside(t.x, down)).length;
 	for (const group of byGap.values()) {
 		group.sort((a, b) => a.lo - b.lo || a.hi - b.hi || a.f.id.localeCompare(b.f.id));
 		const laneEnd: number[] = [];
@@ -145,6 +152,39 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 			if (lane < 0) lane = laneEnd.length;
 			laneEnd[lane] = b.hi;
 			b.lane = lane;
+		}
+		// Lowest first.
+		const order = [...group].sort((a, b) => a.lane - b.lane || a.lo - b.lo);
+		const cost = () => {
+			let n = 0;
+			for (let i = 0; i < order.length; i++) for (let j = i + 1; j < order.length; j++) if (overlap(order[i], order[j])) n += hopsOver(order[j], order[i]);
+			return n;
+		};
+		let best = cost();
+		// Each bus tried at every place in the order (buses that don't overlap can sit between two that do).
+		for (let pass = 0, moved = true; moved && best && pass < 4; pass++) {
+			moved = false;
+			for (const b of [...order]) {
+				const from = order.indexOf(b);
+				for (let to = 0; to < order.length; to++) {
+					if (to === from) continue;
+					order.splice(from, 1);
+					order.splice(to, 0, b);
+					const c = cost();
+					if (c < best) {
+						best = c;
+						moved = true;
+						break;
+					}
+					order.splice(to, 1);
+					order.splice(from, 0, b);
+				}
+			}
+		}
+		const placed: Bus[] = [];
+		for (const b of order) {
+			b.lane = Math.max(-1, ...placed.filter((o) => overlap(o, b)).map((o) => o.lane)) + 1;
+			placed.push(b);
 		}
 	}
 

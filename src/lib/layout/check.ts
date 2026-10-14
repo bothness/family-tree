@@ -1,6 +1,6 @@
 // Checks a tree layout against the Phase C rules. Returns a list of problems (empty = all good). Used by tests.
 import type { Dataset } from '../model/types.ts';
-import { birthStart, childIds, partnerIds, person } from '../model/queries.ts';
+import { childIds, partnerIds, person } from '../model/queries.ts';
 import type { TreeLayout } from './tree.ts';
 
 type NodeLike = { id: string; x: number };
@@ -10,8 +10,6 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 	const NODE_W = L.size.w,
 		NODE_H = L.size.h,
 		GHOST_W = L.size.ghost;
-	/** How far (px) beyond the outermost children's centres a parent couple may sit and still count as "above" them. */
-	const CENTRE_TOLERANCE = NODE_W;
 	const name = (id: string) => person(d, id)?.names?.[0]?.given ?? id;
 	const pos = new Map(L.nodes.map((n) => [n.id, n]));
 
@@ -54,7 +52,7 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 	};
 	/** A child sitting with someone whose own parents are in view (a spouse, or a spouse's other partner): they sit
 	 *  with that family's children, so their own brothers and sisters may be some way off. They don't count when
-	 *  checking their family is unbroken and in age order. */
+	 *  checking their family is unbroken. */
 	const marriedAcross = (c: string, fid: string) => [...partnerGroup(c)].some((o) => o !== c && parentFam.has(o) && parentFam.get(o) !== fid);
 
 	for (const f of d.families) {
@@ -74,23 +72,10 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 					out.push(`${name(a.id)} and ${name(b.id)} have someone between them but no raised line`);
 			}
 		}
-		// Children below their parents, siblings in strict birth order.
+		// Children below their parents. Their order among themselves (oldest first), and parents sitting centred over
+		// them, are only preferences: brothers and sisters stay together, and lines cross as little as they can
+		// (`crossings`), first.
 		for (const c of cs) for (const p of ps) if (pos.get(c)!.y <= pos.get(p)!.y) out.push(`${name(c)} is not below ${name(p)}`);
-		const inOrder = cs.filter((c) => !marriedAcross(c, f.id));
-		const byX = [...inOrder].sort((a, b) => pos.get(a)!.x - pos.get(b)!.x);
-		const byBirth = [...inOrder].sort((a, b) => birthStart(d, a) - birthStart(d, b));
-		if (byX.some((c, i) => c !== byBirth[i] && birthStart(d, c) !== birthStart(d, byBirth[i]))) out.push(`${f.id}: children not in birth order`);
-		// Parents with one family sit over their children's block. Exact centring can't always hold (a partner's
-		// parents may want the same space), and someone with several families sits between them by design, so
-		// they're exempt.
-		const multi = ps.some((p) => d.families.some((g) => g !== f && partnerIds(g).includes(p) && childIds(g).some((c) => pos.has(c))));
-		const a = multi ? undefined : L.anchors[f.id];
-		const kids = [...cs.map((c) => pos.get(c)!.x + NODE_W / 2), ...L.ghosts.filter((g) => g.familyId === f.id).map((g) => g.x + GHOST_W / 2)];
-		if (a && kids.length) {
-			const lo = Math.min(...kids) - CENTRE_TOLERANCE,
-				hi = Math.max(...kids) + CENTRE_TOLERANCE;
-			if (a.x < lo || a.x > hi) out.push(`${f.id}: parents aren't above their children (${Math.round(a.x < lo ? a.x - lo : a.x - hi)}px out)`);
-		}
 	}
 
 	// Each family's children form one unbroken run on their row: nobody else's child sits among them, apart from
@@ -115,7 +100,7 @@ export function checkLayout(d: Dataset, L: TreeLayout, ids: string[]): string[] 
 		}
 	}
 	// A couple whose parents are both in view: at least one partner's brothers and sisters are all on their own side
-	// (with strict age order the other's may be on both sides of the couple) (V8). When the two families are linked
+	// (the other's may be on both sides of the couple) (V8). When the two families are linked
 	// by more than one marriage, only one couple can sit where the families meet; the others sit within one family's
 	// run (a spouse joins their partner), so it's enough that one partner's brothers and sisters are all to one side.
 	for (const f of d.families) {

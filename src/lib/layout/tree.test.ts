@@ -47,11 +47,14 @@ describe('tree layout specifics', () => {
 	const at = (id: string) => L.nodes.find((n) => n.id === id)!;
 	const row = (id: string) => L.nodes.filter((n) => n.y === at(id).y).sort((a, b) => a.x - b.x).map((n) => n.id);
 
-	it('puts someone with two partners between them, earliest partnership on the left', () => {
-		const r = row('per_margaret_smith');
-		expect(r.slice(r.indexOf('per_albert_dunn'), r.indexOf('per_albert_dunn') + 3)).toEqual(['per_albert_dunn', 'per_margaret_smith', 'per_george_hall']);
-		const w = row('per_william_smith');
-		expect(w.slice(w.indexOf('per_sarah_smith'), w.indexOf('per_sarah_smith') + 3)).toEqual(['per_sarah_smith', 'per_william_smith', 'per_eliza_smith']);
+	it('puts someone with two partners between them (either way round)', () => {
+		const between = (p: string, a: string, b: string) => {
+			const r = row(p);
+			expect(Math.abs(r.indexOf(a) - r.indexOf(p))).toBe(1);
+			expect(Math.abs(r.indexOf(b) - r.indexOf(p))).toBe(1);
+		};
+		between('per_margaret_smith', 'per_albert_dunn', 'per_george_hall');
+		between('per_william_smith', 'per_sarah_smith', 'per_eliza_smith');
 	});
 
 	it('puts a single couple with the father on the left', () => expect(at('per_john_smith').x).toBeLessThan(at('per_mary_smith').x));
@@ -95,7 +98,7 @@ describe('isotonic', () => {
 	});
 });
 
-describe('sibling sets either side of a couple (V8), in strict age order', () => {
+describe('sibling sets either side of a couple (V8)', () => {
 	// Husband (b.1878) with an older brother and a younger sister; wife with a sister; both sets of parents in view;
 	// some of the husband's siblings are missing.
 	const d2: Dataset = emptyDataset();
@@ -118,10 +121,14 @@ describe('sibling sets either side of a couple (V8), in strict age order', () =>
 			.map((x) => x[0]);
 
 	it('passes the layout rules', () => expect(checkLayout(d2, L, d2.people.map((p) => p.id))).toEqual([]));
-	it("keeps strict age order, with the spouse's brothers and sisters beyond the other family's children", () => {
-		process.stdout.write(JSON.stringify([row(0), row(L.nodes.find((n) => n.id === 'husband')!.y)]) + '\n');
-		expect(row(0)).toEqual(['hf', 'hm', 'wf', 'wm']);
-		expect(row(L.nodes.find((n) => n.id === 'husband')!.y)).toEqual(['older', 'husband', 'wife', 'younger', '+f_h', 'sister']);
+	it("keeps each partner's brothers and sisters on their own side, under their own parents, with nothing crossing", () => {
+		const r = row(L.nodes.find((n) => n.id === 'husband')!.y);
+		const left = r.indexOf('wife') < r.indexOf('husband');
+		const side = (id: string) => r.indexOf(id) < r.indexOf(left ? 'wife' : 'husband');
+		expect(side('sister')).toBe(true);
+		for (const id of ['older', 'younger', '+f_h']) expect(side(id)).toBe(false);
+		expect(row(0).indexOf('wf') < row(0).indexOf('hf')).toBe(left);
+		expect(crossings(L)).toEqual({ hops: 0, crossed: 0 });
 	});
 	it('also works in a focus view on the wife', () => {
 		const ids = [...focusSet(d2, 'wife', { up: 1, down: 0, width: 'siblings' }).ids];
@@ -182,6 +189,22 @@ describe('connectors', () => {
 		expect(crossing).toBeDefined();
 		expect(line('fa:bus').hops).toContain(crossing!.seg.x1);
 		expect(line('fa:bus').d).toMatch(/A5 5 0 0 1/);
+	});
+	it('stacks overlapping lines so they hop as little as they can', () => {
+		// C's line runs from its parent on the left to a child far right, over D's family: below D's line it would hop
+		// D's two lines down to its children, above it only D's line down from its parent.
+		const d: Dataset = emptyDataset();
+		for (const id of ['c', 'cc', 'p', 'k1', 'k2']) d.people.push({ id, names: [{ given: id }] });
+		d.families.push(
+			{ id: 'fc', partners: [{ personId: 'c' }], children: [{ personId: 'cc' }] },
+			{ id: 'fd', partners: [{ personId: 'p' }], children: [{ personId: 'k1' }, { personId: 'k2' }] }
+		);
+		const ns = [
+			{ id: 'c', x: 0, y: 0 }, { id: 'p', x: 300, y: 0 },
+			{ id: 'k1', x: 210, y: 142 }, { id: 'k2', x: 390, y: 142 }, { id: 'cc', x: 700, y: 142 }
+		];
+		const ls = routeConnectors(d, ns, []).lines;
+		expect(ls.reduce((n, l) => n + l.hops.length, 0)).toBe(1);
 	});
 	it('anchors a couple at the middle of their line, a lone parent below their card', () => {
 		expect(anchors.fa).toMatchObject({ x: 163, couple: true });
@@ -315,11 +338,47 @@ describe('fewer crossings', () => {
 	const L = sideways(d5, components(d5).map((ids) => ({ label: 'x', ids })), undefined, S);
 	const x = (id: string) => L.nodes.find((n) => n.id === id)!.x;
 	it('keeps the layout rules', () => expect(checkLayout(d5, L, d5.people.map((p) => p.id))).toEqual([]));
-	it("keeps a man's two families from crossing, and his younger sons beside their mother's side", () => {
-		expect(x('son')).toBeLessThan(x('half1'));
-		expect(x('half2')).toBeLessThan(x('thirdDad'));
+	it("keeps a man's two families from crossing, the younger sons on their mother's side", () => {
+		const side = Math.sign(x('second') - x('first'));
+		for (const h of ['half1', 'half2']) expect(Math.sign(x(h) - x('son'))).toBe(side);
 	});
-	// One forced by strict age order (the bride is the eldest, so her husband sits between her and her siblings), one
-	// where the third family's line reaches over to the grandson.
-	it('leaves only the crossings the rules force', () => expect(crossings(L).hops).toBeLessThanOrEqual(2));
+	// (The third family's parents can sit between the half-brothers: that untangles the line to the grandson.)
+	it('leaves no lines crossing', () => expect(crossings(L)).toEqual({ hops: 0, crossed: 0 }));
+});
+
+describe('in-law families joining further down', () => {
+	// Shrunk from a real tree (made-up ids, years shifted): a grandson marries the granddaughter of a family whose parents only
+	// join in below; his father has a second wife. Put in one at a time, aimed at where their relatives were, one
+	// family's child landed inside another's run of children.
+	const d6: Dataset = emptyDataset();
+	const P = (id: string, sex: 'M' | 'F', born?: string) => {
+		d6.people.push({ id, names: [{ given: id }], sex: { value: sex } });
+		if (born) d6.events.push({ id: `b_${id}`, type: 'birth', date: { edtf: born }, participants: [{ personId: id }] });
+	};
+	for (const [id, sex, born] of [
+		['gs', 'M', '1753'], ['bride', 'F', '1748'], ['tDau', 'F', '1723'], ['son', 'M', '1726'], ['kDau', 'F', '1724'], ['wife2', 'F', undefined],
+		['half', 'M', '1776'], ['bro', 'M', '1753'], ['mDau', 'F', '1694'], ['m1', 'M', '1658'], ['top', 'M', '1614'], ['t1', 'F', undefined],
+		['tSon', 'M', '1722'], ['mDau2', 'F', '1703'], ['k1', 'M', '1696'], ['k0', 'F', '1670'], ['kDau2', 'F', undefined], ['kTop', 'F', undefined]
+	] as const)
+		P(id, sex, born);
+	const k = (...ids: string[]) => ids.map((personId) => ({ personId }));
+	const since = (edtf: string) => ({ relationship: { type: 'marriage' as const, start: { edtf } } });
+	d6.families.push(
+		{ id: 'f_gb', partners: k('gs', 'bride'), children: [], childrenComplete: 'yes', ...since('1778') },
+		{ id: 'f_ts', partners: k('tDau', 'son'), children: k('gs'), childrenComplete: 'yes' },
+		{ id: 'f_kd', partners: k('kDau'), children: k('bride', 'bro') },
+		{ id: 'f_sw', partners: k('son', 'wife2'), children: k('half'), childrenComplete: 'yes' },
+		{ id: 'f_md', partners: k('mDau'), children: k('son') },
+		{ id: 'f_m1', partners: k('m1'), children: k('mDau', 'mDau2'), ...since('1693') },
+		{ id: 'f_top', partners: k('top'), children: k('m1') },
+		{ id: 'f_t1', partners: k('t1'), children: k('tDau', 'tSon'), ...since('1720') },
+		{ id: 'f_k1', partners: k('k1'), children: k('kDau', 'kDau2'), childrenComplete: 'yes', expectedChildren: { min: 2 }, ...since('1723') },
+		{ id: 'f_k0', partners: k('k0'), children: k('k1') },
+		{ id: 'f_kt', partners: k('kTop'), children: k('k0') }
+	);
+	for (const [mode, S] of [['vertical', cardSize()], ['horizontal', turn(cardSize(PHOTO_W))]] as const)
+		it(`keeps every family's children together (${mode})`, () => {
+			const L = sideways(d6, components(d6).map((ids) => ({ label: 'x', ids })), undefined, S);
+			expect(checkLayout(d6, L, d6.people.map((p) => p.id))).toEqual([]);
+		});
 });
