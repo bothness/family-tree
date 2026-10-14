@@ -165,7 +165,7 @@
 	</nav>
 	<SearchBox />
 	<div class="actions">
-		{#if app.canEdit}<button class="btn primary new" onclick={addNew} aria-label="New person">+<span class="wide-only"> New person</span></button>{/if}
+		{#if app.canEdit}<button class="btn primary new" onclick={addNew} aria-label="New person">+<span class="wide-only">&nbsp;New person</span></button>{/if}
 		{#if app.backupDue}
 			<span class="remind">
 				<button class="btn small" onclick={() => (app.showData = true)} title="Some changes aren't in a backup yet">Back up your tree</button>
