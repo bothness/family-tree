@@ -40,6 +40,9 @@ export interface TimelineRow {
 
 /** Years of fade shown when a death date isn't recorded. */
 export const UNKNOWN_END_FADE = 18;
+/** With no birth date: the solid bar starts this many years before death (or at their first event, if earlier),
+ *  after a fade-in of the same length. */
+const UNKNOWN_START = 20;
 
 const unsure = (s?: string) => !!s && s !== 'confirmed';
 
@@ -79,8 +82,9 @@ export function timelineRows(d: Dataset, ids: string[]): { rows: TimelineRow[]; 
 		}
 		const events = timelineEvents(d, id);
 		const living = !death && isLiving(d, p);
-		const start = birth ? birth.start : death!.start - 40;
-		const solidStart = birth ? birth.end : death!.start - 20;
+		// Without a birth or death date, the solid bar still covers all their dated events, then fades.
+		const solidStart = birth ? birth.end : Math.min(death!.start - UNKNOWN_START, ...events.map((e) => e.range.start));
+		const start = birth ? birth.start : solidStart - UNKNOWN_START;
 		const lastKnown = Math.max(solidStart, ...events.map((e) => e.range.end));
 		const solidEnd = living ? NOW : death ? death.start : lastKnown;
 		rows.push({

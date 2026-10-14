@@ -60,4 +60,16 @@ describe('timeline events', () => {
 		const bob = timelineRows(d, ['bob']).rows[0];
 		expect(bob.solidEnd).toBe(1951);
 	});
+
+	it('starts the bar at the first event when there is no birth date', () => {
+		const d = family();
+		d.events = d.events.filter((e) => e.id !== 'b_cal');
+		d.events.push({ id: 'd_cal', type: 'death', date: { edtf: '1990' }, participants: [{ personId: 'cal' }] });
+		d.families.find((f) => f.id === 'f2')!.children = []; // so his first event is the 1940 marriage
+		const cal = timelineRows(d, ['cal']).rows[0];
+		expect([cal.start, cal.solidStart, cal.solidEnd]).toEqual([1920, 1940, 1990]);
+		// with no events before it, 20 years before death as before
+		d.families = d.families.filter((f) => f.id !== 'f2');
+		expect(timelineRows(d, ['cal']).rows[0].solidStart).toBe(1970);
+	});
 });
