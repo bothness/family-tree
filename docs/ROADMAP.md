@@ -22,6 +22,7 @@ From a review at phone width (390px) on 10 Oct, with the demo loaded. These are 
 **Screen space**
 | # | Option | Notes |
 |---|---|---|
+| M16 | **In-between widths** | Between the phone layout and full desktop width, the header and bars don't always stack or wrap well (noticed 14 Oct); look at the widths just above and below 760px |
 | M4 | **Bars hide while panning** | The bars slide away while the tree is dragged and come back on a tap or when it stops |
 
 **Person panel**
