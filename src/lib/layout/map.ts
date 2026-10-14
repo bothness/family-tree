@@ -176,6 +176,29 @@ export function placeLinks(d: Dataset, ids: Iterable<string>, placeId: string): 
 	return [...byPlace.values()];
 }
 
+/** The links as drawn at one zoom level: those to places in the same group are one line to the group's middle,
+ *  with all their people. They start from the middle of the open place's own group (a place on its own is its own
+ *  middle), and links within that group are left out. */
+export function linksAtLevel(links: MapLink[], clusters: MapCluster[], placeId: string): MapLink[] {
+	const groupOf = (id: string) => clusters.find((c) => c.placeIds.includes(id));
+	const home = groupOf(placeId);
+	const out = new Map<MapCluster | string, MapLink>();
+	for (const l of links) {
+		const g = groupOf(l.toPlaceId);
+		if (g && g === home) continue;
+		const merged = out.get(g ?? l.toPlaceId);
+		if (merged) merged.people.push(...l.people);
+		else
+			out.set(g ?? l.toPlaceId, {
+				from: home ? [home.lon, home.lat] : l.from,
+				to: g ? [g.lon, g.lat] : l.to,
+				toPlaceId: l.toPlaceId,
+				people: [...l.people]
+			});
+	}
+	return [...out.values()];
+}
+
 /** The box around all the places, as [[west, south], [east, north]], or null if there are none. */
 export function boundsOf(m: MapData): [[number, number], [number, number]] | null {
 	if (!m.places.length) return null;

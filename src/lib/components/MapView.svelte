@@ -9,7 +9,7 @@
 	// MapLibre draws tiles in a web worker; tell it where Vite put the worker file (needed in dev and build).
 	import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 	import { app } from '#lib/app.svelte.ts';
-	import { boundsOf, CLUSTER_MAX_ZOOM, clusterPlaces, mapData, placeLinks, toGeoJSON, type MapLink } from '#lib/layout/map.ts';
+	import { boundsOf, CLUSTER_MAX_ZOOM, clusterPlaces, linksAtLevel, mapData, placeLinks, toGeoJSON, type MapLink } from '#lib/layout/map.ts';
 
 	const STYLE = { light: 'https://tiles.openfreemap.org/styles/positron', dark: 'https://tiles.openfreemap.org/styles/dark' };
 	const data = $derived(mapData(app.data, app.visibleIds));
@@ -93,7 +93,8 @@
 	});
 	function setLinks(placeId: string | null) {
 		open = placeId;
-		links = placeId ? placeLinks(app.data, app.visibleIds, placeId) : [];
+		// Lines to (and from) places still grouped at this zoom go to the group's middle, one line for the group.
+		links = placeId ? linksAtLevel(placeLinks(app.data, app.visibleIds, placeId), clusters[level] ?? [], placeId) : [];
 		(map?.getSource('links') as GeoJSONSource | undefined)?.setData(linksGeoJSON());
 	}
 

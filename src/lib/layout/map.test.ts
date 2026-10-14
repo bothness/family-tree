@@ -4,7 +4,7 @@ import { migrate } from '../model/migrate.ts';
 import { focusSet } from '../model/focus.ts';
 import { emptyDataset } from '../model/mutations.ts';
 import type { Dataset } from '../model/types.ts';
-import { boundsOf, CLUSTER_MAX_ZOOM, clusterPlaces, mapData, placeLinks, toGeoJSON } from './map.ts';
+import { boundsOf, CLUSTER_MAX_ZOOM, clusterPlaces, linksAtLevel, mapData, placeLinks, toGeoJSON } from './map.ts';
 
 const d = migrate(structuredClone(sample));
 const all = d.people.map((p) => p.id);
@@ -94,6 +94,19 @@ describe('map links', () => {
 		expect(by('cork').people.map((p) => p.name)).toEqual(['bob', 'dan']);
 		expect(by('york').people[0]).toEqual({ personId: 'cat', name: 'cat', born: 'York, 1850', died: 'Leeds, 1900' });
 		expect(by('cork').from).toEqual([-1.55, 53.8]);
+	});
+	it('joins the lines to places in one group into one line to its middle', () => {
+		const levels = clusterPlaces(mapData(d, ids));
+		const z = levels.findIndex((l) => l.some((c) => c.placeIds.join() === 'bradford,leeds,york'));
+		// From Cork, at a zoom where Leeds, Bradford and York are one group: one line, with everyone.
+		const fromCork = linksAtLevel(placeLinks(d, ids, 'cork'), levels[z], 'cork');
+		const g = levels[z].find((c) => c.placeIds.length === 3)!;
+		expect(fromCork.map((l) => [l.to, l.people.map((p) => p.name)])).toEqual([[[g.lon, g.lat], ['bob', 'dan']]]);
+		// From Leeds, in that group: lines start from its middle, and those within the group are left out.
+		const fromLeeds = linksAtLevel(placeLinks(d, ids, 'leeds'), levels[z], 'leeds');
+		expect(fromLeeds.map((l) => [l.from, l.toPlaceId])).toEqual([[[g.lon, g.lat], 'cork']]);
+		// Zoomed right in, nothing changes.
+		expect(linksAtLevel(placeLinks(d, ids, 'leeds'), levels.at(-1)!, 'leeds')).toEqual(placeLinks(d, ids, 'leeds'));
 	});
 	it('only includes people in view', () => {
 		expect(placeLinks(d, ['bob'], 'cork').map((l) => l.people.length)).toEqual([1]);
