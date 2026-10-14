@@ -347,13 +347,13 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
   .phone-only{display:revert}
   .top{padding:8px 12px;gap:6px 8px}
   /* The name gives way first: on a narrow screen (or with larger text) it wraps onto two lines, rather than
-     the buttons dropping to a row of their own. */
-  .brand{font-size:17px;line-height:1.15;flex:1 1 0;min-width:0}
+     the buttons dropping to a row of their own; never narrower than its longest word, so nothing overlaps. */
+  .brand{font-size:17px;line-height:1.15;flex:1 1 0;min-width:min-content}
   .actions{order:1;margin-left:auto;align-items:center}
   .btn.new{font-size:19px;line-height:21px}
   .actions button.sync-status{padding:4px 0 4px 2px}
   .tabs{order:2;flex:1;justify-content:space-between}
-  .tabs button{padding:5px 9px}
+  .tabs button{padding:5px 9px;white-space:nowrap}
   .search-toggle{display:inline-grid;order:2}
   .search{order:3;flex:1 1 100%}
   .search:not(.open){display:none}
