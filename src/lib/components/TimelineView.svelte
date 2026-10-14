@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { app } from '#lib/app.svelte.ts';
 	import { dateUnsure, datesDisagree, fmtDate } from '#lib/model/edtf.ts';
-	import { cardDates, displayName, lifeEvent, nameIsGuess, NOW, partnerIds, person } from '#lib/model/queries.ts';
+	import { cardDates, displayName, lifeEvent, nameIsGuess, NOW, person } from '#lib/model/queries.ts';
 	import type { EdtfDate } from '#lib/model/types.ts';
-	import { timelineRows, UNKNOWN_END_FADE } from '#lib/layout/timeline.ts';
+	import { timelineRows, UNKNOWN_END_FADE, type TimelineEvent, type TimelineEventKind } from '#lib/layout/timeline.ts';
 
 	let width = $state(900);
 	const tl = $derived(timelineRows(app.data, app.visibleIds));
@@ -16,35 +16,77 @@
 	const X = (y: number) => 20 + (y - lo) * px;
 	const decades = $derived(Array.from({ length: (hi - lo) / 10 + 1 }, (_, i) => lo + i * 10));
 	const anyLiving = $derived(tl.rows.some((r) => r.living));
+	const rowOf = $derived(new Map(tl.rows.map((r, i) => [r.id, i])));
+	/** The middle of a row's bar. */
+	const mid = (i: number) => 30 + i * ROW + 26;
 
-	// Tooltips for events (marriages and partnerships), on hover or keyboard focus, drawn above the circle.
+	/** Each kind of event has its own symbol, centred on 0,0: a ring for a marriage, a diamond for a divorce or
+	 *  separation, a downward triangle for a child's birth. The legend draws the same shapes. */
+	const SHAPE: Record<TimelineEventKind, string> = {
+		marriage: 'M-4.5 0a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z',
+		end: 'M0 -5.5L5.5 0L0 5.5L-5.5 0Z',
+		child: 'M-5 -4H5L0 5Z'
+	};
+
+	// Tooltips for events, on hover or keyboard focus, drawn above the symbol, with a thin line down (or up) to the
+	// partner or child the event links to, when they're on the timeline.
 	let box: HTMLDivElement | undefined = $state();
 	let tip = $state<{ x: number; y: number; head: string; lines: string[] } | null>(null);
-	function show(e: Event, head: string, lines: string[]) {
+	let link = $state<{ x: number; y1: number; y2: number; unsure: boolean } | null>(null);
+	function show(e: Event, ev: TimelineEvent, i: number, head: string, lines: string[]) {
 		if (!box) return;
 		const t = (e.currentTarget as Element).getBoundingClientRect(),
 			b = box.getBoundingClientRect();
 		tip = { x: t.left + t.width / 2 - b.left, y: t.top - b.top, head, lines: lines.filter(Boolean) };
+		const j = ev.other ? rowOf.get(ev.other) : undefined;
+		if (j === undefined || j === i) return void (link = null);
+		// From the edge of this symbol to the edge of the other one (the same event on a partner's row) or of the child's bar.
+		const down = j > i ? 1 : -1;
+		link = { x: X(ev.at), y1: mid(i) + down * 5.5, y2: mid(j) - down * (ev.kind === 'child' ? 4 : 5.5), unsure: ev.linkUnsure };
 	}
-	const hide = () => (tip = null);
+	const hide = () => ((tip = null), (link = null));
 
 	const sure = (d?: EdtfDate) => (datesDisagree(d?.edtf) ? ' (sources disagree)' : '');
 	const when = (d?: EdtfDate) => (d?.edtf ? fmtDate(d.edtf) + sure(d) : '');
 
-	/** A marriage or partnership: what it was, with whom, when, and how it ended. */
-	function partnershipTip(fid: string, pid: string): [string, string[]] {
-		const f = app.data.families.find((f) => f.id === fid)!;
-		const r = f.relationship;
-		const other = partnerIds(f).find((x) => x !== pid);
+	const offTimeline = (id?: string) => (id && !rowOf.has(id) ? `${displayName(person(app.data, id))} isn't on the timeline` : '');
+	const sureness = (s?: string) => (s === 'guess' ? 'a guess' : s);
+
+	/** What an event was, with whom, and when: the head and lines of its tooltip. */
+	function eventTip(ev: TimelineEvent): [string, string[]] {
+		const r = ev.family.relationship;
+		if (ev.kind === 'child') {
+			const c = person(app.data, ev.other!),
+				ref = ev.family.children.find((x) => x.personId === ev.other);
+			const sex = c?.sex?.value;
+			return [
+				`Birth of a ${sex === 'M' ? 'son' : sex === 'F' ? 'daughter' : 'child'}`,
+				[
+					displayName(c),
+					`Born ${when(lifeEvent(app.data, ev.other!, 'birth')?.date)}`,
+					ref?.relation === 'adopted' ? 'Adopted' : '',
+					ref?.status && ref.status !== 'confirmed' ? `Being their child is ${sureness(ref.status)}` : '',
+					offTimeline(ev.other)
+				]
+			];
+		}
+		const withWhom = ev.other ? `With ${displayName(person(app.data, ev.other))}` : 'Partner not known';
+		const doubt = r?.status && r.status !== 'confirmed' ? `The relationship itself is ${sureness(r.status)}` : '';
+		if (ev.kind === 'end') {
+			const head = { divorce: 'Divorce', separation: 'Separation', annulment: 'Annulment' }[r!.endReason as 'divorce'];
+			const verb = { divorce: 'Divorced', separation: 'Separated', annulment: 'Annulled' }[r!.endReason as 'divorce'];
+			return [head, [withWhom, `${verb} ${when(r!.end)}`, r?.start?.edtf ? `${r.type === 'marriage' ? 'Married' : 'Together from'} ${when(r.start)}` : '', doubt, offTimeline(ev.other)]];
+		}
 		const head = r?.type === 'marriage' ? 'Marriage' : r?.type === 'civil-partnership' ? 'Civil partnership' : 'Partnership';
 		const ended = { death: 'Until', divorce: 'Divorced', separation: 'Separated', annulment: 'Annulled', unknown: 'Ended' }[r?.endReason ?? 'unknown'];
 		return [
 			head,
 			[
-				other ? `With ${displayName(person(app.data, other))}` : 'Partner not known',
-				r?.start?.edtf ? `${r.type === 'marriage' ? 'Married' : 'From'} ${when(r.start)}` : 'Date not known',
+				withWhom,
+				`${r?.type === 'marriage' ? 'Married' : 'From'} ${when(r?.start)}`,
 				r?.end?.edtf ? `${ended} ${when(r.end)}${r.endReason === 'death' ? ', when one of them died' : ''}` : '',
-				r?.status && r.status !== 'confirmed' ? `The relationship itself is ${r.status === 'guess' ? 'a guess' : r.status}` : ''
+				doubt,
+				offTimeline(ev.other)
 			]
 		];
 	}
@@ -52,11 +94,16 @@
 
 <!-- A click on the timeline's background (not a name, circle or link) closes the person panel. -->
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="tl" bind:clientWidth={width} bind:this={box} onclick={(e) => !(e.target as Element).closest('.tlname, .mdot, button, a') && app.selected && app.select(null)}>
+<div class="tl" bind:clientWidth={width} bind:this={box} onclick={(e) => !(e.target as Element).closest('.tlname, .tev, button, a') && app.selected && app.select(null)}>
 	{#if !tl.rows.length}
 		<div class="empty">Add a birth year to anyone and they'll appear here.</div>
 	{:else}
-		<p class="note">Bars run from birth to death; living people run to today (dashed line). Faded ends mean an approximate or unrecorded date. Circles mark marriages and partnerships.</p>
+		<p class="note">Bars run from birth to death; living people run to today (dashed line). Faded ends mean an approximate or unrecorded date.</p>
+		<div class="legend tl-key">
+			{#each [['marriage', 'marriage or partnership'], ['end', 'divorce or separation'], ['child', 'birth of a child']] as [k, label] (k)}
+				<span class="ev-key"><svg viewBox="-6.5 -6.5 13 13" aria-hidden="true"><path class="tev {k}" d={SHAPE[k as TimelineEventKind]} /></svg> = {label}</span>
+			{/each}
+		</div>
 		<div class="tl-wrap">
 			<svg width={W} height={H} viewBox="0 0 {W} {H}" role="img" aria-label="Timeline">
 				<defs>
@@ -94,12 +141,14 @@
 					{:else if !r.living}
 						<rect x={X(r.solidEnd)} y={by} width={UNKNOWN_END_FADE * px} height="8" fill="url(#foutp)" />
 					{/if}
-					{#each r.partnerships as m (m.family.id)}
-						{@const t = partnershipTip(m.family.id, r.id)}
+					<!-- children's births first, so the rings and diamonds stay on top where they meet -->
+					{#each [...r.events].sort((a, b) => +(a.kind !== 'child') - +(b.kind !== 'child')) as ev (ev.kind + ev.family.id + (ev.other ?? ''))}
+						{@const t = eventTip(ev)}
 						<!-- svelte-ignore a11y_no_noninteractive_tabindex (focusable so the tooltip can be read from the keyboard) -->
-						<circle class="mdot" cx={X((m.range.start + m.range.end) / 2)} cy={by + 4} r="4.5" tabindex="0" role="img" aria-label="{t[0]}: {t[1].join('. ')}" onpointerenter={(e) => show(e, ...t)} onpointerleave={hide} onfocus={(e) => show(e, ...t)} onblur={hide} />
+						<path class="tev {ev.kind}" class:pencil={ev.dateUnsure} d={SHAPE[ev.kind]} transform="translate({X(ev.at)} {by + 4})" tabindex="0" role="img" aria-label="{t[0]}: {t[1].filter(Boolean).join('. ')}" onpointerenter={(e) => show(e, ev, i, ...t)} onpointerleave={hide} onfocus={(e) => show(e, ev, i, ...t)} onblur={hide} />
 					{/each}
 				{/each}
+				{#if link}<path class="tlink" class:unsure={link.unsure} d="M{link.x} {link.y1}V{link.y2}" />{/if}
 			</svg>
 		</div>
 		{#if tip}

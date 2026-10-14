@@ -287,7 +287,10 @@ details.names summary{cursor:pointer;font-size:14px;color:var(--ink-soft)}
 textarea{resize:vertical;min-height:70px;line-height:1.4}
 .del-row{margin-top:18px;padding-top:12px;border-top:1px solid var(--rule)}
 .today{stroke:var(--accent);stroke-dasharray:3 3;stroke-width:1}
-.mdot{fill:var(--sheet);stroke:var(--ink);stroke-width:1.5}
+.tev{fill:var(--sheet);stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round}
+.tev.pencil{stroke:var(--pencil)}
+.tlink{stroke:var(--ink);stroke-width:1;pointer-events:none}
+.tlink.unsure{stroke-dasharray:3 2}
 .evlist{display:grid;gap:6px;margin:0;padding:0;list-style:none}
 .evlist li{display:flex;gap:8px;align-items:baseline;font-size:14px;border-bottom:1px dotted var(--rule);padding-bottom:5px}
 .evlist .ty{font-weight:700;min-width:84px;text-transform:capitalize}
@@ -334,7 +337,7 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .chip.focus-chip{border-color:var(--ink);color:var(--ink);font-weight:500}
 .chip.focus-chip::after{content:" ▾";font-size:11px}
 @media (max-width:760px){
-  .legend{display:none}
+  .legend:not(.tl-key){display:none}
   .sheet{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:78%;border-left:0;border-top:1px solid var(--rule);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:10}
   .actions{margin-left:0}
   /* Phone: keep the header and views short, so the tree gets the screen. Row one is the name, + and Data (and
@@ -378,8 +381,12 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .tl .tip{position:absolute;z-index:5;transform:translate(-50%,calc(-100% - 9px));display:grid;gap:1px;min-width:120px;max-width:300px;background:var(--ink);color:var(--paper);border-radius:7px;padding:6px 10px;font-size:13px;line-height:1.35;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none}
 .tl .tip b{font-family:var(--f-name);font-size:14px}
 .tl .tip::after{content:'';position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:var(--ink);transform:translateX(-50%) rotate(45deg)}
-.mdot{cursor:default}
-.mdot:hover,.mdot:focus-visible{stroke-width:3}
+.tev{cursor:default}
+.tl-wrap .tev:hover,.tl-wrap .tev:focus-visible{stroke-width:3}
+/* timeline legend: the event symbols, under the intro text */
+.legend.tl-key{margin:-4px 0 12px}
+.legend .ev-key{display:inline-flex;align-items:baseline;gap:5px}
+.legend .ev-key svg{width:11px;height:11px;align-self:center;overflow:visible}
 /* legend: research progress dot */
 .legend .stage-key{display:inline-flex;align-items:baseline;gap:5px}
 .legend .stage-key svg{width:11px;height:11px;align-self:center}
