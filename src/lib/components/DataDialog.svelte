@@ -5,6 +5,8 @@
 	import { ago } from '#lib/storage/safety.ts';
 	import { toGedcom } from '#lib/export/gedcom.ts';
 	import { isZip, makeZip, readZip } from '#lib/export/zip.ts';
+	import { subsetDataset } from '#lib/model/subset.ts';
+	import { displayName, person } from '#lib/model/queries.ts';
 
 	let { onClose }: { onClose: () => void } = $props();
 	/** Family edition: the tree is shared, so replacing all of it (a backup, pasted data, starting empty) is for
@@ -49,13 +51,21 @@
 		useData(kind === 'reset' ? demoData() : emptyDataset());
 	}
 
+	// Exports can take only the people in the current focus or saved view. Not offered when everyone (or nobody) is shown.
+	const filtered = $derived(app.visibleIds.length > 0 && app.visibleIds.length < app.data.people.length);
+	let onlyView = $state(false);
+	const partial = $derived(filtered && onlyView);
+	/** The view's name, for the file name: "family-tree-2026-10-14-charles-darwins-family.json". */
+	const viewName = () => app.activeView?.name ?? (app.activeFocus ? `${displayName(person(app.data, app.activeFocus.id))} family` : 'view');
+	const slug = (t: string) => t.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 	// Downloads: the backup (one JSON file with everything, photos included), a GEDCOM file for other apps, and a
 	// ZIP with all of it (the data, GEDCOM and the photos as files). The backup and the ZIP count as backups.
 	let saving = $state<'' | 'json' | 'ged' | 'zip'>('');
 	function save(blob: Blob, ext: string) {
 		const a = document.createElement('a');
 		a.href = URL.createObjectURL(blob);
-		a.download = `family-tree-${new Date().toISOString().slice(0, 10)}.${ext}`;
+		a.download = `family-tree-${new Date().toISOString().slice(0, 10)}${partial ? `-${slug(viewName()) || 'view'}` : ''}.${ext}`;
 		a.click();
 		setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 	}
@@ -64,11 +74,13 @@
 		saving = kind;
 		err = '';
 		try {
-			const d = $state.snapshot(app.data);
+			const all = $state.snapshot(app.data);
+			const d = partial ? subsetDataset(all, app.visibleIds) : all;
 			if (kind === 'json') save(new Blob([await makeBackup(app.store, d)], { type: 'application/json' }), 'json');
 			else if (kind === 'ged') save(new Blob([toGedcom(d)], { type: 'text/plain;charset=utf-8' }), 'ged');
 			else save(new Blob([(await makeZip(app.store, d)).slice()], { type: 'application/zip' }), 'zip');
-			if (kind !== 'ged') app.noteBackup();
+			// Only the whole tree counts towards the backup reminder.
+			if (kind !== 'ged' && !partial) app.noteBackup();
 		} catch (e) {
 			err = "Couldn't make that file: " + (e as Error).message;
 		} finally {
@@ -119,16 +131,27 @@
 			{/if}
 		</p>
 		{/if}
-		<div class="row">
-			<button class="btn small primary" onclick={() => download('json')} disabled={!!saving}>{saving === 'json' ? 'Preparing…' : 'Download backup'}</button>
-			{#if canReplace}<button class="btn small" onclick={() => fileInput?.click()}>{shared ? 'Replace the shared tree with a backup…' : 'Open backup file…'}</button>{/if}
-			<input bind:this={fileInput} type="file" accept="application/json,.json,application/zip,.zip" hidden onchange={openFile} />
+		<div class="export-groups">
+			<div class="export-group">
+				<div class="lbl">Backup and import data</div>
+				<div class="row">
+					<button class="btn small primary" onclick={() => download('json')} disabled={!!saving}>{saving === 'json' ? 'Preparing…' : 'Download backup'}</button>
+					{#if canReplace}<button class="btn small" onclick={() => fileInput?.click()}>{shared ? 'Replace the shared tree with a backup…' : 'Open backup file…'}</button>{/if}
+					<input bind:this={fileInput} type="file" accept="application/json,.json,application/zip,.zip" hidden onchange={openFile} />
+				</div>
+			</div>
+			<div class="export-group">
+				<div class="lbl">Export for other apps</div>
+				<div class="row">
+					<button class="btn small" onclick={() => download('ged')} disabled={!!saving}>{saving === 'ged' ? 'Preparing…' : 'Export GEDCOM (.ged)'}</button>
+					<button class="btn small" onclick={() => download('zip')} disabled={!!saving}>{saving === 'zip' ? 'Preparing…' : 'Export ZIP, with photos'}</button>
+				</div>
+			</div>
 		</div>
-		<div class="lbl">For other family tree apps</div>
-		<div class="row">
-			<button class="btn small" onclick={() => download('ged')} disabled={!!saving}>{saving === 'ged' ? 'Preparing…' : 'Export GEDCOM (.ged)'}</button>
-			<button class="btn small" onclick={() => download('zip')} disabled={!!saving}>{saving === 'zip' ? 'Preparing…' : 'Export ZIP, with photos'}</button>
-		</div>
+		{#if filtered}
+			<label class="check"><input type="checkbox" bind:checked={onlyView} /> Only export data for current filtered view</label>
+			{#if onlyView}<p class="hint" style="margin:0">{app.visibleIds.length} of {app.data.people.length} people, with their families, places and sources. Saved views aren't included, and a partial backup doesn't count towards the backup reminder.</p>{/if}
+		{/if}
 		<p class="hint" style="margin:0">
 			GEDCOM is the format other family tree apps and sites (Ancestry, FamilySearch, Gramps, MacFamilyTree…) import.
 			Names, dates, places, families, notes and sources carry over. How sure each fact is, research notes, to-dos and

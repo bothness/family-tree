@@ -16,7 +16,7 @@ The data model and everything that reads or writes it without drawing it: `model
 
 ## Files
 - `types.ts` mirrors `schema/family-tree.schema.json`. **When the model changes, update together:** `types.ts`, the schema, `migrate.ts`, `src/lib/data/example-data.json` (the test fixture), `docs/MODEL.md`, and the GEDCOM export if the field carries over.
-- `queries.ts` read-only lookups · `mutations.ts` in-place changes · `edtf.ts` dates · `gaps.ts` research to-do · `focus.ts` who a focus view shows · `views.ts` saved views · `places.ts` places · `sources.ts` sources · `media.ts` photo entries.
+- `queries.ts` read-only lookups · `mutations.ts` in-place changes · `edtf.ts` dates · `gaps.ts` research to-do · `focus.ts` who a focus view shows · `views.ts` saved views · `places.ts` places · `sources.ts` sources · `media.ts` photo entries · `subset.ts` part of a tree, for exporting only the current view.
 - `places/nominatim.ts`: OpenStreetMap place search, called from the browser. At most one request a second, cached, and only when asked ("Search OpenStreetMap for …"): Nominatim's policy forbids search-as-you-type.
 - `media/images.ts` resizes photos (800px, halving in steps so it stays smooth, plus a 192px square thumbnail); `media/crop.ts` is the square-crop maths.
 - `storage/`: the `DataStore` interface (async; the dataset plus photo files) on IndexedDB, falling back to localStorage. `safety.ts`: persistent storage and backup reminders. The app must work fully with no server: sync is a layer on top (`src/lib/sync/`, see `server/CLAUDE.md`).

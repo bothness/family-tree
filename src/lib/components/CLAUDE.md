@@ -18,7 +18,7 @@ Everything the user sees and touches: `components/`, `src/routes/+page.svelte` (
 - Animation (V11): cards keyed by person glide to new positions, newcomers fade in, leavers go at once; lines are re-routed on in-between positions; "reduce motion" is respected.
 - Tabs: `TreeView` (draws the layout from `src/lib/layout/`: cards, lines, pan/zoom/fit, animation, zoom bar with Fit, the Photos switch and the Vertical/Horizontal menu), `TimelineView`, `MapView` (MapLibre globe, OpenFreeMap tiles, no borders or country names; its worker URL is set explicitly with `setWorkerUrl`, which the Vite dev server needs; dots from `layout/map.ts` grow as you zoom), `TodoView`.
 - Person panel: `PersonSheet` (editing), `PersonView` (read-only, for viewers), `AddRelative`, `PlaceInput` (a birth or death place, or with `fid` where a couple married)/`PlaceDetails`, `SourceList` (sources, shared: pick one already in the tree or add one; a person's note on it), `PhotoPicker` + `CropDialog`. A right-hand panel on wide screens, a bottom sheet under 760px. It closes with the × or a click on empty canvas.
-- Dialogs: `DataDialog` (backup, open, exports, demo), `AccessDialog` and `SignIn` (family edition), `BlankPrompt` (first run).
+- Dialogs: `DataDialog` (backup, open, exports with "only the current view", demo), `AccessDialog` and `SignIn` (family edition), `BlankPrompt` (first run).
 
 ## Conventions
 - Interaction: wheel zooms at the cursor (Safari: the wheel scrolls, ⌘ + wheel zooms); drag or middle-button drag pans; pinch zooms; +/−/0 keys. The view re-fits only on load, Fit, search or focus changes, never on ordinary edits.
