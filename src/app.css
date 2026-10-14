@@ -329,10 +329,12 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
   .wide-only{display:none}
   .phone-only{display:revert}
   .top{padding:8px 12px;gap:6px 8px}
-  .brand{font-size:17px}
+  /* The name gives way first: on a narrow screen (or with larger text) it wraps onto two lines, rather than
+     the buttons dropping to a row of their own. */
+  .brand{font-size:17px;line-height:1.15;flex:1 1 0;min-width:0}
   .actions{order:1;margin-left:auto;align-items:center}
   .btn.new{font-size:19px;line-height:21px}
-  .sync-status{padding-right:0}
+  .actions button.sync-status{padding:4px 0 4px 2px}
   .tabs{order:2;flex:1;justify-content:space-between}
   .tabs button{padding:5px 9px}
   .search-toggle{display:inline-grid;order:2}
