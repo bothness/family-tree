@@ -157,7 +157,7 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 .stepper button:disabled{opacity:.35;cursor:default}
 .step{display:inline-flex;align-items:center;gap:8px}
 .legend{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft)}
-.legend .pen{font-family:var(--f-pencil);font-size:17px;line-height:1;color:var(--pencil)} /* no taller than the text beside it */
+.legend .pen{font-family:var(--f-pencil);font-size:17px;line-height:1;color:var(--pencil)} /* keeps the line no taller than the text */
 .legend .ink{font-family:var(--f-name);color:var(--ink)}
 
 .work{flex:1;display:flex;min-height:0}
@@ -173,7 +173,9 @@ kbd{font-family:var(--f-ui);font-size:12px;border:1px solid var(--rule);border-b
 /* The tree's legend, bottom left: a card when the canvas is wide enough, otherwise a Legend button that opens it. */
 .canvas{container-type:inline-size}
 .tree-legend{position:absolute;left:12px;bottom:14px;display:grid;justify-items:start;gap:6px;cursor:default;max-width:calc(100% - 24px)}
-.tree-legend .legend{display:none;align-items:center;row-gap:4px;background:var(--sheet);border:1px solid var(--rule);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:5px 11px}
+/* Items share a baseline (centring them as boxes put words beside the taller handwritten "pencil" lower), and
+   the padding is a pixel less above so the line sits in the middle of the card. */
+.tree-legend .legend{display:none;align-items:baseline;row-gap:4px;background:var(--sheet);border:1px solid var(--rule);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:4px 11px 5px}
 .tree-legend.open .legend{display:flex}
 .legend-btn{padding:5px 11px;font-weight:500;color:var(--ink-soft)}
 .legend-btn[aria-expanded="true"],.legend-btn:hover{color:var(--ink)}
