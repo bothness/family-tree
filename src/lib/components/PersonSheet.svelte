@@ -88,7 +88,8 @@
 
 	const val = (e: Event) => (e.currentTarget as HTMLInputElement).value;
 	const ensureMain = (): Name => {
-		if (!main) (p.names ??= []).push({ type: 'birth' });
+		// Push through the property: `(p.names ??= []).push` would push into the plain array, not the reactive one.
+		if (!main) (p.names ??= [], p.names.push({ type: 'birth' }));
 		return primaryName(p)!;
 	};
 	/** Other names, folded: "Mary Smith (married, from 1883, on the tree)". */
@@ -145,7 +146,10 @@
 	}
 	function addTodo() {
 		if (!todoText.trim()) return;
-		((p.research ??= {}).todo ??= []).push(todoText.trim());
+		// Each step through the property: chaining `??=` would push into a plain array, not the reactive one.
+		p.research ??= {};
+		p.research.todo ??= [];
+		p.research.todo.push(todoText.trim());
 		todoText = '';
 	}
 	function remove() {

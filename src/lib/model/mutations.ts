@@ -80,7 +80,8 @@ export function detachChild(d: Dataset, cid: string) {
 export function attachChild(d: Dataset, f: Family, cid: string, unsure = false) {
 	const l = detachChild(d, cid) ?? { personId: cid };
 	if (unsure) l.status = 'guess';
-	(f.children ??= []).push(l);
+	f.children ??= [];
+	f.children.push(l); // not `(f.children ??= []).push`, which would miss the reactive copy in the app
 }
 
 /** Remove families that no longer carry information, and places and sources nothing uses. */

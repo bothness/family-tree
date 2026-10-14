@@ -5,6 +5,7 @@ import { flushSync } from 'svelte';
 import type { Dataset } from './types.ts';
 import { emptyDataset, linkPeople, newPerson, setLife } from './mutations.ts';
 import { childIds, famAsChild, lifeEvent, partnerIds } from './queries.ts';
+import { cite } from './sources.ts';
 
 describe('mutations on a $state proxy', () => {
 	it('adding a child to someone with no family yet links them', () => {
@@ -32,5 +33,19 @@ describe('mutations on a $state proxy', () => {
 		setLife(d, id, 'birth', '1880s', 'Leeds');
 		expect(lifeEvent(d, id, 'birth')?.date?.edtf).toBe('188X');
 		expect(JSON.parse(JSON.stringify(d)).events[0].date.edtf).toBe('188X');
+	});
+
+	it("someone's first source is kept", () => {
+		const d: Dataset = $state(emptyDataset());
+		const id = newPerson(d, 'Ann').id;
+		const stop = $effect.root(() => {
+			$effect(() => {
+				JSON.stringify(d);
+			});
+		});
+		flushSync();
+		const sid = cite(d, id, { type: 'web', title: 'WikiTree', url: 'https://www.wikitree.com/wiki/Darwin-11' });
+		expect(d.people[0].citations).toEqual([{ sourceId: sid }]);
+		stop();
 	});
 });

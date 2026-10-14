@@ -92,7 +92,10 @@ export function cite(d: Dataset, pid: string, from: string | Omit<Source, 'id'>,
 	if (p.citations?.some((c) => c.sourceId === id)) return id;
 	const c: Citation = { sourceId: id };
 	if (detail?.trim()) c.detail = detail.trim();
-	(p.citations ??= []).push(c);
+	// Push through the property, not the result of `??=`: in the app the data is reactive, and a push into the
+	// plain array just assigned would be lost.
+	p.citations ??= [];
+	p.citations.push(c);
 	return id;
 }
 

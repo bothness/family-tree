@@ -217,7 +217,7 @@ function restorePerson(d: Dataset, from: Dataset, pid: string) {
 			d.families.push(structuredClone(f));
 			continue;
 		}
-		for (const l of roles) if (!(here[l] ?? []).some((x) => x.personId === pid)) (here[l] ??= []).push(structuredClone(f[l].find((x) => x.personId === pid)!));
+		for (const l of roles) if (!(here[l] ?? []).some((x) => x.personId === pid)) (here[l] ??= [], here[l].push(structuredClone(f[l].find((x) => x.personId === pid)!)));
 	}
 	const photo = from.people.find((x) => x.id === pid)?.photo;
 	const m = photo && from.media.find((x) => x.id === photo);
