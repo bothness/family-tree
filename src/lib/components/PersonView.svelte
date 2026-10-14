@@ -96,7 +96,7 @@
 <div class="blk ro">
 	<div class="lbl">Family</div>
 	<div class="who">
-		<span class="hint">Parents:</span>
+		<span class="hint">{parentFam?.children.find((c) => c.personId === pid)?.relation === 'adopted' ? 'Adoptive parents:' : 'Parents:'}</span>
 		{#if parents.length}{#each parents as id, i (id)}{@render personLink(id)}{#if sure(parentFam?.partners.find((x) => x.personId === id)?.status)}<span class="sure">&nbsp;({sure(parentFam?.partners.find((x) => x.personId === id)?.status)})</span>{/if}{i < parents.length - 1 ? ' & ' : ''}{/each}{#if sure(parentFam?.children.find((c) => c.personId === pid)?.status)}<span class="sure">&nbsp;(the link is {sure(parentFam?.children.find((c) => c.personId === pid)?.status)})</span>{/if}{:else}<span class="hint">not recorded</span>{/if}
 	</div>
 	{#if siblings.length}<div class="who"><span class="hint">Siblings:</span> {#each siblings as id, i (id)}{@render personLink(id)}{i < siblings.length - 1 ? ', ' : ''}{/each}</div>{/if}
@@ -112,7 +112,7 @@
 			</div>
 			{#if r.start?.edtf || r.end?.edtf || placeName(r.place)}
 				<div class="hint">
-					{#if r.start?.edtf}from {@render when(r.start)}{/if}{#if placeName(r.place)}{r.start?.edtf ? ', ' : ''}in {@render where(r.place)}{/if}{#if r.end?.edtf}{r.start?.edtf || placeName(r.place) ? '; ' : ''}{ENDED[r.endReason ?? 'unknown']} {@render when(r.end)}{/if}
+					{#if r.start?.edtf}from {@render when(r.start)}{/if}{#if placeName(r.place)}{r.start?.edtf ? ', ' : ''}in {@render where(r.place)}{/if}{#if r.end?.edtf}{r.start?.edtf || placeName(r.place) ? '; ' : ''}{ENDED[r.endReason ?? 'unknown']} {@render when(r.end)}{:else if r.endReason && r.endReason !== 'unknown' && r.endReason !== 'death'}{r.start?.edtf || placeName(r.place) ? '; ' : ''}{ENDED[r.endReason]}{/if}
 				</div>
 			{/if}
 			<div class="who"><span class="hint">Children:</span> {#each kidsOf(f) as id, i (id)}{@render personLink(id)}{i < f.children.length - 1 ? ', ' : ''}{:else}<span class="hint">none recorded</span>{/each}</div>

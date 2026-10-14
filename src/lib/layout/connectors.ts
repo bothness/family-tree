@@ -7,18 +7,21 @@
 // family's bus the bus hops over it (V9). Partners with someone between them (a third partner, say) are joined
 // by a raised line just above the cards, and their children's line drops through the gap just inside the
 // "outer" partner (the one with fewer partners), so it never runs through a card.
-import type { Dataset, Family, Status } from '../model/types.ts';
+import type { ChildRef, Dataset, EndReason, Family, Status } from '../model/types.ts';
 import { childIds, partnerIds } from '../model/queries.ts';
 import { anchorOffset, cardSize, missingCount, type CardSize, type GhostBox, type NodeBox } from './positions.ts';
 
-/** ghost = to a placeholder for children known to be missing; maybe = to a "more children?" one. */
-export type LineStyle = 'solid' | 'likely' | 'guess' | 'ghost' | 'maybe';
+/** ghost = to a placeholder for children known to be missing; maybe = to a "more children?" one; adopted = to an
+ *  adopted child. */
+export type LineStyle = 'solid' | 'likely' | 'guess' | 'ghost' | 'maybe' | 'adopted';
 export interface Seg { x1: number; y1: number; x2: number; y2: number }
 export interface Line {
 	/** Stable across layouts, e.g. "fam_x:bus", so lines can be keyed while animating. */
 	key: string;
 	familyId: string;
-	kind: 'couple' | 'drop' | 'bus' | 'stub';
+	/** mark = the slash across a couple's line when they divorced or separated (the only line that isn't straight
+	 *  across or down). */
+	kind: 'couple' | 'drop' | 'bus' | 'stub' | 'mark';
 	d: string;
 	style: LineStyle;
 	seg: Seg;
@@ -39,6 +42,13 @@ export const RAISE_BASE = 9,
 	RAISE_INSET = 16;
 
 const styleOf = (st?: Status | ''): LineStyle => (st === 'guess' ? 'guess' : st === 'likely' ? 'likely' : 'solid');
+/** A child's line: a guess stays pencil; otherwise an adoption is dashed. */
+const childStyle = (c: ChildRef): LineStyle => (c.status !== 'guess' && c.relation === 'adopted' ? 'adopted' : styleOf(c.status));
+/** Partnerships that ended other than by a death are marked with a slash across the couple's line. */
+const ENDED_APART: EndReason[] = ['divorce', 'separation', 'annulment'];
+/** Half the slash's width and height (it leans like "/", steeper than a diagonal). */
+const MARK_DX = 3.5,
+	MARK_DY = 6;
 
 export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[], S: CardSize = cardSize()): { lines: Line[]; anchors: Record<string, Anchor> } {
 	const W = S.w,
@@ -87,10 +97,12 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 			const [a, b] = [...ps].sort((p, q) => p.x - q.x);
 			const st = f.relationship?.status ?? (f.partners.some((x) => x.status === 'guess') ? 'guess' : '');
 			const lane = raised.get(f.id);
+			// Where the slash goes if they divorced or separated: the middle of the line between them.
+			let mx: number;
 			if (lane === undefined) {
 				ay = a.y + NODE_H / 2;
 				h(`${f.id}:couple`, f, 'couple', a.x + W, b.x, ay, styleOf(st));
-				ax = (a.x + W + b.x) / 2;
+				ax = mx = (a.x + W + b.x) / 2;
 			} else {
 				ay = a.y - RAISE_BASE - lane * RAISE_STEP;
 				const x1 = a.x + W - RAISE_INSET,
@@ -100,7 +112,11 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 				v(`${f.id}:couple-r`, f, 'couple', x2, ay, b.y, styleOf(st));
 				const [ia, ib] = [a.id, b.id].map((p) => partnerCount.get(p) ?? 0);
 				ax = a.x + anchorOffset(0, b.x - a.x, !(ia > ib), W);
+				mx = (x1 + x2) / 2;
 			}
+			const end = f.relationship?.endReason;
+			if (end && ENDED_APART.includes(end))
+				lines.push({ key: `${f.id}:ended`, familyId: f.id, kind: 'mark', d: '', style: 'solid', seg: { x1: mx - MARK_DX, y1: ay + MARK_DY, x2: mx + MARK_DX, y2: ay - MARK_DY }, hops: [] });
 			anchors[f.id] = { x: ax, y: ay, couple: true, bottom: a.y + NODE_H };
 		} else if (ps.length) {
 			ax = ps[0].x + W / 2;
@@ -108,7 +124,7 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 			anchors[f.id] = { x: ax, y: ay, couple: false, bottom: ay };
 		}
 
-		const targets = cs.map(({ id, n }) => ({ key: `${f.id}:c:${id}`, x: n.x + W / 2, y: n.y, style: styleOf(f.children.find((c) => c.personId === id)!.status), left: n.x, w: W }));
+		const targets = cs.map(({ id, n }) => ({ key: `${f.id}:c:${id}`, x: n.x + W / 2, y: n.y, style: childStyle(f.children.find((c) => c.personId === id)!), left: n.x, w: W }));
 		if (gh) targets.push({ key: `${f.id}:ghost`, x: gh.x + GHOST_W / 2, y: gh.y, style: missingCount(f) ? 'ghost' : 'maybe', left: gh.x, w: GHOST_W });
 		if (!targets.length) continue;
 		const xs = targets.map((t) => t.x).concat(ax != null ? [ax] : []);
@@ -214,6 +230,7 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
  *  sideways on a vertical one, as in a left-to-right tree). */
 export function pathOf(l: Line): string {
 	const { x1, y1, x2, y2 } = l.seg;
+	if (x1 !== x2 && y1 !== y2) return `M${x1} ${y1}L${x2} ${y2}`;
 	if (!l.hops.length) return `M${x1} ${y1}${y1 === y2 ? `H${x2}` : `V${y2}`}`;
 	let p = `M${x1} ${y1}`;
 	if (y1 === y2) {

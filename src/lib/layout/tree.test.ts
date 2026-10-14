@@ -190,6 +190,36 @@ describe('connectors', () => {
 		expect(line('fa:bus').hops).toContain(crossing!.seg.x1);
 		expect(line('fa:bus').d).toMatch(/A5 5 0 0 1/);
 	});
+	it('marks a divorce or separation with a slash across the couple line (not a partnership ended by a death)', () => {
+		const dd = structuredClone(d3);
+		dd.people.push({ id: 'c1', names: [{ given: 'c1' }] }, { id: 'c2', names: [{ given: 'c2' }] });
+		dd.families.push(
+			{ id: 'fdiv', partners: [{ personId: 'c1' }, { personId: 'c2' }], children: [], relationship: { endReason: 'divorce' } },
+			{ id: 'fdied', partners: [{ personId: 'b' }, { personId: 'bc' }], children: [], relationship: { endReason: 'death' } }
+		);
+		const ns = [...nodes, { id: 'c1', x: 0, y: 300 }, { id: 'c2', x: 170, y: 300 }];
+		const ls = routeConnectors(dd, ns, []).lines;
+		const mark = ls.find((l) => l.key === 'fdiv:ended')!;
+		const couple = ls.find((l) => l.key === 'fdiv:couple')!;
+		// Leaning like "/": up to the right, across the middle of the couple line.
+		expect(mark.kind).toBe('mark');
+		expect(mark.seg.x2).toBeGreaterThan(mark.seg.x1);
+		expect(mark.seg.y2).toBeLessThan(mark.seg.y1);
+		expect((mark.seg.x1 + mark.seg.x2) / 2).toBe((couple.seg.x1 + couple.seg.x2) / 2);
+		expect((mark.seg.y1 + mark.seg.y2) / 2).toBe(couple.seg.y1);
+		expect(mark.d).toMatch(/^M[\d.-]+ [\d.-]+L/);
+		expect(ls.some((l) => l.familyId === 'fdied' && l.kind === 'mark')).toBe(false);
+	});
+	it('draws the line to an adopted child dashed (a guess stays pencil)', () => {
+		const dd = structuredClone(d3);
+		dd.families[0].children[0].relation = 'adopted';
+		dd.families[0].children[1].relation = 'adopted';
+		dd.families[0].children[1].status = 'guess';
+		const ls = routeConnectors(dd, nodes, []).lines;
+		expect(ls.find((l) => l.key === 'fa:c:ac1')!.style).toBe('adopted');
+		expect(ls.find((l) => l.key === 'fa:c:ac2')!.style).toBe('guess');
+		expect(ls.find((l) => l.key === 'fb:c:bc')!.style).toBe('solid');
+	});
 	it('stacks overlapping lines so they hop as little as they can', () => {
 		// C's line runs from its parent on the left to a child far right, over D's family: below D's line it would hop
 		// D's two lines down to its children, above it only D's line down from its parent.

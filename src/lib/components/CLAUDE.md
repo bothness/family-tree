@@ -3,7 +3,7 @@
 Everything the user sees and touches: `components/`, `src/routes/+page.svelte` (the app shell), `app.svelte.ts` (shared state), `src/app.css` (all styles), `src/app.html` (title, icons, sharing tags), `static/`. Requests here are often cross-cutting, so keep things visually consistent across tabs, panels and dialogs.
 
 ## Design language
-- **Ink and pencil.** Confirmed facts are drawn in ink (`--f-name`, Alegreya, a serif). Guesses are in pencil (`--f-pencil`, Caveat, handwritten, `--pencil` grey). UI text is `--f-ui` (Alegreya Sans). Likely or guessed links are dashed lines.
+- **Ink and pencil.** Confirmed facts are drawn in ink (`--f-name`, Alegreya, a serif). Guesses are in pencil (`--f-pencil`, Caveat, handwritten, `--pencil` grey). UI text is `--f-ui` (Alegreya Sans). Likely or guessed links are dashed lines; so, for now, are lines to adopted children ("This is an adoptive relationship" under the parent link). A couple who divorced, separated or had the marriage annulled have a "/" across their line.
 - **Tokens only** (`:root` in `app.css`): `--paper` (background), `--sheet` (panels), `--ink`, `--ink-soft`, `--pencil`, `--rule` (borders), `--accent` (green: primary buttons, focus rings, research dots), `--warn`. Dark theme is the same tokens redefined, so never hard-code colours.
 - **All styles live in `app.css`**, as plain classes (`.btn`, `.btn.primary`, `.btn.small`, `.linkish`, `.seg` switches, `.dialog`, `.overlay`, `.sheet`, `.zoombar`/`.zgroup`, …). Reuse an existing class before adding one. Components have almost no `<style>` blocks.
 - Complex keyboard and accessibility widgets use **Bits UI** (headless), styled with our classes. No styled UI kits.

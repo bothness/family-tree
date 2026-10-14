@@ -300,6 +300,9 @@
 			<!-- How sure the link to their parents is (set to "guess" when added with "This is a guess"), and, for a
 			     parent who was added as a guess, how sure that parent is. -->
 			<div class="row"><span class="hint">This parent link is</span><StatusPicker value={link?.status} onchange={(v) => setStatus(link, v)} /></div>
+			{#if link}
+				<label class="check"><input type="checkbox" checked={link.relation === 'adopted'} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) link.relation = 'adopted'; else delete link.relation; }} /> This is an adoptive relationship</label>
+			{/if}
 			{#each parentFam.partners.filter((x) => (x.status && x.status !== 'confirmed') || touchedParents.has(x.personId)) as pr (pr.personId)}
 				<div class="row"><span class="hint">{displayName(person(d, pr.personId))} as a parent is</span><StatusPicker value={pr.status} onchange={(v) => ((touchedParents = new Set([...touchedParents, pr.personId])), setStatus(pr, v))} /></div>
 			{/each}

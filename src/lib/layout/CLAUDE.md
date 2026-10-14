@@ -4,7 +4,7 @@ Pure functions: a `Dataset` and the people in view go in, card positions and lin
 
 ## Files
 - `positions.ts`: where each card goes (step 1). `layoutPositions(d, branches, root?, size)`; card sizes (`cardSize`, `NODE_W`, `PORTRAIT_W`, …) and gaps (`CARD_GAP` between partners, `SIB_GAP` between siblings, `FAM_GAP` between families, `COMP_GAP` between unconnected groups).
-- `connectors.ts`: the lines (step 2), from card positions alone, so `TreeView` can re-run it on in-between positions while animating: couple lines (raised when someone sits between partners), drops, buses at separate heights where they'd overlap (stacked in the order with fewest hops), hops where lines cross, stubs nudged apart where a child's line would run along another family's.
+- `connectors.ts`: the lines (step 2), from card positions alone, so `TreeView` can re-run it on in-between positions while animating: couple lines (raised when someone sits between partners; a "/" across the middle when they divorced, separated or the marriage was annulled), drops, buses at separate heights where they'd overlap (stacked in the order with fewest hops), hops where lines cross, stubs nudged apart where a child's line would run along another family's.
 - `tree.ts`: `layoutTree` combines the two. Horizontal trees are the vertical layout worked out with the card turned on its side (`turn`), then flipped (`flip`); `routeShown` re-routes lines for the cards on screen.
 - `check.ts`: `checkLayout(d, L, ids)` lists every rule a layout breaks (empty = good); `crossings()` counts crossing lines. Tests use it; it's the definition of "correct".
 - `viewport.ts`: pan/zoom camera maths. `timeline.ts`, `map.ts`: the other tabs' layouts.

@@ -189,6 +189,8 @@ svg text{font-family:var(--f-ui)}
 .ln{stroke:var(--ink-soft);stroke-width:1.4;fill:none}
 .ln.probable{stroke-dasharray:6 4}
 .ln.guess{stroke:var(--pencil);stroke-dasharray:2 4}
+/* to an adopted child: dashed like a likely link, for now */
+.ln.adopted{stroke-dasharray:6 4}
 /* missing-children placeholders: grey and dashed; "+2 more expected" (a recorded count) in plain text,
    "more children?" (no count) in pencil */
 .ln.ghost{stroke:var(--pencil);stroke-dasharray:2 4}

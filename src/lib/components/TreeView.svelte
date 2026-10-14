@@ -37,7 +37,7 @@
 		return [trunc(a, n), trunc(words.join(' '), n)].filter(Boolean);
 	}
 	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
-	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe' } as const;
+	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe', adopted: 'ln adopted' } as const;
 
 	// ---- animation between layouts (V11) ----
 	// Cards that stay glide from where they're drawn to their new place; people entering fade in; people leaving
