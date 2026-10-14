@@ -201,6 +201,16 @@ export function setChildOf(d: Dataset, pid: string, value: string) {
 	prune(d);
 }
 
+/** Remove a partnership ("Remove this relationship"). With no children the couple's family goes; with children
+ *  both stay their parents, and only the partnership's details (kind, dates, place, how sure) are cleared. */
+export function removePartnership(d: Dataset, fid: string) {
+	const f = family(d, fid);
+	if (!f) return;
+	if ((f.children ?? []).length) delete f.relationship;
+	else d.families = d.families.filter((x) => x !== f);
+	prune(d);
+}
+
 export function deletePerson(d: Dataset, pid: string) {
 	d.people = d.people.filter((p) => p.id !== pid);
 	d.families.forEach((f) => {

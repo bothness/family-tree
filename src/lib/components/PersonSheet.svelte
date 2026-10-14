@@ -11,7 +11,7 @@
 		birthNameNote, birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, halfSiblings,
 		lifeEvent, nameIsGuess, nameText, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName, soloFam
 	} from '#lib/model/queries.ts';
-	import { deletePerson, setChildOf, setLife } from '#lib/model/mutations.ts';
+	import { deletePerson, removePartnership, setChildOf, setLife } from '#lib/model/mutations.ts';
 	import { expandToInclude, type FocusOptions } from '#lib/model/focus.ts';
 	import { setViewScope, viewKind } from '#lib/model/views.ts';
 	import { DropdownMenu } from 'bits-ui';
@@ -40,8 +40,7 @@
 			for (const g of famsAsPartner(d, par)) if (g !== parentFam && !out.some((o) => o[0] === `fam:${g.id}`)) out.push([`fam:${g.id}`, famLabel(d, g)]);
 			if (parents.length === 2 && !soloFam(d, par)) out.push([`solo:${par}`, `${displayName(person(d, par))} + unknown other parent`]);
 		}
-		out.push(['none', 'Not recorded']);
-		return out;
+		return out; // no "Not recorded": the parents box's "Remove this relationship" does that
 	});
 
 	let info = $state('');
@@ -295,28 +294,31 @@
 <div class="blk">
 	<div class="lbl">Family</div>
 	<div class="rels">
-		<div class="who">
-			<span class="hint">Parents:</span>
-			{#if parents.length}{#each parents as id, i (id)}{@render personLink(id)}{i < parents.length - 1 ? ' & ' : ''}{/each}{:else}<span class="hint">not recorded</span>{/if}
-		</div>
-		{#if parentFam && parents.length}
+		{#if !parentFam || !parents.length}
+			<div class="who"><span class="hint">Parents:</span> <span class="hint">not recorded</span></div>
+		{:else}
 			{@const link = parentFam.children.find((c) => c.personId === pid)}
-			<!-- How sure the link to their parents is (set to "guess" when added with "This is a guess"), and, for a
-			     parent who was added as a guess, how sure that parent is. -->
-			<div class="row"><span class="hint">This parent link is</span><StatusPicker value={link?.status} onchange={(v) => setStatus(link, v)} /></div>
-			{#if link}
-				<label class="check"><input type="checkbox" checked={link.relation === 'adopted'} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) link.relation = 'adopted'; else delete link.relation; }} /> This is an adoptive relationship</label>
-			{/if}
-			{#each parentFam.partners.filter((x) => (x.status && x.status !== 'confirmed') || touchedParents.has(x.personId)) as pr (pr.personId)}
-				<div class="row"><span class="hint">{displayName(person(d, pr.personId))} as a parent is</span><StatusPicker value={pr.status} onchange={(v) => ((touchedParents = new Set([...touchedParents, pr.personId])), setStatus(pr, v))} /></div>
-			{/each}
-		{/if}
-		{#if childOfOptions.length > 1}
-			<label class="fld"><span>Child of</span>
-				<select value={parentFam ? `fam:${parentFam.id}` : 'none'} onchange={(e) => setChildOf(d, pid, val(e))}>
-					{#each childOfOptions as [v, l] (v)}<option value={v}>{l}</option>{/each}
-				</select>
-			</label>
+			<!-- The parents get a box like each partnership, ending with a way to take this person away from them. -->
+			<div class="fam">
+				<div class="fam-head"><span class="hint">Parents:</span> {#each parents as id, i (id)}{@render personLink(id)}{i < parents.length - 1 ? ' & ' : ''}{/each}</div>
+				<!-- How sure the link to their parents is (set to "guess" when added with "This is a guess"), and, for a
+				     parent who was added as a guess, how sure that parent is. -->
+				<div class="row"><span class="hint">This parent link is</span><StatusPicker value={link?.status} onchange={(v) => setStatus(link, v)} /></div>
+				{#if link}
+					<label class="check"><input type="checkbox" checked={link.relation === 'adopted'} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) link.relation = 'adopted'; else delete link.relation; }} /> This is an adoptive relationship</label>
+				{/if}
+				{#each parentFam.partners.filter((x) => (x.status && x.status !== 'confirmed') || touchedParents.has(x.personId)) as pr (pr.personId)}
+					<div class="row"><span class="hint">{displayName(person(d, pr.personId))} as a parent is</span><StatusPicker value={pr.status} onchange={(v) => ((touchedParents = new Set([...touchedParents, pr.personId])), setStatus(pr, v))} /></div>
+				{/each}
+				{#if childOfOptions.length > 1}
+					<label class="fld"><span>Child of</span>
+						<select value={`fam:${parentFam.id}`} onchange={(e) => setChildOf(d, pid, val(e))}>
+							{#each childOfOptions as [v, l] (v)}<option value={v}>{l}</option>{/each}
+						</select>
+					</label>
+				{/if}
+				<div class="row"><button class="btn small danger" onclick={() => setChildOf(d, pid, 'none')} title="Takes {displayName(p)} away from both parents">Remove this relationship</button></div>
+			</div>
 		{/if}
 		{#if siblings.length}<div class="who"><span class="hint">Siblings:</span> {#each siblings as id, i (id)}{@render personLink(id)}{i < siblings.length - 1 ? ', ' : ''}{/each}</div>{/if}
 		{#if half.length}<div class="who"><span class="hint">Half-siblings:</span> {#each half as id, i (id)}{@render personLink(id)}{i < half.length - 1 ? ', ' : ''}{/each}</div>{/if}
@@ -357,6 +359,13 @@
 					<label class="fld" style="flex:1 1 80px"><span>Total expected</span><input type="number" min="0" value={f.expectedChildren?.min ?? ''} onchange={(e) => setExpected(f, val(e))} /></label>
 				{/if}
 			</div>
+			<!-- With children, removing keeps both as their parents, so there's only something to remove while the
+			     partnership has details of its own. -->
+			{#if other && (!f.children.length || f.relationship)}
+				<div class="row"><button class="btn small danger" onclick={() => removePartnership(d, f.id)} title={f.children.length ? 'Clears the partnership; both stay parents of their children' : undefined}>Remove this relationship</button></div>
+			{:else if other}
+				<div class="hint">Recorded only as the parents of their children.</div>
+			{/if}
 		</div>
 	{/each}
 

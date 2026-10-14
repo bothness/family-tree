@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Dataset } from './types.ts';
-import { deletePerson, emptyDataset, linkPeople, newPerson, setChildOf, setLife } from './mutations.ts';
+import { deletePerson, emptyDataset, linkPeople, newPerson, removePartnership, setChildOf, setLife } from './mutations.ts';
 import { childIds, coupleFam, displayName, famAsChild, halfSiblings, partnerIds, soloFam } from './queries.ts';
 
 let d: Dataset;
@@ -18,6 +18,29 @@ describe('newPerson', () => {
 	});
 	it('allows an unnamed person', () => {
 		expect(newPerson(d, '').names).toEqual([]);
+	});
+});
+
+describe('removePartnership', () => {
+	it('with no children, the couple goes, and the place they married with it', () => {
+		const a = mk('A'), b = mk('B');
+		ok(linkPeople(d, 'partner', a, b));
+		const f = coupleFam(d, a, b)!;
+		f.relationship = { type: 'marriage', place: { placeId: 'pl_1' } };
+		d.places.push({ id: 'pl_1', name: 'Leeds' });
+		removePartnership(d, f.id);
+		expect(d.families).toEqual([]);
+		expect(d.places).toEqual([]);
+	});
+	it('with children, both stay their parents and only the partnership details go', () => {
+		const a = mk('A'), b = mk('B'), c = mk('C');
+		ok(linkPeople(d, 'parent', c, a));
+		ok(linkPeople(d, 'parent', c, b));
+		const f = famAsChild(d, c)!;
+		f.relationship = { type: 'marriage', start: { edtf: '1880' } };
+		removePartnership(d, f.id);
+		expect(partnerIds(famAsChild(d, c)!)).toEqual([a, b]);
+		expect(famAsChild(d, c)!.relationship).toBeUndefined();
 	});
 });
 
