@@ -16,6 +16,25 @@ Open work only, tagged by area (Layout, Data, Interface, Shared edition, Product
 | Interface | The demo may be too wide to read at a glance | Charles Darwin's ten children plus spouses make a very wide row. Vertical cards (V13) helped; a smaller opening view (see M12) may help more |
 | Data | GEDCOM import | Export is done (E1); import is a separate, larger job (mapping GEDCOM's forms back onto our model and certainty) |
 
+## Larger trees
+From a review on 15 Oct. Synthetic descendant trees timed in Node: the full layout took 0.11 s at 150 people, 0.34 s at 300, 1.9 s at 600, 11 s at 1,000 and 88 s at 2,000 (roughly cubic; in the app it's on the main thread, and real trees with more intermarriage will be slower). What counts is the largest connected group, since unconnected groups are laid out separately. In the owner's export (150 people, 32 photos) the card thumbnails are 460 KB against 221 KB for the tree itself, and they go into every save, sync and stored version. In rough order of value for effort:
+
+| # | Area | Item | Notes |
+|---|---|---|---|
+| L1 | Interface | **Open large trees in a focus view** | Above a few hundred people, open on a focus view instead of everyone. Uses what exists; the cheapest protection |
+| L2 | Layout | **Bound the order search** | Each trial move in step 3b calls `now()`, which re-scores the whole tree, and the couple-turn move re-sorts every row first. Score only the rows a move touches, and give the search a work or time budget |
+| L3 | Layout | **Cache layouts by group** | Keep each connected group's layout, keyed on what the layout reads (people, families, dates, sizes), so an edit only re-lays out its own group |
+| L4 | Layout | **Lay out in a Web Worker** | So a slow layout never freezes the page; show the previous layout until the new one arrives |
+| L5 | Interface | **Don't re-route lines every animation frame** | `TreeView`'s animation calls `routeShown` (all of `routeConnectors`) per frame: 55 ms at 600 people, 0.6 s at 1,000. Slide the old lines with the cards, or route once at the end |
+| L6 | Interface | **Draw only what's on screen** | The SVG draws every card and line; skip those outside the viewport (with a margin) |
+| L7 | Data | **Lookup tables for queries** | `person()`, `famAsChild()`, `lifeEvent()` search whole lists and are called per card. Build id maps once per change (derived, never stored) |
+| L8 | Data | **Thumbnails out of the dataset** | `media[].thumb` (about 14 KB each as data URLs) belongs with the photo in IndexedDB (and R2), or is remade from the kept copy as `betterThumb` does. Needs a schema change and a migration of the family edition's data. At 14 KB each they'd fill the server's 25 MB limit at about 1,700 photos |
+| L9 | Data | **Say when saving fails** | The localStorage fallback (no IndexedDB) swallows a full quota (about 5 MB, so a few hundred thumbnails today) and carries on unsaved. Show it |
+| L10 | Data | **Drop the copy and paste box** | The Data dialog builds the whole dataset (thumbnails included) as text every time it opens. Downloads and "Open backup file" cover the same ground; pasting from the prototype is the only thing lost |
+| L11 | Data | **The ZIP as the backup** | The ZIP export already holds the whole tree (`family-tree.json`, with photos as files rather than base64) plus GEDCOM, and the app opens it again. Make it the one "Download backup", with the JSON file (photos as base64 in one big string, decoded a character at a time) kept for opening old backups. Build it with fflate's async `zip` so it doesn't block the page |
+| L12 | Shared edition | **Polls that send nothing when nothing changed** | Every open tab downloads the whole tree every 30 s. Send the version held; the server answers 304 if it's still the newest |
+| L13 | Shared edition | **Send only what changed** | Each save PUTs the whole tree, which the server parses and re-stringifies (check Cloudflare's CPU and memory limits on large trees). `stampChanges` already finds what changed, and `merge.ts` can run on the server, so a save could send changes since `base` |
+
 ## Phones (options to explore) · Interface
 From a review at phone width (390px) on 10 Oct, with the demo loaded. These are options to try on a real phone and narrow down, not decisions yet. What was found: the header, view chips and focus bar take about a third of the screen; the person panel covers about 80% and hides the card that was tapped; text inputs are 14–15px, so iOS Safari zooms in on every field; many buttons are 20–26px tall (the usual minimum for touch is 44); the tree opens fitted to its full width (13% on the demo, unreadable).
 
