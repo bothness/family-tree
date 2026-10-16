@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Dataset, Family } from './types.ts';
 import { emptyDataset } from './mutations.ts';
-import { expandToInclude, focusSet, type FocusOptions } from './focus.ts';
+import { expandToInclude, focusSet, startingPerson, type FocusOptions } from './focus.ts';
 
 // Grandparents gf + gm → dad, aunt.  mgf (placeholder, alone) → mum.
 // dad + mum → me, sis.  dad + mum2 → halfbro.  aunt + uncle → cousin.  cousin + cspouse → ckid.
@@ -181,5 +181,16 @@ describe('focusSet: siblings with no parents recorded', () => {
 	});
 	it('can be reached by Expand view', () => {
 		expect(expandToInclude(d2, 'ann', { up: 1, down: 1, width: 'direct' }, 'bob')).toEqual({ up: 1, down: 1, width: 'siblings' });
+	});
+});
+
+describe('startingPerson', () => {
+	it('picks whoever has the most parents, partners and children (dad: 2 + 2 + 3)', () => expect(startingPerson(d)).toBe('dad'));
+	it('takes the first by id on a tie, and never a placeholder', () => {
+		const t = emptyDataset();
+		t.people = [{ id: 'b', names: [] }, { id: 'a', names: [], placeholder: true }, { id: 'c', names: [] }];
+		t.families = [{ id: 'f', partners: [{ personId: 'a' }, { personId: 'b' }, { personId: 'c' }], children: [] }];
+		expect(startingPerson(t)).toBe('b');
+		expect(startingPerson(emptyDataset())).toBeUndefined();
 	});
 });

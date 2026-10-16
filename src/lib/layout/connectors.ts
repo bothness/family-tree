@@ -171,30 +171,31 @@ export function routeConnectors(d: Dataset, nodes: NodeBox[], ghosts: GhostBox[]
 		}
 		// Lowest first.
 		const order = [...group].sort((a, b) => a.lane - b.lane || a.lo - b.lo);
-		const cost = () => {
-			let n = 0;
-			for (let i = 0; i < order.length; i++) for (let j = i + 1; j < order.length; j++) if (overlap(order[i], order[j])) n += hopsOver(order[j], order[i]);
-			return n;
-		};
-		let best = cost();
-		// Each bus tried at every place in the order (buses that don't overlap can sit between two that do).
+		// Hops when one bus sits above another (0 if they don't overlap), worked out once for each pair.
+		const n = group.length,
+			at = new Map(group.map((b, i) => [b, i])),
+			H = new Int32Array(n * n);
+		for (const [i, a] of group.entries()) for (const [j, b] of group.entries()) if (i !== j && overlap(a, b)) H[i * n + j] = hopsOver(a, b);
+		const over = (up: Bus, down: Bus) => H[at.get(up)! * n + at.get(down)!];
+		let best = 0;
+		for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) best += over(order[j], order[i]);
+		// Each bus tried at every place in the order (buses that don't overlap can sit between two that do), lowest
+		// place first. Moving a bus only changes how it sits against those it passes.
 		for (let pass = 0, moved = true; moved && best && pass < 4; pass++) {
 			moved = false;
 			for (const b of [...order]) {
 				const from = order.indexOf(b);
-				for (let to = 0; to < order.length; to++) {
-					if (to === from) continue;
-					order.splice(from, 1);
-					order.splice(to, 0, b);
-					const c = cost();
-					if (c < best) {
-						best = c;
-						moved = true;
-						break;
-					}
-					order.splice(to, 1);
-					order.splice(from, 0, b);
-				}
+				/** What moving `b` past `x` (from below it to above it) adds. */
+				const gain = (x: Bus) => over(b, x) - over(x, b);
+				const delta = new Array<number>(n).fill(0);
+				for (let to = from - 1, s = 0; to >= 0; to--) delta[to] = s -= gain(order[to]);
+				for (let to = from + 1, s = 0; to < n; to++) delta[to] = s += gain(order[to]);
+				const to = delta.findIndex((c, i) => i !== from && c < 0);
+				if (to < 0) continue;
+				order.splice(from, 1);
+				order.splice(to, 0, b);
+				best += delta[to];
+				moved = true;
 			}
 		}
 		const placed: Bus[] = [];

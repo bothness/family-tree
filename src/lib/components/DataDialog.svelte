@@ -31,7 +31,7 @@
 	function useData(d: typeof app.data) {
 		app.replaceData(d);
 		app.select(null);
-		app.showEveryone();
+		app.openTree();
 		if (app.store) pruneMedia(app.store, d);
 		onClose();
 	}

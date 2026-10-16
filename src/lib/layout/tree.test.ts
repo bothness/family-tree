@@ -430,3 +430,48 @@ describe('brothers and sisters still expected, in a focus view', () => {
 		expect(placeholders('siblings')).toEqual(['f_me', 'f_parents']);
 	});
 });
+
+describe('reusing a recent layout', () => {
+	// Two separate families: an edit to one reuses the other's layout, and an edit that changes what the layout reads
+	// is never answered from a stale one.
+	const make = () => {
+		const d: Dataset = emptyDataset();
+		const P = (id: string, born: string) => {
+			d.people.push({ id, names: [{ given: id }] });
+			d.events.push({ id: `b_${id}`, type: 'birth', date: { edtf: born }, participants: [{ personId: id }] });
+		};
+		for (const [id, born] of [['dad', '1850'], ['mum', '1852'], ['ann', '1875'], ['bob', '1878'], ['x', '1900'], ['y', '1925']]) P(id, born);
+		d.families.push(
+			{ id: 'f1', partners: [{ personId: 'dad' }, { personId: 'mum' }], children: [{ personId: 'ann' }, { personId: 'bob' }] },
+			{ id: 'f2', partners: [{ personId: 'x' }], children: [{ personId: 'y' }] }
+		);
+		return d;
+	};
+	const lay = (d: Dataset) => layoutTree(d, components(d).map((ids) => ({ label: 'x', ids })));
+	const order = (L: ReturnType<typeof layoutTree>, ids: string[]) => [...ids].sort((a, b) => L.nodes.find((n) => n.id === a)!.x - L.nodes.find((n) => n.id === b)!.x);
+	it('follows a change of birth date (brothers and sisters re-ordered)', () => {
+		const d = make();
+		expect(order(lay(d), ['ann', 'bob'])).toEqual(['ann', 'bob']);
+		d.events.find((e) => e.id === 'b_bob')!.date = { edtf: '1870' };
+		expect(order(lay(d), ['ann', 'bob'])).toEqual(['bob', 'ann']);
+	});
+	it('follows a change to more children expected (a placeholder appears)', () => {
+		const d = make();
+		expect(lay(d).ghosts).toEqual([]);
+		d.families[0].childrenComplete = 'no';
+		expect(lay(d).ghosts.map((g) => g.familyId)).toEqual(['f1']);
+	});
+	it('follows a new child', () => {
+		const d = make();
+		lay(d);
+		d.people.push({ id: 'cat', names: [{ given: 'cat' }] });
+		d.families[0].children.push({ personId: 'cat' });
+		expect(lay(d).nodes.some((n) => n.id === 'cat')).toBe(true);
+	});
+	it('gives the same layout as working it out afresh', () => {
+		const d = make();
+		const first = lay(d);
+		d.events.push({ id: 'd_y', type: 'death', date: { edtf: '1990' }, participants: [{ personId: 'y' }] });
+		expect(lay(d).nodes).toEqual(first.nodes);
+	});
+});

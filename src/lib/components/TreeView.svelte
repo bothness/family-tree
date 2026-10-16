@@ -4,12 +4,17 @@
 	import { cubicOut } from 'svelte/easing';
 	import { app } from '#lib/app.svelte.ts';
 	import BlankPrompt from './BlankPrompt.svelte';
-	import { cardDates, displayName, lifeEvent, nameIsGuess, person } from '#lib/model/queries.ts';
+	import { datesLine, displayName, lifeEvents, nameIsGuess } from '#lib/model/queries.ts';
 	import { dateUnsure } from '#lib/model/edtf.ts';
-	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, cardSize, layoutTree, routeShown, type TreeLayout } from '#lib/layout/tree.ts';
+	import { GHOST_W, NODE_H, NODE_W, PHOTO_W, PORTRAIT_H, PORTRAIT_NOPHOTO_H, PORTRAIT_W, cardSize, layoutTree, pathOf, routeShown, type Anchor, type Line, type TreeLayout } from '#lib/layout/tree.ts';
 	import { DropdownMenu } from 'bits-ui';
+	import { emptyDataset } from '#lib/model/mutations.ts';
+	import type { Dataset } from '#lib/model/types.ts';
+	import type { Branch, CardSize } from '#lib/layout/tree.ts';
+	import type { LayoutRequest } from '#lib/layout/worker.ts';
+	import LayoutWorker from '#lib/layout/worker.ts?worker';
 	import { SILHOUETTE, SILHOUETTE_VIEWBOX, silhouetteKey } from './Silhouette.svelte';
-	import { photoOf } from '#lib/model/media.ts';
+	import { mediaOf } from '#lib/model/media.ts';
 	import { centreOn, ensureVisible, fit, panBy, wheelAction, zoomAt, type Camera } from '#lib/layout/viewport.ts';
 
 	let { onGhost }: { onGhost: (familyId: string) => void } = $props();
@@ -22,7 +27,62 @@
 	);
 	/** Portrait photo: the card's width less its padding, square. */
 	const PP = PORTRAIT_W - 12;
-	const layout = $derived(layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, size, app.across));
+	// A big tree is laid out in a worker (L4), so the page never freezes: what's drawn stays until the new layout
+	// arrives (nothing, the first time). Smaller trees are laid out at once.
+	const WORKER_ABOVE = 300;
+	let workerFailed = $state(false);
+	const big = $derived(!workerFailed && app.visibleIds.length > WORKER_ABOVE);
+	let fromWorker = $state.raw<TreeLayout | null>(null);
+	const none = (S: CardSize): TreeLayout => ({ nodes: [], ghosts: [], lines: [], labels: [], anchors: {}, bounds: { x: 0, y: 0, w: 0, h: 0 }, cardW: S.w, size: S });
+	const layout = $derived(big ? (fromWorker ?? none(size)) : layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, size, app.across));
+	/** What the layout reads, as plain data the worker can be sent. */
+	const forLayout = (d: Dataset): Dataset => ({
+		...emptyDataset(),
+		people: d.people.map((p) => ({ id: p.id, names: [], ...(p.sex ? { sex: { value: p.sex.value } } : {}) })),
+		families: $state.snapshot(d.families),
+		events: d.events.filter((e) => e.type === 'birth' || e.type === 'baptism').map((e) => $state.snapshot(e))
+	});
+	let worker: Worker | null = null;
+	let sent = 0,
+		busy = false,
+		waiting: Omit<LayoutRequest, 'id'> | null = null;
+	/** Send the newest request once the worker is free (only the newest waits, so fast edits don't queue up). */
+	function send() {
+		if (busy || !waiting) return;
+		try {
+			worker ??= startWorker();
+			worker.postMessage({ id: ++sent, ...waiting });
+			busy = true;
+			waiting = null;
+		} catch {
+			workerFailed = true;
+		}
+	}
+	function startWorker() {
+		const w = new LayoutWorker();
+		w.onmessage = (e: MessageEvent<{ id: number; L: TreeLayout }>) => {
+			busy = false;
+			fromWorker = e.data.L;
+			send();
+		};
+		w.onerror = () => (workerFailed = true);
+		return w;
+	}
+	$effect(() => {
+		if (!big) return;
+		const req = {
+			d: forLayout(app.data),
+			branches: app.visibleBranches.map((b: Branch): Branch => ({ label: b.label, ids: [...b.ids], ...(b.noPlaceholders ? { noPlaceholders: new Set(b.noPlaceholders) } : {}) })),
+			root: app.activeFocus?.id,
+			size: { ...size },
+			across: app.across
+		};
+		untrack(() => {
+			waiting = req;
+			send();
+		});
+	});
+	$effect(() => () => worker?.terminate());
 	/** Card width and height as drawn, and the missing-children placeholders' (as big as a card left to right). */
 	const CW = $derived(size.w),
 		CH = $derived(size.h);
@@ -42,18 +102,48 @@
 	// ---- animation between layouts (V11) ----
 	// Cards that stay glide from where they're drawn to their new place; people entering fade in; people leaving
 	// go at once (fading them out while others move looked odd). Lines and markers are re-routed from the moving
-	// cards every frame.
-	const DURATION = 420;
+	// cards every frame, while that's quick (up to SLIDE_ABOVE lines); in a bigger tree each line slides from where
+	// it was drawn to its new place instead (its ends move with the cards), new ones fade in, and the hops come back
+	// when the cards arrive. With very many cards on screen, nothing animates.
+	const DURATION = 420,
+		SLIDE_ABOVE = 600,
+		ANIMATE_UP_TO = 400;
+	/** Cards drawn now: with more than ANIMATE_UP_TO the browser can't move them all smoothly, so they jump. */
+	let drawnCards = 0;
 	const dur = () => (prefersReducedMotion.current ? 0 : DURATION);
 	type Pt = { x: number; y: number };
+	type Drawn = Line & { o?: number };
 	const progress = new Tween(1, { easing: cubicOut });
-	let from = $state.raw({ nodes: new Map<string, Pt>(), ghosts: new Map<string, Pt>() });
+	let from = $state.raw({ nodes: new Map<string, Pt>(), ghosts: new Map<string, Pt>(), lines: new Map<string, Line['seg']>(), anchors: {} as Record<string, Anchor> });
 	let to = $state.raw<TreeLayout>(untrack(() => layout));
 	const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 	const blend = (m: Map<string, Pt>, id: string, p: Pt, k: number) => {
 		const f = m.get(id);
 		return f ? { x: lerp(f.x, p.x, k), y: lerp(f.y, p.y, k) } : { x: p.x, y: p.y };
 	};
+	/** A line partway from where it was drawn (`f`) to its new place; one that turned (across ↔ down) fades in. */
+	const slide = (l: Line, f: Line['seg'] | undefined, k: number): Drawn => {
+		const dir = (s: Line['seg']) => (s.y1 === s.y2 ? 'across' : s.x1 === s.x2 ? 'down' : 'slant');
+		if (!f || dir(f) !== dir(l.seg)) return { ...l, o: k };
+		const seg = { x1: lerp(f.x1, l.seg.x1, k), y1: lerp(f.y1, l.seg.y1, k), x2: lerp(f.x2, l.seg.x2, k), y2: lerp(f.y2, l.seg.y2, k) };
+		return { ...l, seg, hops: [], d: pathOf({ ...l, seg, hops: [] }) };
+	};
+	type Shown = { o: number };
+	const anim = $derived.by((): { nodes: (TreeLayout['nodes'][number] & Shown)[]; ghosts: (TreeLayout['ghosts'][number] & Shown)[]; lines: Drawn[]; anchors: Record<string, Anchor> } => {
+		const k = progress.current;
+		const animating = k < 1 && (from.nodes.size > 0 || from.ghosts.size > 0);
+		if (!animating) return { nodes: to.nodes.map((n) => ({ ...n, o: 1 })), ghosts: to.ghosts.map((g) => ({ ...g, o: 1 })), lines: to.lines, anchors: to.anchors };
+		const nodes = to.nodes.map((n) => ({ ...n, ...blend(from.nodes, n.id, n, k), o: from.nodes.has(n.id) ? 1 : k }));
+		const ghosts = to.ghosts.map((g) => ({ ...g, ...blend(from.ghosts, g.familyId, g, k), o: from.ghosts.has(g.familyId) ? 1 : k }));
+		if (to.lines.length <= SLIDE_ABOVE) return { nodes, ghosts, ...routeShown(app.data, to, nodes, ghosts) };
+		const anchors: Record<string, Anchor> = {};
+		for (const [id, a] of Object.entries(to.anchors)) {
+			const f = from.anchors[id];
+			anchors[id] = f ? { ...a, x: lerp(f.x, a.x, k), y: lerp(f.y, a.y, k), bottom: lerp(f.bottom, a.bottom, k) } : a;
+		}
+		return { nodes, ghosts, lines: to.lines.map((l) => slide(l, from.lines.get(l.key), k)), anchors };
+	});
+
 	$effect.pre(() => {
 		const L = layout;
 		untrack(() => {
@@ -61,7 +151,9 @@
 			const k = progress.current;
 			const now = {
 				nodes: new Map(to.nodes.map((n) => [n.id, blend(from.nodes, n.id, n, k)])),
-				ghosts: new Map(to.ghosts.map((g) => [g.familyId, blend(from.ghosts, g.familyId, g, k)]))
+				ghosts: new Map(to.ghosts.map((g) => [g.familyId, blend(from.ghosts, g.familyId, g, k)])),
+				lines: new Map(anim.lines.map((l) => [l.key, l.seg])),
+				anchors: anim.anchors
 			};
 			const same = (p: Pt | undefined, q: Pt) => !!p && p.x === q.x && p.y === q.y;
 			const moved =
@@ -69,25 +161,17 @@
 				L.ghosts.length !== to.ghosts.length ||
 				L.nodes.some((n) => !same(now.nodes.get(n.id), n)) ||
 				L.ghosts.some((g) => !same(now.ghosts.get(g.familyId), g));
-			if (moved && dur()) {
+			if (moved && dur() && drawnCards <= ANIMATE_UP_TO) {
 				from = now;
 				progress.set(0, { duration: 0 });
 				progress.set(1, { duration: dur() });
 			} else {
 				// Nothing moved (e.g. typing a name): no animation, nothing to re-route.
-				from = { nodes: new Map(), ghosts: new Map() };
+				from = { nodes: new Map(), ghosts: new Map(), lines: new Map(), anchors: {} };
 				progress.set(1, { duration: 0 });
 			}
 			to = L;
 		});
-	});
-	const anim = $derived.by(() => {
-		const k = progress.current;
-		const animating = k < 1 && (from.nodes.size > 0 || from.ghosts.size > 0);
-		if (!animating) return { nodes: to.nodes.map((n) => ({ ...n, o: 1 })), ghosts: to.ghosts.map((g) => ({ ...g, o: 1 })), lines: to.lines, anchors: to.anchors };
-		const nodes = to.nodes.map((n) => ({ ...n, ...blend(from.nodes, n.id, n, k), o: from.nodes.has(n.id) ? 1 : k }));
-		const ghosts = to.ghosts.map((g) => ({ ...g, ...blend(from.ghosts, g.familyId, g, k), o: from.ghosts.has(g.familyId) ? 1 : k }));
-		return { nodes, ghosts, ...routeShown(app.data, to, nodes, ghosts) };
 	});
 
 	// Focus edge markers: "↑ parents" above someone whose parents are just out of view, "+3 children" below a family.
@@ -232,6 +316,33 @@
 	});
 
 	const zoomBy = (f: number) => glide(zoomAt(target(), f, vw / 2, vh / 2));
+
+	// A big tree draws only what's on screen, with a margin of half a screen each way: the box drawn moves only once
+	// the view leaves it, so panning doesn't add and remove cards every frame. Smaller trees draw everything (so every
+	// card can be reached from the keyboard).
+	const CULL_ABOVE = 200;
+	type Rect = { x: number; y: number; w: number; h: number };
+	let drawn: Rect | null = null;
+	const cull = $derived.by((): Rect | null => {
+		if (to.nodes.length <= CULL_ABOVE || !vw || !vh) return (drawn = null);
+		const v = { x: -cam.x / cam.k, y: -cam.y / cam.k, w: vw / cam.k, h: vh / cam.k };
+		const inside = drawn && v.x >= drawn.x && v.y >= drawn.y && v.x + v.w <= drawn.x + drawn.w && v.y + v.h <= drawn.y + drawn.h;
+		if (!inside || v.w * 4 < drawn!.w) drawn = { x: v.x - v.w / 2, y: v.y - v.h / 2, w: v.w * 2, h: v.h * 2 };
+		return drawn;
+	});
+	const meets = (r: Rect, x: number, y: number, w: number, h: number) => x + w >= r.x && x <= r.x + r.w && y + h >= r.y && y <= r.y + r.h;
+	/** Everyone by id, and their birth and death events, found once for all the cards. */
+	const byId = $derived(new Map(app.data.people.map((p) => [p.id, p])));
+	const life = $derived(lifeEvents(app.data));
+	// (A worker's layout can be a moment behind the data, so someone just deleted may still be in it.)
+	const shownNodes = $derived(anim.nodes.filter((n) => (!cull || meets(cull, n.x, n.y, CW, CH)) && byId.has(n.id)));
+	$effect.pre(() => {
+		drawnCards = shownNodes.length;
+	});
+	const shownGhosts = $derived(cull ? anim.ghosts.filter((g) => meets(cull, g.x, g.y, GW, CH)) : anim.ghosts);
+	const shownLines = $derived(
+		cull ? anim.lines.filter(({ seg: s }) => meets(cull, Math.min(s.x1, s.x2), Math.min(s.y1, s.y2), Math.abs(s.x2 - s.x1), Math.abs(s.y2 - s.y1))) : anim.lines
+	);
 
 	// Wheel needs a non-passive listener so it can stop the page scrolling.
 	$effect(() => {
@@ -428,14 +539,14 @@
 				{#each layout.labels as l (`${l.x},${l.y}`)}
 					<text class="brlabel" x={l.x} y={l.y}>{l.text}</text>
 				{/each}
-				{#each anim.lines as l (l.key)}
-					<path class={lineClass[l.style]} d={l.d} />
+				{#each shownLines as l (l.key)}
+					<path class={lineClass[l.style]} d={l.d} opacity={l.o !== undefined && l.o < 1 ? l.o : undefined} />
 				{/each}
-				{#each anim.nodes as n (n.id)}
-					{@const p = person(app.data, n.id)!}
+				{#each shownNodes as n (n.id)}
+					{@const p = byId.get(n.id)!}
 					{@const guess = nameIsGuess(p)}
-					{@const dates = cardDates(app.data, n.id)}
-					{@const dateGuess = dateUnsure(lifeEvent(app.data, n.id, 'birth')?.date?.edtf) || dates === 'no dates yet'}
+					{@const dates = datesLine(p, life(n.id, 'birth'), life(n.id, 'death'))}
+					{@const dateGuess = dateUnsure(life(n.id, 'birth')?.date?.edtf) || dates === 'no dates yet'}
 					{@const stage = p.research?.stage ?? 'none'}
 					{@const tx = app.showPhotos ? 61 : 11}
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -458,7 +569,7 @@
 							<!-- V13: the photo across the top, then the name over up to two lines, centred, and the dates -->
 							{@const top = app.showPhotos ? PP + 6 : 0}
 							{#if app.showPhotos}
-								{@const ph = photoOf(app.data, n.id)}
+								{@const ph = mediaOf(app.data, p.photo)}
 								{#if ph?.thumb}
 									<image href={ph.thumb} x="6" y="6" width={PP} height={PP} clip-path="url(#avatar-clip-p)" preserveAspectRatio="xMidYMid slice" />
 								{:else}
@@ -471,7 +582,7 @@
 							<text class="dt" class:pencil={dateGuess} x={CW / 2} y={CH - 9} text-anchor="middle">{dates}</text>
 						{:else}
 							{#if app.showPhotos}
-								{@const ph = photoOf(app.data, n.id)}
+								{@const ph = mediaOf(app.data, p.photo)}
 								{#if ph?.thumb}
 									<image href={ph.thumb} x="6" y="6" width="46" height="46" clip-path="url(#avatar-clip)" preserveAspectRatio="xMidYMid slice" />
 								{:else}
@@ -493,7 +604,7 @@
 						<text x={m.px} y={m.py + 4} text-anchor="middle">{m.text}</text>
 					</g>
 				{/each}
-				{#each anim.ghosts as g (g.familyId)}
+				{#each shownGhosts as g (g.familyId)}
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex (a button for editors; just a picture for viewers) -->
 					<g
 						class="ghost"

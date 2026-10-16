@@ -34,6 +34,8 @@
 			if (saved) app.data = saved;
 		}
 		app.ready = true;
+		// Opened with nothing in the address: everyone, or a focus for a big tree.
+		if (!app.focus && !app.viewId && !app.blank) app.openTree();
 		if (app.data.people.length) app.askToKeep();
 		app.refreshThumbs();
 	});
@@ -117,7 +119,8 @@
 	}
 
 	// Like the to-do list itself, the count only covers people in view.
-	const todoCount = $derived(Object.entries(gaps(app.data)).reduce((n, [id, g]) => n + (app.inView(id) ? g.length : 0), 0));
+	const allGaps = $derived(gaps(app.data));
+	const todoCount = $derived(Object.entries(allGaps).reduce((n, [id, g]) => n + (app.inView(id) ? g.length : 0), 0));
 
 	// Start each person's panel at the top, not wherever the previous person's was scrolled to.
 	let sheet: HTMLElement | undefined = $state();

@@ -10,7 +10,7 @@ import type { SyncStatus } from './sync/engine.ts';
 import type { Me } from './sync/http.ts';
 import { removePhoto, setPhoto } from './model/media.ts';
 import { emptyDataset, uid } from './model/mutations.ts';
-import { DEFAULT_FOCUS, focusSet, type FocusOptions } from './model/focus.ts';
+import { DEFAULT_FOCUS, OPEN_FOCUSED_ABOVE, focusSet, startingPerson, type FocusOptions } from './model/focus.ts';
 import { components, displayName, person, primaryName } from './model/queries.ts';
 import { addView, focusScope, sameFocus, setViewScope, viewFocus, viewKind, viewMembers, type FocusRule } from './model/views.ts';
 import { migrate } from './model/migrate.ts';
@@ -145,6 +145,14 @@ class AppState {
 		this.picked = null;
 		this.pickingFor = null;
 		this.fitTree();
+	}
+
+	/** What to show on opening a tree (or loading a backup): everyone, or for a big tree a focus on its
+	 *  best-connected person, which draws quickly and reads at a glance (L1). */
+	openTree() {
+		this.showEveryone();
+		const id = this.data.people.length > OPEN_FOCUSED_ABOVE ? startingPerson(this.data) : undefined;
+		if (id) this.focusOn(id, DEFAULT_FOCUS);
 	}
 
 	openView(id: string) {

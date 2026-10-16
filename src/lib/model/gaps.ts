@@ -1,7 +1,7 @@
 // Research to-do list derived from uncertainty markers. Never stored.
 import type { Dataset } from './types.ts';
-import { dateUnsure, datesDisagree, fmtDate } from './edtf.ts';
-import { childIds, displayName, famLabel, isLiving, lifeEvent, partnerIds, person, primaryName } from './queries.ts';
+import { dateUnsure, datesDisagree, edtfRange, fmtDate } from './edtf.ts';
+import { childIds, displayName, famLabel, lifeEvents, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName } from './queries.ts';
 
 export type GapKind = 'missing' | 'guess' | 'todo' | 'check';
 export interface Gap { kind: GapKind; text: string }
@@ -11,6 +11,7 @@ export function gaps(d: Dataset): Record<string, Gap[]> {
 	const add = (pid: string | undefined, kind: GapKind, text: string) => {
 		if (pid) (out[pid] ??= []).push({ kind, text });
 	};
+	const life = lifeEvents(d);
 	for (const p of d.people) {
 		if (p.placeholder) add(p.id, 'missing', 'Placeholder – identity unknown');
 		else {
@@ -18,13 +19,15 @@ export function gaps(d: Dataset): Record<string, Gap[]> {
 			p.names
 				?.filter((n) => n.status === 'guess')
 				.forEach((n) => add(p.id, 'guess', `${n === primaryName(p) ? 'Name' : (n.type ?? 'other') + ' name'} is a guess`));
-			const b = lifeEvent(d, p.id, 'birth');
+			const b = life(p.id, 'birth');
 			if (!b) add(p.id, 'missing', 'No birth date or place');
 			else if (dateUnsure(b.date?.edtf)) add(p.id, 'guess', `${datesDisagree(b.date!.edtf) ? 'Sources disagree on the birth date' : 'Birth date is a guess'} (${fmtDate(b.date!.edtf)})`);
-			const x = lifeEvent(d, p.id, 'death');
+			const x = life(p.id, 'death');
 			if (p.deceased && !x?.date) add(p.id, 'missing', 'Date of death not recorded');
 			else if (dateUnsure(x?.date?.edtf)) add(p.id, 'guess', `${datesDisagree(x!.date!.edtf) ? 'Sources disagree on the death date' : 'Death date is a guess'} (${fmtDate(x!.date!.edtf)})`);
-			if (!p.deceased && !x && !isLiving(d, p)) add(p.id, 'check', 'Born over 110 years ago – mark as deceased?');
+			// (as `isLiving`: born over PRESUMED_DEAD_AFTER years ago)
+			const born = edtfRange(b?.date?.edtf);
+			if (!p.deceased && !x && born && born.start <= NOW - PRESUMED_DEAD_AFTER) add(p.id, 'check', 'Born over 110 years ago – mark as deceased?');
 		}
 		// Someone marked as researched drops their to-dos from the list (they're kept on the person).
 		if (p.research?.stage !== 'researched') p.research?.todo?.forEach((t) => add(p.id, 'todo', t));

@@ -12,8 +12,8 @@
 // (a person and their partners on the same row); units ordered row by row by walking down the families
 // (in-laws' parents inserted above them); then x positions found by repeated sweeps that pull children under
 // their parents and parents over their children, keeping each row's order and spacing (isotonic regression).
-import type { Dataset, Family } from '../model/types.ts';
-import { birthStart, childIds, partnerIds, sexRank } from '../model/queries.ts';
+import type { Dataset, Family, LifeEvent } from '../model/types.ts';
+import { childIds, partnerIds, sexRank } from '../model/queries.ts';
 import { edtfRange } from '../model/edtf.ts';
 
 /** Card width without photos (compact) and with them (V10); the layout takes the card size to use. */
@@ -82,22 +82,59 @@ export function missingCount(f: Family): number | null {
 }
 
 /** Ordering rows (step 3b): seed rows tried, sweeps from each, rounds of small changes (bounds, as it runs on every
- *  edit); how much a card width of line counts against a crossing, and an out-of-order brother or sister, or a couple
- *  the other way round. */
+ *  edit), and how much scoring the rounds may do (`work`: units, lines and couples looked at; couples turned round
+ *  only in the first half), so a large tree gets less polish rather than a long wait; how much a card width of line
+ *  counts against a crossing, and an out-of-order brother or sister, or a couple the other way round. */
 const SEEDS = 3,
 	SWEEPS = 6,
 	ROUNDS = 6,
+	WORK = 250_000,
 	REACH = 0.1,
 	SOFT = 0.2;
 
-const relStart = (f: Family) => edtfRange(f.relationship?.start?.edtf)?.start ?? Infinity;
-const byBirth = (d: Dataset) => (a: string, b: string) => birthStart(d, a) - birthStart(d, b) || a.localeCompare(b);
+/** How many pairs are out of order in `xs` (i < j with xs[i] > xs[j]), by merge sort. */
+export function inversions(xs: number[]): number {
+	const a = [...xs],
+		tmp = new Array<number>(a.length);
+	let n = 0;
+	for (let w = 1; w < a.length; w *= 2)
+		for (let lo = 0; lo + w < a.length; lo += 2 * w) {
+			const mid = lo + w,
+				hi = Math.min(lo + 2 * w, a.length);
+			let i = lo,
+				j = mid,
+				k = lo;
+			while (i < mid && j < hi) {
+				if (a[i] <= a[j]) tmp[k++] = a[i++];
+				else (n += mid - i), (tmp[k++] = a[j++]);
+			}
+			while (i < mid) tmp[k++] = a[i++];
+			while (j < hi) tmp[k++] = a[j++];
+			for (let t = lo; t < hi; t++) a[t] = tmp[t];
+		}
+	return n;
+}
 
-function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S: CardSize, noPlaceholders?: Set<string>) {
+const relStart = (f: Family) => edtfRange(f.relationship?.start?.edtf)?.start ?? Infinity;
+/** Each person's earliest possible birth year (9999 if not known), from one pass over the events: as `birthStart`
+ *  (their first birth event, else their first baptism). */
+function birthYears(d: Dataset): (id: string) => number {
+	const birth = new Map<string, LifeEvent>(),
+		baptism = new Map<string, LifeEvent>();
+	for (const e of d.events) {
+		const m = e.type === 'birth' ? birth : e.type === 'baptism' ? baptism : null;
+		if (m) for (const x of e.participants) if ((x.role ?? 'principal') === 'principal' && !m.has(x.personId)) m.set(x.personId, e);
+	}
+	const years = new Map<string, number>();
+	return (id) => years.get(id) ?? years.set(id, edtfRange((birth.get(id) ?? baptism.get(id))?.date?.edtf)?.start ?? 9999).get(id)!;
+}
+const byBirth = (born: (id: string) => number) => (a: string, b: string) => born(a) - born(b) || a.localeCompare(b);
+
+function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S: CardSize, noPlaceholders: Set<string> | undefined, born: (id: string) => number) {
 	const W = S.w,
 		GHOST = S.ghost;
 	const inC = new Set(ids);
-	const birth = byBirth(d);
+	const birth = byBirth(born);
 	const fams: Fam[] = d.families
 		.map((f) => ({ f, ps: partnerIds(f).filter((p) => inC.has(p)), cs: childIds(f).filter((c) => inC.has(c)), anchorOff: 0, kids: [] as Unit[] }))
 		.filter((x) => x.ps.length || x.cs.length)
@@ -147,7 +184,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 		// Everyone linked to `id` through partnerships on this row.
 		const group = new Set([id]);
 		for (const m of group) for (const { p } of partners.get(m) ?? []) group.add(p);
-		const members = arrange([...group], partners, d);
+		const members = arrange([...group], partners, d, birth);
 		const u: Unit = { key: members[0], g: gen.get(id)!, members, w: members.length * W + (members.length - 1) * CARD_GAP, x: 0, placed: false };
 		units.push(u);
 		for (const m of members) unitOf.set(m, u);
@@ -228,7 +265,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	const sibGroup = (u: Unit) => fams.find((fm) => !fm.parent && u.members.some((m) => fm.cs.includes(m)))?.f.id ?? '';
 	const roots = units
 		.filter((u) => !parentFams.get(u)?.length)
-		.sort((a, b) => a.g - b.g || sibGroup(a).localeCompare(sibGroup(b)) || birthStart(d, a.members[0] ?? '') - birthStart(d, b.members[0] ?? '') || a.key.localeCompare(b.key));
+		.sort((a, b) => a.g - b.g || sibGroup(a).localeCompare(sibGroup(b)) || born(a.members[0] ?? '') - born(b.members[0] ?? '') || a.key.localeCompare(b.key));
 	const deferred: Unit[] = [];
 	for (const r of roots) {
 		if (r.placed) continue;
@@ -333,31 +370,36 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	// Starting from the widest rows (ancestors ordered from the row below, descendants from the row above), whole
 	// sweeps down and up keep the best order seen; then small changes are kept while they help. Fewest lines crossing
 	// comes first (after the couple rules); line length, age order and partners' usual order only break ties.
-	const sibFams = (u: Unit) => [...(parentFams.get(u) ?? []), ...fams.filter((fm) => !fm.parent && fm.kids.includes(u))];
+	const sibFamsOf = new Map<Unit, Fam[]>();
+	const sibFams = (u: Unit) => {
+		let l = sibFamsOf.get(u);
+		if (!l) sibFamsOf.set(u, (l = [...(parentFams.get(u) ?? []), ...fams.filter((fm) => !fm.parent && fm.kids.includes(u))]));
+		return l;
+	};
 	const related = (a: Unit, b: Unit) => sibFams(a).some((f) => sibFams(b).includes(f));
 	/** A point's place along its row: the unit's index plus how far across the unit it is. */
 	const at = (row: Map<Unit, number>, u: Unit, off: number) => row.get(u)! + off / (u.w + 1);
-	/** Lines that cross between neighbouring rows, from the order alone. */
-	function crossingCount(): number {
-		let n = 0;
-		for (let g = 0; g < rows.length - 1; g++) {
-			const P = new Map(rows[g].map((u, i) => [u, i])),
-				C = new Map(rows[g + 1].map((u, i) => [u, i]));
-			const links: [number, number, Fam, Unit][] = [];
-			for (const fm of fams) {
-				if (!fm.parent || !P.has(fm.parent)) continue;
-				const a = at(P, fm.parent, fm.anchorOff);
-				for (const k of fm.kids) if (C.has(k)) links.push([a, at(C, k, childLeft(k, fm) + childW(k) / 2), fm, k]);
-			}
-			// Two of one person's families crossing (their children by different partners) is the most confusing
-			// tangle, so it counts double.
-			for (let i = 0; i < links.length; i++)
-				for (let j = i + 1; j < links.length; j++)
-					if (links[i][2] !== links[j][2] && (links[i][0] - links[j][0]) * (links[i][1] - links[j][1]) < 0)
-						n += links[i][2].parent === links[j][2].parent ? 2 : 1;
-		}
+	// Scoring an order is the inner loop of the search, so each part of the score is kept per row (or per pair of
+	// rows) and only the parts that touch a changed row (`dirty`) are worked out again.
+	const dirty = new Set<number>();
+	/** Each row's units by place (`at` reads these), and packed from the left and centred (for `lineReach`). */
+	const idx: Map<Unit, number>[] = rows.map(() => new Map());
+	const packed: Map<Unit, number>[] = rows.map(() => new Map());
+	/** Lines that cross between rows g and g + 1, from the order alone. */
+	const gapLinks: { fm: Fam; k: Unit }[][] = rows.map(() => []);
+	for (const fm of fams) if (fm.parent && fm.parent.g + 1 < rows.length) for (const k of fm.kids) if (k.g === fm.parent.g + 1) gapLinks[fm.parent.g].push({ fm, k });
+	const gapCrossings = (g: number) => {
+		const ls = gapLinks[g].map(({ fm, k }) => ({ p: fm.parent!, a: at(idx[g], fm.parent!, fm.anchorOff), b: at(idx[g + 1], k, childLeft(k, fm) + childW(k) / 2) }));
+		// Two lines cross when their ends are in opposite orders (one family's lines share their top end, so never
+		// count). Two of one person's families crossing (their children by different partners) is the most
+		// confusing tangle, so it counts double.
+		const count = (l: typeof ls) => inversions(l.sort((x, y) => x.a - y.a || x.b - y.b).map((x) => x.b));
+		const byParent = new Map<Unit, typeof ls>();
+		for (const l of ls) (byParent.get(l.p) ?? byParent.set(l.p, []).get(l.p)!).push(l);
+		let n = count(ls);
+		for (const l of byParent.values()) n += count(l);
 		return n;
-	}
+	};
 	// Couples with both partners' parents in view (in different families), and how many couples link each two families.
 	const pairs = couples.map((c) => c.ps).filter(([a, b]) => childOf.get(a)?.parent && childOf.get(b)?.parent && childOf.get(a) !== childOf.get(b));
 	const linkCount = new Map<string, number>();
@@ -387,7 +429,13 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 		const mean = (b: Unit[]) => b.reduce((n, u) => n + idx.get(u)!, 0) / b.length;
 		return [...groups.values()].sort((a, b) => mean(a) - mean(b));
 	});
-	blocks.forEach((bs, g) => (rows[g] = bs.flat()));
+	const setRow = (g: number) => {
+		const row = blocks[g].flat();
+		if (row.length === rows[g].length && row.every((u, i) => u === rows[g][i])) return;
+		rows[g] = row;
+		dirty.add(g);
+	};
+	blocks.forEach((bs, g) => ((rows[g] = bs.flat()), dirty.add(g)));
 	/** A row's blocks sorted by the average place of their relatives in the row above (down) or below (up); blocks
 	 *  with none that way keep their slots. */
 	const sortRow = (g: number, down: boolean) => {
@@ -416,7 +464,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 			let j = 0;
 			return ks.map((k) => (k.key === undefined ? k.u : mv[j++].u));
 		});
-		rows[g] = blocks[g].flat();
+		setRow(g);
 	};
 	/** A block that is one family's children (no in-law families joined to it). */
 	const single = (b: Unit[]) => {
@@ -427,63 +475,128 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	const ageRank = new Map<Unit, number>();
 	for (const fm of fams) fm.kids.forEach((k, i) => ageRank.set(k, i));
 	const usual = new Map(units.map((u) => [u, u.members.join()]));
-	const soft = () => {
+	/** A row's brothers and sisters out of age order, and units with their partners the other way round. */
+	const rowSoft = (g: number) => {
+		const row = rows[g];
 		let n = 0;
-		for (const row of rows)
-			for (let i = 0; i + 1 < row.length; i++)
-				if (related(row[i], row[i + 1]) && (ageRank.get(row[i]) ?? 0) > (ageRank.get(row[i + 1]) ?? 0)) n++;
-		for (const u of units) if (u.members.join() !== usual.get(u)) n++;
+		for (let i = 0; i + 1 < row.length; i++) if (related(row[i], row[i + 1]) && (ageRank.get(row[i]) ?? 0) > (ageRank.get(row[i + 1]) ?? 0)) n++;
+		for (const u of row) if (u.members.join() !== usual.get(u)) n++;
 		return n;
 	};
 	/** Roughly how long the lines are, without placing anyone: each row packed from its order and centred, and the
-	 *  distance from each family's anchor to its children, in card widths. */
-	const lineReach = () => {
-		const X = new Map<Unit, number>();
-		for (const row of rows) {
-			let x = 0;
-			for (const u of row) X.set(u, x), (x += u.w + SIB_GAP);
-			for (const u of row) X.set(u, X.get(u)! - x / 2);
-		}
-		let n = 0;
-		for (const fm of fams)
-			if (fm.parent && X.has(fm.parent))
-				for (const k of fm.kids) if (X.has(k)) n += Math.abs(X.get(fm.parent)! + fm.anchorOff - X.get(k)! - childLeft(k, fm) - childW(k) / 2);
-		return n / W;
+	 *  distance from each family's anchor to each child, in card widths (summed in `now`). */
+	const reachLinks = fams.flatMap((fm) => (fm.parent ? fm.kids.map((k) => ({ fm, k })) : []));
+	const reachOf = ({ fm, k }: { fm: Fam; k: Unit }) => {
+		const X = packed[fm.parent!.g],
+			Y = packed[k.g];
+		return X.has(fm.parent!) && Y.has(k) ? Math.abs(X.get(fm.parent!)! + fm.anchorOff - Y.get(k)! - childLeft(k, fm) - childW(k) / 2) : 0;
 	};
 	/** The rules for couples whose parents are both in view, for any unit (someone between two partners too): the
 	 *  couple isn't crossed under their parents, and one partner's brothers and sisters are all on their own side. */
-	const pairRules = () => {
+	const px = (m: string) => {
+		const u = unitOf.get(m)!;
+		return idx[u.g].has(u) ? at(idx[u.g], u, cardLeft(u, m) + W / 2) : undefined;
+	};
+	const oneSide = (xs: number[], p: number) => xs.every((v) => v < p) || xs.every((v) => v > p);
+	const pairRule = (ps: string[]) => {
+		if (ps.some((p) => px(p) === undefined)) return 0;
+		const [a, b] = [...ps].sort((p, q) => px(p)! - px(q)!);
+		const fa = childOf.get(a)!,
+			fb = childOf.get(b)!;
 		let n = 0;
-		const idx = rows.map((r) => new Map(r.map((u, i) => [u, i])));
-		const px = (m: string) => {
-			const u = unitOf.get(m)!;
-			return idx[u.g].has(u) ? at(idx[u.g], u, cardLeft(u, m) + W / 2) : undefined;
-		};
-		const oneSide = (xs: number[], p: number) => xs.every((v) => v < p) || xs.every((v) => v > p);
-		for (const ps of pairs) {
-			if (ps.some((p) => px(p) === undefined)) continue;
-			const [a, b] = [...ps].sort((p, q) => px(p)! - px(q)!);
-			const fa = childOf.get(a)!,
-				fb = childOf.get(b)!;
-			if (fa.parent!.g === fb.parent!.g && at(idx[fa.parent!.g], fa.parent!, fa.anchorOff) > at(idx[fb.parent!.g], fb.parent!, fb.anchorOff)) n++;
-			const sibs = (m: string, fm: Fam) => fm.cs.filter((c) => c !== m && !married.has(c)).map(px).filter((x): x is number => x !== undefined);
-			const A = px(a)!,
-				B = px(b)!;
-			const ls = sibs(a, fa),
-				rs = sibs(b, fb);
-			if (ls.every((v) => v < A) || rs.every((v) => v > B)) continue;
-			if ((linkCount.get(pairKey(fa, fb)) ?? 0) > 1 && (oneSide(ls, A) || oneSide(rs, B))) continue;
-			n++;
+		if (fa.parent!.g === fb.parent!.g && at(idx[fa.parent!.g], fa.parent!, fa.anchorOff) > at(idx[fb.parent!.g], fb.parent!, fb.anchorOff)) n++;
+		const sibs = (m: string, fm: Fam) => fm.cs.filter((c) => c !== m && !married.has(c)).map(px).filter((x): x is number => x !== undefined);
+		const A = px(a)!,
+			B = px(b)!;
+		const ls = sibs(a, fa),
+			rs = sibs(b, fb);
+		if (ls.every((v) => v < A) || rs.every((v) => v > B)) return n;
+		if ((linkCount.get(pairKey(fa, fb)) ?? 0) > 1 && (oneSide(ls, A) || oneSide(rs, B))) return n;
+		return n + 1;
+	};
+	// Which parts of the score each unit touches.
+	const unitReach = new Map<Unit, number[]>(),
+		unitPairs = new Map<Unit, number[]>();
+	const touch = (m: Map<Unit, number[]>, u: Unit, i: number) => {
+		const l = m.get(u) ?? m.set(u, []).get(u)!;
+		if (l[l.length - 1] !== i) l.push(i);
+	};
+	reachLinks.forEach(({ fm, k }, i) => (touch(unitReach, fm.parent!, i), touch(unitReach, k, i)));
+	pairs.forEach(([a, b], i) => {
+		const fa = childOf.get(a)!,
+			fb = childOf.get(b)!;
+		for (const u of new Set([...[a, b, ...fa.cs, ...fb.cs].map((m) => unitOf.get(m)!), fa.parent!, fb.parent!])) touch(unitPairs, u, i);
+	});
+	/** Units turned round since the last score (their partners' order, so their anchors, changed). */
+	const turned = new Set<Unit>();
+	const softs = rows.map(() => 0),
+		gapCross = rows.map(() => 0),
+		reaches = reachLinks.map(() => 0),
+		pairBroken = pairs.map(() => 0);
+	let softTotal = 0,
+		crossTotal = 0,
+		pairTotal = 0;
+	/** Roughly how much scoring has been done (units, lines and couples looked at), for the search's budget. */
+	let work = 0;
+	const refresh = () => {
+		if (!dirty.size) return;
+		// Units whose place in their row changed (what the couple rules read), and those whose packed position did:
+		// everything between the first and last that moved, as a row's units keep their widths.
+		const moved = new Set<Unit>(turned),
+			shifted = new Set<Unit>(turned);
+		for (const g of dirty) {
+			const old = idx[g],
+				row = rows[g];
+			let lo = row.length,
+				hi = -1;
+			row.forEach((u, i) => old.get(u) !== i && (moved.add(u), (lo = Math.min(lo, i)), (hi = i)));
+			if (hi < 0) continue;
+			idx[g] = new Map(row.map((u, i) => [u, i]));
+			const X = (packed[g] = new Map());
+			let x = 0;
+			for (const u of row) X.set(u, x), (x += u.w + SIB_GAP);
+			for (const u of row) X.set(u, X.get(u)! - x / 2);
+			for (let i = lo; i <= hi; i++) shifted.add(row[i]);
 		}
-		return n;
+		const gaps = new Set<number>(),
+			ls = new Set<number>(),
+			ps = new Set<number>();
+		for (const g of dirty) {
+			work += rows[g].length + gapLinks[g].length;
+			softTotal += -softs[g] + (softs[g] = rowSoft(g));
+			if (g > 0) gaps.add(g - 1);
+			if (g + 1 < rows.length) gaps.add(g);
+		}
+		for (const u of shifted) for (const i of unitReach.get(u) ?? []) ls.add(i);
+		for (const u of moved) for (const i of unitPairs.get(u) ?? []) ps.add(i);
+		for (const g of gaps) crossTotal += -gapCross[g] + (gapCross[g] = gapCrossings(g));
+		work += ls.size + ps.size;
+		for (const i of ls) reaches[i] = reachOf(reachLinks[i]);
+		for (const i of ps) pairTotal += -pairBroken[i] + (pairBroken[i] = pairRule(pairs[i]));
+		dirty.clear();
+		turned.clear();
 	};
 	/** How good the order is: the couple rules broken, then crossings with line length and the preferences added. */
-	const now = () => [pairRules(), crossingCount() + REACH * lineReach() + SOFT * soft()];
+	const now = () => {
+		refresh();
+		let reach = 0;
+		for (const r of reaches) reach += r;
+		return [pairTotal, crossTotal + REACH * (reach / W) + SOFT * softTotal];
+	};
 	const lt = (a: number[], b: number[]) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1] - 1e-6);
-	const keep = () => ({ s: now(), blocks: blocks.map((bs) => bs.map((b) => [...b])), members: units.map((u) => [...u.members]) });
+	const keep = (s = now()) => ({ s, blocks: blocks.map((bs) => bs.map((b) => [...b])), members: units.map((u) => [...u.members]) });
+	/** Back to a kept order (only the rows that differ need scoring again). */
 	const put = (t: ReturnType<typeof keep>) => {
-		t.blocks.forEach((bs, g) => ((blocks[g] = bs.map((b) => [...b])), (rows[g] = blocks[g].flat())));
-		units.forEach((u, i) => (u.members = [...t.members[i]]));
+		t.blocks.forEach((bs, g) => {
+			blocks[g] = bs.map((b) => [...b]);
+			setRow(g);
+		});
+		units.forEach((u, i) => {
+			if (u.members.every((m, j) => m === t.members[i][j])) return;
+			u.members = [...t.members[i]];
+			dirty.add(u.g);
+			turned.add(u);
+		});
 		for (const fm of fams) if (fm.parent) setAnchor(fm);
 	};
 	let best = keep();
@@ -501,7 +614,7 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 				for (const g of down ? [...rows.keys()].slice(1) : [...rows.keys()].reverse().slice(1)) sortRow(g, down);
 			}
 			const sc = now();
-			if (lt(sc, best.s)) best = keep();
+			if (lt(sc, best.s)) best = keep(sc);
 		}
 	}
 	put(best);
@@ -511,11 +624,11 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	let cur = best.s;
 	const tryMove = (g: number, change: () => void, undo: () => void) => {
 		change();
-		rows[g] = blocks[g].flat();
+		setRow(g);
 		const sc = now();
 		if (lt(sc, cur)) return (cur = sc), true;
 		undo();
-		rows[g] = blocks[g].flat();
+		setRow(g);
 		return false;
 	};
 	/** A block mirrored, the "more expected" placeholders keeping their places. */
@@ -526,11 +639,13 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 	};
 	const flip = (u: Unit) => {
 		u.members.reverse();
+		dirty.add(u.g);
+		turned.add(u);
 		for (const fm of fams) if (fm.parent === u) setAnchor(fm);
 	};
 	for (let round = 0; round < ROUNDS; round++) {
 		let improved = false;
-		for (let g = 0; g < rows.length; g++) {
+		for (let g = 0; g < rows.length && work < WORK; g++) {
 			const bs = blocks[g];
 			for (let b = 0; b + 1 < bs.length; b++) {
 				const sw = () => ([bs[b], bs[b + 1]] = [bs[b + 1], bs[b]]);
@@ -552,19 +667,20 @@ function layoutComponent(d: Dataset, ids: string[], root: string | undefined, S:
 		// which no change to one row can do.
 		for (const u of new Set(pairs.map(([a]) => unitOf.get(a)!)))
 			for (const mirror of [false, true]) {
+				if (work > WORK / 2) break;
 				const t = keep();
 				flip(u);
 				// (and the couple's run of brothers and sisters and in-laws mirrored with them)
 				const blk = blocks[u.g].find((b) => b.includes(u))!;
 				if (mirror) mirrorBlock(blk);
-				rows[u.g] = blocks[u.g].flat();
+				setRow(u.g);
 				for (let g = u.g - 1; g >= 0; g--) sortRow(g, false);
 				for (let g = u.g + 1; g < rows.length; g++) sortRow(g, true);
 				const sc = now();
 				if (lt(sc, cur)) (cur = sc), (improved = true);
 				else put(t);
 			}
-		if (!improved) break;
+		if (!improved || work > WORK) break;
 	}
 	sweep();
 
@@ -596,8 +712,7 @@ export function anchorOffset(l: number, r: number, outerLeft: boolean, W: number
 /** Arrange people joined by partnerships on one row. A couple: father left. Someone with several partners sits
  *  between them, earlier partnerships on the left (the first half, rounding up), later ones on the right; each
  *  partner's own other partners sit next to them, further out. */
-function arrange(group: string[], partners: Map<string, { p: string; f: Family }[]>, d: Dataset): string[] {
-	const birth = byBirth(d);
+function arrange(group: string[], partners: Map<string, { p: string; f: Family }[]>, d: Dataset, birth: (a: string, b: string) => number): string[] {
 	if (group.length === 1) return group;
 	if (group.length === 2) return [...group].sort((a, b) => sexRank(d, a) - sexRank(d, b) || birth(a, b));
 	const deg = (p: string) => partners.get(p)?.length ?? 0;
@@ -722,13 +837,46 @@ export function isotonic(want: { x: number; wt: number }[], gaps: number[], tied
 export interface Branch { label: string; ids: string[]; noPlaceholders?: Set<string> }
 
 /** Lay out each group of people (focus view: one group, with the focus person at x = 0), side by side. */
+/** Recent layouts of one group, by everything the layout reads (`groupKeys`): an edit elsewhere in the tree, or one
+ *  that moves no one (a death date, a note), reuses them, and so does going back to a recent view. */
+const recent = new Map<string, ReturnType<typeof layoutComponent>>();
+const RECENT = 20;
+
+/** For each group: its people, the focus person, the card size and the view's settings, then what the layout reads
+ *  of each family touching the group (its people, whether more children are expected, when the partnership began)
+ *  and of each person (birth year, sex). */
+function groupKeys(d: Dataset, branches: Branch[], root: string | undefined, S: CardSize, born: (id: string) => number): string[] {
+	const of = new Map<string, number>();
+	branches.forEach((b, i) => b.ids.forEach((id) => of.set(id, i)));
+	const parts = branches.map((b) => [JSON.stringify([b.ids, branches.length === 1 ? (root ?? null) : null, S, b.noPlaceholders ? [...b.noPlaceholders].sort() : null])]);
+	for (const p of d.people) {
+		const i = of.get(p.id);
+		if (i !== undefined) parts[i].push(`${p.id} ${born(p.id)} ${p.sex?.value ?? ''}`);
+	}
+	for (const f of d.families) {
+		const ps = partnerIds(f),
+			cs = childIds(f);
+		const at = new Set([...ps, ...cs].flatMap((id) => of.get(id) ?? []));
+		if (!at.size) continue;
+		const key = JSON.stringify([f.id, ps, cs, f.childrenComplete ?? null, f.expectedChildren?.min ?? null, f.relationship?.start?.edtf ?? null]);
+		for (const i of at) parts[i].push(key);
+	}
+	return parts.map((l) => l.join('\n'));
+}
+
 export function layoutPositions(d: Dataset, branches: Branch[], root?: string, S: CardSize = cardSize()): Positions {
 	const W = S.w;
 	const out: Positions = { nodes: [], ghosts: [], labels: [], bounds: { x: 0, y: 0, w: 0, h: 0 }, cardW: W, size: S };
 	let right = -Infinity;
-	for (const b of branches) {
+	const born = birthYears(d);
+	const keys = groupKeys(d, branches, root, S, born);
+	for (const [i, b] of branches.entries()) {
 		if (!b.ids.length) continue;
-		const L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined, S, b.noPlaceholders);
+		let L = recent.get(keys[i]);
+		if (L) recent.delete(keys[i]);
+		else L = layoutComponent(d, b.ids, branches.length === 1 ? root : undefined, S, b.noPlaceholders, born);
+		recent.set(keys[i], L);
+		if (recent.size > RECENT) recent.delete(recent.keys().next().value!);
 		const lefts = [...L.nodes.map((n) => n.x), ...L.ghosts.map((g) => g.x)];
 		const dx = right === -Infinity ? 0 : right + COMP_GAP - Math.min(...lefts);
 		for (const n of L.nodes) out.nodes.push({ ...n, x: n.x + dx });

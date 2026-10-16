@@ -6,7 +6,8 @@ import schema from '../../../schema/family-tree.schema.json';
 import sample from '../data/example-data.json';
 import { migrate } from './migrate.ts';
 import { gaps } from './gaps.ts';
-import { components, halfSiblings, isLiving, person, searchPeople } from './queries.ts';
+import { cardDates, components, datesLine, halfSiblings, isLiving, lifeEvent, lifeEvents, person, searchPeople } from './queries.ts';
+import demo from '../data/demo-darwin.json';
 import { timelineRows } from '../layout/timeline.ts';
 import { layoutTree } from '../layout/tree.ts';
 import { focusSet, type FocusOptions } from './focus.ts';
@@ -130,5 +131,17 @@ describe('missing-children placeholders', () => {
 		delete d.families.find((f) => f.id === 'fam_smith_walker')!.expectedChildren;
 		expect(styles(d)).toContain('maybe');
 		expect(styles(d)).not.toContain('ghost');
+	});
+});
+
+describe('lifeEvents', () => {
+	it('finds the same birth and death events as lifeEvent, for everyone in the sample and the demo', () => {
+		for (const d of [fresh(), migrate(structuredClone(demo) as never)]) {
+			const life = lifeEvents(d);
+			for (const p of d.people) {
+				for (const kind of ['birth', 'death'] as const) expect(life(p.id, kind)).toBe(lifeEvent(d, p.id, kind));
+				expect(datesLine(p, life(p.id, 'birth'), life(p.id, 'death'))).toBe(cardDates(d, p.id));
+			}
+		}
 	});
 });

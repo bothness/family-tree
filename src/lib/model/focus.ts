@@ -146,3 +146,26 @@ export function expandToInclude(d: Dataset, rootId: string, o: FocusOptions, id:
 			}
 	return best?.o ?? null;
 }
+
+/** Above this many people, the tree opens on a focus view rather than everyone (L1). */
+export const OPEN_FOCUSED_ABOVE = 300;
+
+/** Who a big tree opens on: the person with the most close family (parents, partners and children), the first by
+ *  id on a tie. Placeholders aren't picked. */
+export function startingPerson(d: Dataset): string | undefined {
+	const links = new Map<string, number>();
+	const add = (id: string, n: number) => links.set(id, (links.get(id) ?? 0) + n);
+	for (const f of d.families) {
+		const ps = partnerIds(f),
+			cs = childIds(f);
+		for (const p of ps) add(p, ps.length - 1 + cs.length);
+		for (const c of cs) add(c, ps.length);
+	}
+	let best: string | undefined,
+		most = -1;
+	for (const p of d.people) {
+		const n = links.get(p.id) ?? 0;
+		if (!p.placeholder && (n > most || (n === most && p.id < best!))) (best = p.id), (most = n);
+	}
+	return best;
+}

@@ -68,6 +68,27 @@ export function lifeEvent(d: Dataset, pid: string, kind: 'birth' | 'death'): Lif
 	}
 }
 
+const LIFE_TYPES = { birth: ['birth', 'baptism'], death: ['death', 'burial'] } as const;
+
+/** Everyone's birth and death events from one pass over the events, as `lifeEvent` finds them: for drawing many
+ *  people at once. */
+export function lifeEvents(d: Dataset): (pid: string, kind: 'birth' | 'death') => LifeEvent | undefined {
+	const first = new Map<string, Record<string, LifeEvent>>();
+	const wanted = new Set<string>([...LIFE_TYPES.birth, ...LIFE_TYPES.death]);
+	for (const e of d.events) {
+		if (!wanted.has(e.type)) continue;
+		for (const x of e.participants) {
+			if ((x.role ?? 'principal') !== 'principal') continue;
+			const m = first.get(x.personId) ?? first.set(x.personId, {}).get(x.personId)!;
+			m[e.type] ??= e;
+		}
+	}
+	return (pid, kind) => {
+		const m = first.get(pid);
+		return m && (m[LIFE_TYPES[kind][0]] ?? m[LIFE_TYPES[kind][1]]);
+	};
+}
+
 export const birthStart = (d: Dataset, id: string) => edtfRange(lifeEvent(d, id, 'birth')?.date?.edtf)?.start ?? 9999;
 
 /** Ordering for partners in a couple: male left, female right, unknown in between. */
@@ -87,9 +108,10 @@ export function famLabel(d: Dataset, f: Family): string {
 
 /** Dates line for a tree card, e.g. "b. 1885", "c.1858 – 1919?", "no dates yet". */
 export function cardDates(d: Dataset, id: string): string {
-	const p = person(d, id);
-	const b = lifeEvent(d, id, 'birth'),
-		x = lifeEvent(d, id, 'death');
+	return datesLine(person(d, id), lifeEvent(d, id, 'birth'), lifeEvent(d, id, 'death'));
+}
+/** The dates line from someone's birth (`b`) and death (`x`) events, already found. */
+export function datesLine(p: Person | undefined, b: LifeEvent | undefined, x: LifeEvent | undefined): string {
 	const by = yearOnly(b?.date?.edtf),
 		dy = yearOnly(x?.date?.edtf);
 	if (p?.deceased || x) return by || dy ? `${by || '?'} – ${dy || '?'}` : 'deceased';
