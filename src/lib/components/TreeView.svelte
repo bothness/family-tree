@@ -32,9 +32,13 @@
 	const WORKER_ABOVE = 300;
 	let workerFailed = $state(false);
 	const big = $derived(!workerFailed && app.visibleIds.length > WORKER_ABOVE);
-	let fromWorker = $state.raw<TreeLayout | null>(null);
+	/** Which view a layout is for (who's in it, the focus person, card size and direction): a worker's answer for
+	 *  another view is drawn until the new one comes, but fitting, centring and keeping someone in sight wait. */
+	const viewKey = $derived(big ? JSON.stringify([app.visibleBranches.map((b) => b.ids), app.activeFocus?.id ?? null, size, app.across]) : '');
+	let fromWorker = $state.raw<{ key: string; L: TreeLayout } | null>(null);
+	const current = $derived(!big || fromWorker?.key === viewKey);
 	const none = (S: CardSize): TreeLayout => ({ nodes: [], ghosts: [], lines: [], labels: [], anchors: {}, bounds: { x: 0, y: 0, w: 0, h: 0 }, cardW: S.w, size: S });
-	const layout = $derived(big ? (fromWorker ?? none(size)) : layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, size, app.across));
+	const layout = $derived(big ? (fromWorker?.L ?? none(size)) : layoutTree(app.data, app.visibleBranches, app.activeFocus?.id, size, app.across));
 	/** What the layout reads, as plain data the worker can be sent. */
 	const forLayout = (d: Dataset): Dataset => ({
 		...emptyDataset(),
@@ -60,9 +64,9 @@
 	}
 	function startWorker() {
 		const w = new LayoutWorker();
-		w.onmessage = (e: MessageEvent<{ id: number; L: TreeLayout }>) => {
+		w.onmessage = (e: MessageEvent<{ id: number; key: string; L: TreeLayout }>) => {
 			busy = false;
-			fromWorker = e.data.L;
+			fromWorker = { key: e.data.key, L: e.data.L };
 			send();
 		};
 		w.onerror = () => (workerFailed = true);
@@ -71,6 +75,7 @@
 	$effect(() => {
 		if (!big) return;
 		const req = {
+			key: viewKey,
 			d: forLayout(app.data),
 			branches: app.visibleBranches.map((b: Branch): Branch => ({ label: b.label, ids: [...b.ids], ...(b.noPlaceholders ? { noPlaceholders: new Set(b.noPlaceholders) } : {}) })),
 			root: app.activeFocus?.id,
@@ -245,7 +250,7 @@
 	// The very first fit (opening the tree) jumps; later ones glide.
 	let shownOnce = false;
 	$effect(() => {
-		if (app.camera === null && vw && vh && layout.bounds.w)
+		if (app.camera === null && vw && vh && layout.bounds.w && current)
 			untrack(() => {
 				instant = !shownOnce;
 				shownOnce = true;
@@ -259,7 +264,7 @@
 	$effect(() => {
 		void [vw, vh];
 		untrack(() => {
-			if (autoFitted && vw && vh && layout.bounds.w) app.camera = fitAll();
+			if (autoFitted && vw && vh && layout.bounds.w && current) app.camera = fitAll();
 		});
 	});
 
@@ -274,23 +279,33 @@
 	});
 
 	// Keep the selected person on screen when they change or the canvas resizes (e.g. the person panel opens).
-	// Edits don't trigger this, so the view stays put while sketching.
-	$effect(() => {
+	// Edits don't trigger this, so the view stays put while sketching. (With a worker's layout for another view still
+	// drawn, it waits for the new one, then runs once.)
+	let selectedWaiting = false;
+	const showSelected = () => {
 		const id = app.selected;
 		if (!id || !vw || !vh) return;
-		untrack(() => {
-			const n = layout.nodes.find((n) => n.id === id);
-			if (!n) return;
-			const t = target();
-			const next = ensureVisible(t, { x: n.x, y: n.y, w: CW, h: CH }, vw, vh);
-			if (next !== t) glide(next);
-		});
+		if (!current) return void (selectedWaiting = true);
+		selectedWaiting = false;
+		const n = layout.nodes.find((n) => n.id === id);
+		if (!n) return;
+		const t = target();
+		const next = ensureVisible(t, { x: n.x, y: n.y, w: CW, h: CH }, vw, vh);
+		if (next !== t) glide(next);
+	};
+	$effect(() => {
+		void [app.selected, vw, vh];
+		untrack(showSelected);
+	});
+	$effect(() => {
+		if (current && selectedWaiting) untrack(showSelected);
 	});
 
 	// Pan to show people who have just appeared (e.g. a child added from the person panel), without refitting.
 	let seen = new Set<string>();
 	$effect(() => {
 		const ids = layout.nodes.map((n) => n.id);
+		if (!current) return;
 		untrack(() => {
 			const fresh = seen.size && app.camera ? layout.nodes.filter((n) => !seen.has(n.id)) : [];
 			seen = new Set(ids);
@@ -307,7 +322,7 @@
 	// then clears the request a couple of frames later so later resizes don't snap back.
 	$effect(() => {
 		const id = app.centreTarget;
-		if (!id || !vw || !vh) return;
+		if (!id || !vw || !vh || !current) return;
 		untrack(() => {
 			const n = layout.nodes.find((n) => n.id === id);
 			if (n) glide(centreOn(app.camera ?? fitAll(), n.x + CW / 2, n.y + CH / 2, vw, vh));

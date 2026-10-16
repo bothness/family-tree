@@ -5,6 +5,8 @@ import type { Dataset } from '../model/types.ts';
 
 export interface LayoutRequest {
 	id: number;
+	/** Which view this is for, sent back with the layout. */
+	key: string;
 	d: Dataset;
 	branches: Branch[];
 	root?: string;
@@ -13,6 +15,6 @@ export interface LayoutRequest {
 }
 
 self.onmessage = (e: MessageEvent<LayoutRequest>) => {
-	const { id, d, branches, root, size, across } = e.data;
-	self.postMessage({ id, L: layoutTree(d, branches, root, size, across) });
+	const { id, key, d, branches, root, size, across } = e.data;
+	self.postMessage({ id, key, L: layoutTree(d, branches, root, size, across) });
 };
