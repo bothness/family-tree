@@ -76,6 +76,7 @@ for (const p of data.people) {
   if (!p.placeholder && !hasBirth) gaps.push(`${nameOf(p.id)}: no birth or baptism event`);
   p.research?.todo?.forEach(t => gaps.push(`${nameOf(p.id)}: TODO ${t}`));
 }
+(data.tasks ?? []).forEach(t => gaps.push(`General: TODO ${t.text}`));
 for (const f of data.families) {
   const label = (f.partners ?? []).map(x => nameOf(x.personId)).join(" & ") || f.id;
   if ((f.partners?.length ?? 0) < 2) gaps.push(`${label}: only ${f.partners?.length ?? 0} partner(s) known`);

@@ -1,5 +1,5 @@
 // Changes to a Dataset. Functions mutate in place (works with Svelte 5 $state proxies) and are unit-tested.
-import type { Dataset, Family, Person, Sex, Status } from './types.ts';
+import type { Dataset, Family, Person, Sex, Status, Task } from './types.ts';
 import { parseUserDate, unsureDate } from './edtf.ts';
 import { prunePlaces } from './places.ts';
 import { pruneSources } from './sources.ts';
@@ -9,7 +9,19 @@ export const uid = (prefix: string) =>
 	`${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 export function emptyDataset(): Dataset {
-	return { schemaVersion: '0.3', people: [], families: [], events: [], places: [], sources: [], views: [], media: [] };
+	return { schemaVersion: '0.3', people: [], families: [], events: [], places: [], sources: [], views: [], media: [], tasks: [] };
+}
+
+/** A research task for the whole tree. Returns the stored task (see the $state proxy pitfall). */
+export function addTask(d: Dataset, text: string): Task | undefined {
+	text = text.trim();
+	if (!text) return;
+	d.tasks.push({ id: uid('task'), text });
+	return d.tasks.at(-1)!;
+}
+
+export function removeTask(d: Dataset, id: string) {
+	d.tasks = d.tasks.filter((t) => t.id !== id);
 }
 
 export function findOrCreatePlace(d: Dataset, name: string): string | null {

@@ -174,6 +174,13 @@ export interface View {
 	meta?: Meta;
 }
 
+/** A research task for the whole tree, not one person ("Order the 1881 census for Leeds"). Deleted when done. */
+export interface Task {
+	id: string;
+	text: string;
+	meta?: Meta;
+}
+
 export interface Dataset {
 	schemaVersion: '0.3';
 	people: Person[];
@@ -183,4 +190,5 @@ export interface Dataset {
 	sources: Source[];
 	views: View[];
 	media: Media[];
+	tasks: Task[];
 }

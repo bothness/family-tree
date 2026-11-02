@@ -4,7 +4,7 @@ import addFormats from 'ajv-formats';
 import schema from '../../../schema/family-tree.schema.json';
 import demo from '../data/demo-darwin.json';
 import type { Dataset } from '../model/types.ts';
-import { deletePerson, emptyDataset, linkPeople, newFamily, newPerson, setLife } from '../model/mutations.ts';
+import { addTask, deletePerson, emptyDataset, linkPeople, newFamily, newPerson, removeTask, setLife } from '../model/mutations.ts';
 import { childIds, famsAsPartner, partnerIds, person } from '../model/queries.ts';
 import { eq, merge3, normalise, stampChanges } from './merge.ts';
 import { cite, uncite } from '../model/sources.ts';
@@ -15,6 +15,24 @@ const p = (d: Dataset, id: string) => person(d, id)!;
 const fam = (d: Dataset, id: string) => d.families.find((f) => f.id === id)!;
 
 describe('merge3 basics', () => {
+	it('keeps general research tasks added on both sides, and one deleted on either', () => {
+		const o = base();
+		const done = addTask(o, 'Visit the record office')!;
+		const a = structuredClone(o),
+			b = structuredClone(o);
+		addTask(a, 'Added here');
+		addTask(b, 'Added there');
+		removeTask(b, done.id);
+		const { data, resolved } = merge3(o, a, b);
+		expect(resolved).toEqual([]);
+		expect(data.tasks.map((t) => t.text).sort()).toEqual(['Added here', 'Added there']);
+	});
+
+	it('reads a tree saved before general tasks as having none', () => {
+		const { tasks: _, ...old } = base();
+		expect(normalise(old).tasks).toEqual([]);
+	});
+
 	it('returns either side when only one changed, or when both made the same change', () => {
 		const o = base(),
 			x = base();

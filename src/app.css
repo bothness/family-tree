@@ -271,6 +271,7 @@ svg text{font-family:var(--f-ui)}
 .todo ul{margin:0;padding-left:18px;display:grid;gap:3px}
 .todo li.k-guess::marker{color:var(--pencil)}
 .todo li.k-missing::marker{color:var(--warn)}
+.todo .tasks{padding:0;gap:8px;margin-bottom:8px}
 .todo .kind{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-right:6px}
 
 /* sheet */

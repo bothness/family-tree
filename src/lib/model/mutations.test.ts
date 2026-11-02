@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Dataset } from './types.ts';
-import { deletePerson, emptyDataset, linkPeople, newPerson, removePartnership, setChildOf, setLife } from './mutations.ts';
+import { addTask, deletePerson, emptyDataset, linkPeople, newPerson, removePartnership, removeTask, setChildOf, setLife } from './mutations.ts';
 import { childIds, coupleFam, displayName, famAsChild, halfSiblings, partnerIds, soloFam } from './queries.ts';
 
 let d: Dataset;
@@ -157,5 +157,16 @@ describe('displayName', () => {
 		expect(displayName(p)).toBe('Annie Smith');
 		p.knownAs = 'Nan Jones';
 		expect(displayName(p)).toBe('Nan Jones');
+	});
+});
+
+describe('general research tasks', () => {
+	it('adds trimmed text, ignores empty text, and removes by id', () => {
+		expect(addTask(d, '   ')).toBeUndefined();
+		const t = addTask(d, '  Order the 1881 census for Leeds ')!;
+		addTask(d, 'Write to the parish');
+		expect(d.tasks.map((x) => x.text)).toEqual(['Order the 1881 census for Leeds', 'Write to the parish']);
+		removeTask(d, t.id);
+		expect(d.tasks.map((x) => x.text)).toEqual(['Write to the parish']);
 	});
 });

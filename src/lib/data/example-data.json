@@ -463,5 +463,8 @@
       "kind": "tree",
       "scope": { "tags": ["walker"] }
     }
+  ],
+  "tasks": [
+    { "id": "task_leeds_registers", "text": "Ask Leeds Central Library which parish registers they hold on film" }
   ]
 }

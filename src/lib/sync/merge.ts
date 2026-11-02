@@ -182,7 +182,7 @@ export function merge3(base: unknown, local: unknown, remote: unknown): MergeRes
 	return { data, resolved: conflicts };
 }
 
-const COLLECTIONS = ['people', 'families', 'events', 'places', 'sources', 'views', 'media'] as const;
+const COLLECTIONS = ['people', 'families', 'events', 'places', 'sources', 'views', 'media', 'tasks'] as const;
 const withoutMeta = (x: Obj) => ({ ...x, meta: undefined });
 
 /** Mark what changed since `base` (people, families, events, places…) with when and by whom, so a later merge

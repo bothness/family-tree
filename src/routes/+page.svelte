@@ -120,7 +120,7 @@
 
 	// Like the to-do list itself, the count only covers people in view.
 	const allGaps = $derived(gaps(app.data));
-	const todoCount = $derived(Object.entries(allGaps).reduce((n, [id, g]) => n + (app.inView(id) ? g.length : 0), 0));
+	const todoCount = $derived(Object.entries(allGaps).reduce((n, [id, g]) => n + (app.inView(id) ? g.length : 0), app.data.tasks.length));
 
 	// Start each person's panel at the top, not wherever the previous person's was scrolled to.
 	let sheet: HTMLElement | undefined = $state();

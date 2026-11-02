@@ -56,6 +56,12 @@
       "items": {
         "$ref": "#/$defs/Media"
       }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Task"
+      }
     }
   },
   "$defs": {
@@ -837,6 +843,28 @@
               "default": true
             }
           }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "Task": {
+      "description": "A research task for the whole tree, not one person. Deleted when done.",
+      "type": "object",
+      "required": [
+        "id",
+        "text"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^task_[A-Za-z0-9_-]+$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
         },
         "meta": {
           "$ref": "#/$defs/Meta"

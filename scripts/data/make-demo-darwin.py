@@ -427,6 +427,7 @@ data = {
         {'id': 'view_wedgwoods', 'name': 'Wedgwoods', 'kind': 'tree', 'scope': {'tags': ['wedgwood']}},
     ],
     'media': [],
+    'tasks': [],
 }
 # every referenced person exists
 ids = {p['id'] for p in people}

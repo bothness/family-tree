@@ -10,6 +10,7 @@ Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/exa
 | **Event** | Birth, marriage, census, residence, occupation, migration… with date, place and participants (with roles) | Timeline, map, person page |
 | **Place** | Hierarchy (parent), coordinates, historical/alternative names, Wikidata | Map, place grouping |
 | **Source** | A record, book, web page, family papers or someone's memory; shared by everyone who cites it | Person panel, GEDCOM `SOUR` |
+| **Task** | A research task for the whole tree, not one person: `{ id, text }`, deleted when done | Research to-do list (General) |
 | **View** | Saved, named filter. One rule: a focus (root + up/down generations + width), tags, or a hand-picked people list | Saved views (chips under the header); filter every tab |
 
 ## Key decisions
@@ -51,6 +52,10 @@ Files: `schema/family-tree.schema.json` (JSON Schema 2020-12), `src/lib/data/exa
 - `media[]`: `Media { id, kind: 'image', mime, width, height, thumb, caption? }`; `person.photo` is a Media id.
 - Only a resized copy is kept (longest side 800px, JPEG), never the original. The image itself is stored apart from the dataset (IndexedDB in the browser) under its id; `thumb` is a small square data: URL for tree cards, so cards show without loading files.
 - Backups (Data → Download backup) are the dataset plus `mediaFiles` (each image as a data: URL), so one file holds everything. In a ZIP export (`family-tree.json` inside it) `mediaFiles` maps each id to a path in the ZIP (`photos/…jpg`) instead. `mediaFiles` isn't part of the schema; it's removed when a backup is loaded.
+
+## General research tasks (added within v0.3, 2 Nov 2026)
+- `tasks[]`: `Task { id, text }` (`task_` ids), for research about the whole tree rather than one person ("Order the 1881 census for Leeds"). Plain text with no links to people; deleted when done. A tree saved without `tasks` reads as having none.
+- Left out of a current-view export (like saved views) and of GEDCOM.
 
 ## Derived (computed, not stored)
 Sortable date ranges, generations, connected branches, and the gaps report (guesses, unsourced events, open families, placeholders, missing births).
