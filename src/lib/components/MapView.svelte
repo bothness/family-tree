@@ -98,12 +98,13 @@
 		(map?.getSource('links') as GeoJSONSource | undefined)?.setData(linksGeoJSON());
 	}
 
-	/** A click on a dot: a group zooms in until it parts; a single place shows its list. */
+	/** A click on a dot: a group zooms in until it parts, and one level more, so its places spread out; a single
+	 *  place shows its list. */
 	function clickDot(e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) {
 		const key = e.features?.[0]?.properties.key as string | undefined;
 		const c = clusters[level]?.find((x) => x.placeIds.join() === key);
 		if (!c || !map) return;
-		if (c.placeIds.length > 1) map.easeTo({ center: [c.lon, c.lat], zoom: Math.max(map.getZoom(), Math.min(c.splitsAt, CLUSTER_MAX_ZOOM + 1) + 0.3), duration: 600 });
+		if (c.placeIds.length > 1) map.easeTo({ center: [c.lon, c.lat], zoom: Math.max(map.getZoom(), Math.min(c.splitsAt, CLUSTER_MAX_ZOOM + 1) + 1.3), duration: 600 });
 		else showPlace(c.placeIds[0]);
 	}
 

@@ -92,16 +92,48 @@
 	const CW = $derived(size.w),
 		CH = $derived(size.h);
 	const GW = $derived(app.across ? size.w : GHOST_W);
-	/** A name over at most two lines of about `n` characters (portrait cards). */
-	function twoLines(name: string, n: number): string[] {
-		if (name.length <= n) return [name];
+	// Names are fitted to the card by their drawn width (counting characters let wide names touch its sides),
+	// measured on a canvas in the card's fonts (`.nm` in app.css) and cached, as big trees draw many cards. Measured
+	// again once the web fonts have loaded: `fitName` is rebuilt then, so the cards redraw.
+	const NAME_PAD = 8;
+	const canvas2d = typeof document === 'undefined' ? null : document.createElement('canvas').getContext('2d');
+	const widths = new Map<string, number>();
+	let fontsLoaded = $state(0);
+	$effect(() => {
+		const done = () => (widths.clear(), fontsLoaded++);
+		document.fonts?.ready.then(done);
+		document.fonts?.addEventListener('loadingdone', done);
+		return () => document.fonts?.removeEventListener('loadingdone', done);
+	});
+	function textW(t: string, pencil: boolean) {
+		const k = (pencil ? 'p' : 'n') + t;
+		let w = widths.get(k);
+		if (w === undefined) {
+			if (!canvas2d) return t.length * 8;
+			canvas2d.font = pencil ? '500 19px Caveat, cursive' : '600 15px Alegreya, Georgia, serif';
+			widths.set(k, (w = canvas2d.measureText(t).width));
+		}
+		return w;
+	}
+	/** One line no wider than `max`, shortened with "…" if need be. */
+	function fitLine(t: string, max: number, pencil: boolean) {
+		if (textW(t, pencil) <= max) return t;
+		while (t.length > 1 && textW(t + '…', pencil) > max) t = t.slice(0, -1);
+		return t.trimEnd() + '…';
+	}
+	/** A name over at most two lines no wider than `max` (portrait cards). */
+	function twoLines(name: string, max: number, pencil: boolean): string[] {
+		if (textW(name, pencil) <= max) return [name];
 		const words = name.split(' ');
 		let a = '';
-		while (words.length && (a + ' ' + words[0]).trim().length <= n) a = (a + ' ' + words.shift()).trim();
+		while (words.length && textW((a + ' ' + words[0]).trim(), pencil) <= max) a = (a + ' ' + words.shift()).trim();
 		if (!a) a = words.shift()!;
-		return [trunc(a, n), trunc(words.join(' '), n)].filter(Boolean);
+		return [fitLine(a, max, pencil), fitLine(words.join(' '), max, pencil)].filter(Boolean);
 	}
-	const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+	const fitName = $derived.by(() => {
+		void fontsLoaded;
+		return { twoLines, fitLine };
+	});
 	const lineClass = { solid: 'ln', likely: 'ln probable', guess: 'ln guess', ghost: 'ln ghost', maybe: 'ln maybe', adopted: 'ln adopted' } as const;
 
 	// ---- animation between layouts (V11) ----
@@ -591,7 +623,7 @@
 									<use href="#sil-{silhouetteKey(p.sex?.value)}" x="6" y="6" width={PP} height={PP} />
 								{/if}
 							{/if}
-							{#each twoLines(displayName(p), guess ? 15 : 13) as line, i (i)}
+							{#each fitName.twoLines(displayName(p), CW - 2 * NAME_PAD, guess) as line, i (i)}
 								<text class="nm" class:pencil={guess} x={CW / 2} y={top + 20 + i * 15} text-anchor="middle">{line}</text>
 							{/each}
 							<text class="dt" class:pencil={dateGuess} x={CW / 2} y={CH - 9} text-anchor="middle">{dates}</text>
@@ -604,7 +636,7 @@
 									<use href="#sil-{silhouetteKey(p.sex?.value)}" x="6" y="6" width="46" height="46" />
 								{/if}
 							{/if}
-							<text class="nm" class:pencil={guess} x={tx} y="25">{trunc(displayName(p), guess ? 20 : 18)}</text>
+							<text class="nm" class:pencil={guess} x={tx} y="25">{fitName.fitLine(displayName(p), CW - tx - NAME_PAD, guess)}</text>
 							<text class="dt" class:pencil={dateGuess} x={tx} y="45">{dates}</text>
 						{/if}
 						<!-- research stage, bottom right, clear of the name and photo -->
