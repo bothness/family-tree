@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	/** The panel's sections, one open at a time; the open one stays open from person to person. */
 	type Section = 'names' | 'life' | 'family' | 'notes' | 'research';
-	let lastOpen: Section | null = 'life';
+	let lastOpen: Section | null = null; // all closed to begin with
 </script>
 
 <script lang="ts">
@@ -460,7 +460,7 @@
 </section>
 
 <section class="acc" class:open={open === 'research'}>
-	{@render head('research', 'Research')}
+	{@render head('research', 'Research progress')}
 	{#if open === 'research'}
 		<div class="acc-body">
 			<div class="row">
