@@ -207,11 +207,13 @@ export function createSync(o: SyncOptions) {
 					await serial(pushNow);
 				} else if (!state.synced) {
 					// First time on this device: take the shared tree; keep what was here aside.
-					if (local?.people.length && !eq(normalise(local), latest.data)) await o.local.putExtra('before-sync', local);
+					// Through `normalise`, like every other way in: a tree saved by an older version may lack newer lists.
+					const shared = normalise(latest.data);
+					if (local?.people.length && !eq(normalise(local), shared)) await o.local.putExtra('before-sync', local);
 					state = { ...state, synced: latest };
 					await saveState();
-					appHas = structuredClone(latest.data);
-					await o.local.save(latest.data);
+					appHas = shared;
+					await o.local.save(structuredClone(shared));
 					setStatus('saved');
 				} else {
 					const merged = merge3(state.synced.data, appHas, latest.data).data;

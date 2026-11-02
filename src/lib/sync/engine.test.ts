@@ -139,6 +139,15 @@ describe('sync engine', () => {
 		expect(server.versions).toHaveLength(1); // nothing of the Smiths was sent
 	});
 
+	it('a new device reads a shared tree saved by an older version as the current shape', async () => {
+		const server = fakeServer();
+		const { tasks: _, ...old } = DARWINS;
+		server.versions.push({ version: 1, data: old as Dataset });
+		const b = await device(server, 'cousin@example.com');
+		expect(b.app.data.tasks).toEqual([]);
+		expect(b.store.data!.tasks).toEqual([]);
+	});
+
 	it("passes one device's edits to the other, stamped with who and when", async () => {
 		const server = fakeServer();
 		const a = await device(server, 'owner@example.com', DARWINS);

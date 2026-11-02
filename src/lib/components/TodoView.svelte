@@ -20,7 +20,7 @@
 	<!-- Tasks for the whole tree, not one person: shown in every view, deleted when done. -->
 	{#if app.canEdit || app.data.tasks.length}
 		<section>
-			<h3>General</h3>
+			<h3>General tasks</h3>
 			{#if app.data.tasks.length}
 				<ul class="tasks">
 					{#each app.data.tasks as t (t.id)}
