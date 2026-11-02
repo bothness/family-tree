@@ -1,3 +1,9 @@
+<script lang="ts" module>
+	/** The panel's sections, one open at a time; the open one stays open from person to person. */
+	type Section = 'names' | 'life' | 'family' | 'notes' | 'research';
+	let lastOpen: Section | null = 'life';
+</script>
+
 <script lang="ts">
 	import { app } from '#lib/app.svelte.ts';
 	import StatusPicker from './StatusPicker.svelte';
@@ -9,7 +15,7 @@
 	import { dateUnsure, edtfRange, fmtDate, parseUserDate } from '#lib/model/edtf.ts';
 	import {
 		birthNameNote, birthStart, childIds, displayName, famAsChild, famLabel, famsAsPartner, halfSiblings,
-		lifeEvent, nameIsGuess, nameText, NOW, partnerIds, person, PRESUMED_DEAD_AFTER, primaryName, soloFam
+		lifeEvent, nameIsGuess, nameText, NOW, partnerIds, person, placeName, PRESUMED_DEAD_AFTER, primaryName, soloFam
 	} from '#lib/model/queries.ts';
 	import { deletePerson, removePartnership, setChildOf, setLife } from '#lib/model/mutations.ts';
 	import { expandToInclude, type FocusOptions } from '#lib/model/focus.ts';
@@ -64,8 +70,12 @@
 	let confirmDel = $state(false);
 	/** Parents whose certainty was changed here: their switch stays visible after being set to Confirmed. */
 	let touchedParents = $state(new Set<string>());
-	let moreOpen = $state(false);
-	let namesOpen = $state(false);
+	let open = $state<Section | null>(lastOpen);
+	const toggle = (s: Section) => (open = lastOpen = open === s ? null : s);
+	// Adding a relative from elsewhere (a placeholder on the tree) opens Family, where the form is.
+	$effect(() => {
+		if (app.addKind) open = lastOpen = 'family';
+	});
 	let todoText = $state('');
 	// The "just added" notice is about the view at the time: drop it once the focus changes (e.g. Expand view).
 	$effect(() => {
@@ -108,7 +118,6 @@
 	function addName() {
 		ensureMain();
 		p.names!.push({ type: p.sex?.value === 'F' ? 'married' : 'other' });
-		namesOpen = true;
 	}
 	function setMainName(field: 'given' | 'surname', v: string) {
 		const n = ensureMain();
@@ -164,6 +173,24 @@
 	}
 	const otherPartner = (f: Family) => partnerIds(f).find((x) => x !== pid);
 	const kidsOf = (f: Family) => childIds(f).sort((a, b) => birthStart(d, a) - birthStart(d, b));
+
+	// What each closed section holds, in a line.
+	const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
+	const lifeText = (e: typeof birth) => [fmtDate(e?.date?.edtf), placeName(d, e?.place?.placeId)].filter(Boolean).join(', ');
+	const summary = $derived({
+		names: [p.knownAs && `Known as ${p.knownAs}`, otherNames.length && namesSummary].filter(Boolean).join(' · ') || 'None',
+		life: [lifeText(birth) && `Born ${lifeText(birth)}`, deceased && (lifeText(death) ? `died ${lifeText(death)}` : 'died')].filter(Boolean).join(' – ') || 'Not recorded',
+		family:
+			[
+				parents.length && `Child of ${parents.map((id) => displayName(person(d, id))).join(' & ')}`,
+				partnerFams.map(otherPartner).filter(Boolean).length && `partner of ${partnerFams.map(otherPartner).filter(Boolean).map((id) => displayName(person(d, id!))).join(', ')}`,
+				partnerFams.reduce((n, f) => n + f.children.length, 0) && plural(partnerFams.reduce((n, f) => n + f.children.length, 0), 'child').replace('childs', 'children')
+			]
+				.filter(Boolean)
+				.join(' · ') || 'None recorded',
+		notes: [p.notes && 'Notes', p.citations?.length && plural(p.citations.length, 'source'), p.tags?.length && `tagged ${p.tags.join(', ')}`].filter(Boolean).join(' · ') || 'None',
+		research: [STAGES.find(([v]) => v === p.research?.stage)?.[1] ?? 'Progress not set', p.research?.todo?.length && plural(p.research.todo.length, 'task'), p.placeholder && 'placeholder'].filter(Boolean).join(' · ')
+	});
 </script>
 
 {#snippet personLink(id: string)}
@@ -234,46 +261,13 @@
 	{@render outOfView(pid, app.activeFocus ? `The focus on ${displayName(person(d, app.activeFocus.id))} doesn't include ${displayName(p)}.` : `${displayName(p)} isn't in the view “${app.activeView?.name ?? ''}”.`)}
 {/if}
 
-<!-- Names and sex: a block like the others below, without the rule above it. -->
+<!-- The main name and sex stay open at the top: they're what's filled in first. -->
 <div class="blk first">
 	<div class="row">
 		<label class="fld"><span>Given names</span><input type="text" class:pencil={main?.status === 'guess'} value={main?.given ?? ''} onchange={(e) => setMainName('given', val(e))} /></label>
 		<label class="fld"><span>Surname</span><input type="text" class:pencil={main?.status === 'guess'} value={main?.surname ?? ''} onchange={(e) => setMainName('surname', val(e))} /></label>
 	</div>
 	<div class="row"><span class="hint">This name is</span><StatusPicker value={main?.status} onchange={(v) => (ensureMain().status = v)} /></div>
-	<label class="fld"><span>Known as (shown on the tree)</span>
-		<input type="text" value={p.knownAs ?? ''} placeholder="e.g. Annie, or Sir John Smith" onchange={(e) => setText('knownAs', val(e))} />
-	</label>
-
-	{#if otherNames.length}
-		<details class="names" bind:open={namesOpen}>
-			<summary>Also {namesSummary}</summary>
-			<div class="names-list">
-				{#each otherNames as { n, i } (i)}
-					<div class="oname">
-						<div class="row">
-							<select style="width:auto" value={n.type ?? 'other'} onchange={(e) => (n.type = val(e) as NameType)}>
-								{#each NAME_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
-							</select>
-							<button class="iconx" onclick={() => p.names!.splice(i, 1)} aria-label="Remove this name">×</button>
-						</div>
-						<div class="row">
-							<label class="fld"><span>Given</span><input type="text" value={n.given ?? ''} onchange={(e) => (n.given = val(e).trim() || undefined)} /></label>
-							<label class="fld"><span>Surname</span><input type="text" value={n.surname ?? ''} onchange={(e) => (n.surname = val(e).trim() || undefined)} /></label>
-							<label class="fld" style="flex-basis:80px"><span>From</span><input type="text" value={fmtDate(n.date)} onchange={(e) => (n.date = parseUserDate(val(e)) || undefined)} /></label>
-						</div>
-						<div class="row"><StatusPicker value={n.status} onchange={(v) => (n.status = v)} /></div>
-						<label class="check"><input type="checkbox" checked={!!n.preferred} onchange={(e) => showOnTree(n, (e.currentTarget as HTMLInputElement).checked)} /> Show this name on the tree</label>
-					</div>
-				{/each}
-			</div>
-		</details>
-	{/if}
-	<div class="row">
-		<button class="btn small" onclick={addName}>+ Another name</button>
-		{#if !otherNames.length}<span class="hint">e.g. married name, deed poll</span>{/if}
-	</div>
-
 	<div class="row">
 		<span class="hint">Sex</span>
 		<span class="seg" role="group">
@@ -284,165 +278,213 @@
 	</div>
 </div>
 
-<div class="blk">
-	{@render lifeRow('birth', 'Born')}
-	<label class="check"><input type="checkbox" checked={deceased} onchange={(e) => setDeceased((e.currentTarget as HTMLInputElement).checked)} /> Deceased</label>
-	{#if deceased}
-		{@render lifeRow('death', 'Died')}
-	{:else if birthRange && birthRange.start <= NOW - PRESUMED_DEAD_AFTER}
-		<span class="hint">Born over {PRESUMED_DEAD_AFTER} years ago, so probably deceased.</span>
-	{/if}
-</div>
+<!-- The rest in sections, one open at a time; a closed one says in a line what it holds. -->
+{#snippet head(s: Section, title: string)}
+	<button class="acc-head" aria-expanded={open === s} onclick={() => toggle(s)}>
+		<span class="acc-title"><b>{title}</b>{#if open !== s}<span class="acc-sum">{summary[s]}</span>{/if}</span>
+		<svg class="src-chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" /></svg>
+	</button>
+{/snippet}
 
-<div class="blk">
-	<div class="lbl">Family</div>
-	<div class="rels">
-		{#if !parentFam || !parents.length}
-			<div class="who"><span class="hint">Parents:</span> <span class="hint">not recorded</span></div>
-		{:else}
-			{@const link = parentFam.children.find((c) => c.personId === pid)}
-			<!-- The parents get a box like each partnership, ending with a way to take this person away from them. -->
-			<div class="fam">
-				<div class="fam-head"><span class="hint">Parents:</span> {#each parents as id, i (id)}{@render personLink(id)}{i < parents.length - 1 ? ' & ' : ''}{/each}</div>
-				<!-- How sure the link to their parents is (set to "guess" when added with "This is a guess"), and, for a
-				     parent who was added as a guess, how sure that parent is. -->
-				<div class="row"><span class="hint">This parent link is</span><StatusPicker value={link?.status} onchange={(v) => setStatus(link, v)} /></div>
-				{#if link}
-					<label class="check"><input type="checkbox" checked={link.relation === 'adopted'} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) link.relation = 'adopted'; else delete link.relation; }} /> This is an adoptive relationship</label>
-				{/if}
-				{#each parentFam.partners.filter((x) => (x.status && x.status !== 'confirmed') || touchedParents.has(x.personId)) as pr (pr.personId)}
-					<div class="row"><span class="hint">{displayName(person(d, pr.personId))} as a parent is</span><StatusPicker value={pr.status} onchange={(v) => ((touchedParents = new Set([...touchedParents, pr.personId])), setStatus(pr, v))} /></div>
-				{/each}
-				{#if childOfOptions.length > 1}
-					<label class="fld"><span>Child of</span>
-						<select value={`fam:${parentFam.id}`} onchange={(e) => setChildOf(d, pid, val(e))}>
-							{#each childOfOptions as [v, l] (v)}<option value={v}>{l}</option>{/each}
-						</select>
-					</label>
-				{/if}
-				<div class="row"><button class="btn small danger" onclick={() => setChildOf(d, pid, 'none')} title="Takes {displayName(p)} away from both parents">Remove this relationship</button></div>
-			</div>
-		{/if}
-		{#if siblings.length}<div class="who"><span class="hint">Siblings:</span> {#each siblings as id, i (id)}{@render personLink(id)}{i < siblings.length - 1 ? ', ' : ''}{/each}</div>{/if}
-		{#if half.length}<div class="who"><span class="hint">Half-siblings:</span> {#each half as id, i (id)}{@render personLink(id)}{i < half.length - 1 ? ', ' : ''}{/each}</div>{/if}
-	</div>
-
-	{#each partnerFams as f (f.id)}
-		{@const other = otherPartner(f)}
-		{@const r = f.relationship ?? {}}
-		<div class="fam">
-			<div class="fam-head"><span class="hint">Partner:</span> {#if other}{@render personLink(other)}{:else}<span class="hint">not recorded</span>{/if}</div>
-			<label class="fld"><span>Relationship</span>
-				<select value={r.type ?? 'unknown'} onchange={(e) => ((f.relationship ??= {}).type = val(e) as RelType)}>
-					{#each REL_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
-				</select>
+<section class="acc" class:open={open === 'names'}>
+	{@render head('names', 'Other names')}
+	{#if open === 'names'}
+		<div class="acc-body">
+			<label class="fld"><span>Known as (shown on the tree)</span>
+				<input type="text" value={p.knownAs ?? ''} placeholder="e.g. Annie, or Sir John Smith" onchange={(e) => setText('knownAs', val(e))} />
 			</label>
-			<div class="row"><span class="hint">This partnership is</span><StatusPicker value={r.status} onchange={(v: Status | undefined) => ((f.relationship ??= {}).status = v)} /></div>
+			{#each otherNames as { n, i } (i)}
+				<div class="oname">
+					<div class="row">
+						<select style="width:auto" value={n.type ?? 'other'} onchange={(e) => (n.type = val(e) as NameType)}>
+							{#each NAME_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
+						</select>
+						<button class="iconx" onclick={() => p.names!.splice(i, 1)} aria-label="Remove this name">×</button>
+					</div>
+					<div class="row">
+						<label class="fld"><span>Given</span><input type="text" value={n.given ?? ''} onchange={(e) => (n.given = val(e).trim() || undefined)} /></label>
+						<label class="fld"><span>Surname</span><input type="text" value={n.surname ?? ''} onchange={(e) => (n.surname = val(e).trim() || undefined)} /></label>
+						<label class="fld" style="flex-basis:80px"><span>From</span><input type="text" value={fmtDate(n.date)} onchange={(e) => (n.date = parseUserDate(val(e)) || undefined)} /></label>
+					</div>
+					<div class="row"><StatusPicker value={n.status} onchange={(v) => (n.status = v)} /></div>
+					<label class="check"><input type="checkbox" checked={!!n.preferred} onchange={(e) => showOnTree(n, (e.currentTarget as HTMLInputElement).checked)} /> Show this name on the tree</label>
+				</div>
+			{/each}
 			<div class="row">
-				<label class="fld" style="flex-basis:90px"><span>From</span><input type="text" class:pencil={dateUnsure(r.start?.edtf)} value={fmtDate(r.start?.edtf)} placeholder="e.g. 1883" onchange={(e) => setRel(f, 'start', val(e))} /></label>
-				<label class="fld" style="flex-basis:90px"><span>Until</span><input type="text" class:pencil={dateUnsure(r.end?.edtf)} value={fmtDate(r.end?.edtf)} onchange={(e) => setRel(f, 'end', val(e))} /></label>
-				<label class="fld" style="flex-basis:100px"><span>Ended by</span>
-					<select value={r.endReason ?? ''} onchange={(e) => { const v = val(e); if (v) (f.relationship ??= {}).endReason = v as EndReason; else delete f.relationship?.endReason; }}>
-						{#each END_REASONS as [v, l] (v)}<option value={v}>{l}</option>{/each}
-					</select>
-				</label>
+				<button class="btn small" onclick={addName}>+ Another name</button>
+				{#if !otherNames.length}<span class="hint">e.g. married name, deed poll</span>{/if}
 			</div>
-			<div class="fld"><span>{r.type === 'marriage' || r.type === 'civil-partnership' ? 'Where they married' : 'Place'}</span><PlaceInput fid={f.id} /></div>
-			{#if r.place}
-				<div class="row"><span class="hint">This place is</span><StatusPicker value={r.place.status} onchange={(v) => setStatus(r.place, v)} /></div>
-			{/if}
-			<div class="who"><span class="hint">Children:</span> {#each kidsOf(f) as id, i (id)}{@render personLink(id)}{i < f.children.length - 1 ? ', ' : ''}{:else}<span class="hint">none yet</span>{/each}</div>
-			<div class="row">
-				<label class="fld" style="flex:2 1 170px"><span>Are all their children recorded?</span>
-					<select value={f.childrenComplete === 'yes' || f.childrenComplete === 'no' ? f.childrenComplete : 'unknown'} onchange={(e) => (f.childrenComplete = val(e) as Family['childrenComplete'])}>
-						<option value="unknown">Not sure</option><option value="yes">Yes, all recorded</option><option value="no">No, some missing</option>
-					</select>
-				</label>
-				{#if f.childrenComplete === 'no'}
-					<label class="fld" style="flex:1 1 80px"><span>Total expected</span><input type="number" min="0" value={f.expectedChildren?.min ?? ''} onchange={(e) => setExpected(f, val(e))} /></label>
-				{/if}
-			</div>
-			<!-- With children, removing keeps both as their parents, so there's only something to remove while the
-			     partnership has details of its own. -->
-			{#if other && (!f.children.length || f.relationship)}
-				<div class="row"><button class="btn small danger" onclick={() => removePartnership(d, f.id)} title={f.children.length ? 'Clears the partnership; both stay parents of their children' : undefined}>Remove this relationship</button></div>
-			{:else if other}
-				<div class="hint">These people share children but have no recorded relationship.</div>
+		</div>
+	{/if}
+</section>
+
+<section class="acc" class:open={open === 'life'}>
+	{@render head('life', 'Birth and death')}
+	{#if open === 'life'}
+		<div class="acc-body">
+			{@render lifeRow('birth', 'Born')}
+			<label class="check"><input type="checkbox" checked={deceased} onchange={(e) => setDeceased((e.currentTarget as HTMLInputElement).checked)} /> Deceased</label>
+			{#if deceased}
+				{@render lifeRow('death', 'Died')}
+			{:else if birthRange && birthRange.start <= NOW - PRESUMED_DEAD_AFTER}
+				<span class="hint">Born over {PRESUMED_DEAD_AFTER} years ago, so probably deceased.</span>
 			{/if}
 		</div>
-	{/each}
-
-	<div class="row">
-		{#each ['parent', 'partner', 'child', 'sibling'] as const as k (k)}
-			<button class="btn small" aria-pressed={app.addKind === k} onclick={() => ((app.addKind = app.addKind === k ? null : k), (info = ''), (added = null))}>+ {k[0].toUpperCase() + k.slice(1)}</button>
-		{/each}
-	</div>
-	{#if app.addKind}
-		{#key `${pid}-${app.addKind}`}
-			<AddRelative {pid} kind={app.addKind} onDone={(m, id) => ((app.addKind = null), (info = m ?? ''), (added = id))} onCancel={() => (app.addKind = null)} />
-		{/key}
 	{/if}
-	{#if info}<div class="hint">{info}</div>{/if}
-	{#if added && person(d, added) && !app.inView(added)}
-		{@const name = displayName(person(d, added))}
-		{#if app.activeFocus}
-			{@render outOfView(
-				added,
-				`${name} was added, but is outside the current focus.` + (expansion ? ` Expanding the view will ${describeExpansion(app.activeFocus, expansion)}.` : ''),
-				expansion ? { label: 'Expand view', run: () => app.adjustFocus(expansion) } : null
-			)}
-		{:else if app.activeView}
-			{@const v = app.activeView}
-			{@render outOfView(
-				added,
-				`${name} was added, but isn't in the view “${v.name}”.`,
-				viewKind(v) === 'people' ? { label: 'Add to this view', run: () => setViewScope(d, v.id, { people: [...(v.scope?.people ?? []), added!] }) } : null
-			)}
-		{/if}
-	{/if}
-</div>
+</section>
 
-<!-- Research: its own section (its stage is the dot on the tree cards), between Family and the notes. -->
-<div class="blk">
-	<div class="lbl">Research</div>
-	<div class="row">
-		<span class="hint">Progress</span>
-		<span class="seg" role="group" aria-label="Research progress">
-			{#each STAGES as [v, l] (v)}
-				<button type="button" aria-pressed={p.research?.stage === v} onclick={() => ((p.research ??= {}).stage = v)}>{l}</button>
+<section class="acc" class:open={open === 'family'}>
+	{@render head('family', 'Family')}
+	{#if open === 'family'}
+		<div class="acc-body">
+			<div class="rels">
+				{#if !parentFam || !parents.length}
+					<div class="who"><span class="hint">Parents:</span> <span class="hint">not recorded</span></div>
+				{:else}
+					{@const link = parentFam.children.find((c) => c.personId === pid)}
+					<!-- The parents get a box like each partnership, ending with a way to take this person away from them. -->
+					<div class="fam">
+						<div class="fam-head"><span class="hint">Parents:</span> {#each parents as id, i (id)}{@render personLink(id)}{i < parents.length - 1 ? ' & ' : ''}{/each}</div>
+						<!-- How sure the link to their parents is (set to "guess" when added with "This is a guess"), and, for a
+						     parent who was added as a guess, how sure that parent is. -->
+						<div class="row"><span class="hint">This parent link is</span><StatusPicker value={link?.status} onchange={(v) => setStatus(link, v)} /></div>
+						{#if link}
+							<label class="check"><input type="checkbox" checked={link.relation === 'adopted'} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) link.relation = 'adopted'; else delete link.relation; }} /> This is an adoptive relationship</label>
+						{/if}
+						{#each parentFam.partners.filter((x) => (x.status && x.status !== 'confirmed') || touchedParents.has(x.personId)) as pr (pr.personId)}
+							<div class="row"><span class="hint">{displayName(person(d, pr.personId))} as a parent is</span><StatusPicker value={pr.status} onchange={(v) => ((touchedParents = new Set([...touchedParents, pr.personId])), setStatus(pr, v))} /></div>
+						{/each}
+						{#if childOfOptions.length > 1}
+							<label class="fld"><span>Child of</span>
+								<select value={`fam:${parentFam.id}`} onchange={(e) => setChildOf(d, pid, val(e))}>
+									{#each childOfOptions as [v, l] (v)}<option value={v}>{l}</option>{/each}
+								</select>
+							</label>
+						{/if}
+						<div class="row"><button class="btn small danger" onclick={() => setChildOf(d, pid, 'none')} title="Takes {displayName(p)} away from both parents">Remove this relationship</button></div>
+					</div>
+				{/if}
+				{#if siblings.length}<div class="who"><span class="hint">Siblings:</span> {#each siblings as id, i (id)}{@render personLink(id)}{i < siblings.length - 1 ? ', ' : ''}{/each}</div>{/if}
+				{#if half.length}<div class="who"><span class="hint">Half-siblings:</span> {#each half as id, i (id)}{@render personLink(id)}{i < half.length - 1 ? ', ' : ''}{/each}</div>{/if}
+			</div>
+
+			{#each partnerFams as f (f.id)}
+				{@const other = otherPartner(f)}
+				{@const r = f.relationship ?? {}}
+				<div class="fam">
+					<div class="fam-head"><span class="hint">Partner:</span> {#if other}{@render personLink(other)}{:else}<span class="hint">not recorded</span>{/if}</div>
+					<label class="fld"><span>Relationship</span>
+						<select value={r.type ?? 'unknown'} onchange={(e) => ((f.relationship ??= {}).type = val(e) as RelType)}>
+							{#each REL_TYPES as [v, l] (v)}<option value={v}>{l}</option>{/each}
+						</select>
+					</label>
+					<div class="row"><span class="hint">This partnership is</span><StatusPicker value={r.status} onchange={(v: Status | undefined) => ((f.relationship ??= {}).status = v)} /></div>
+					<div class="row">
+						<label class="fld" style="flex-basis:90px"><span>From</span><input type="text" class:pencil={dateUnsure(r.start?.edtf)} value={fmtDate(r.start?.edtf)} placeholder="e.g. 1883" onchange={(e) => setRel(f, 'start', val(e))} /></label>
+						<label class="fld" style="flex-basis:90px"><span>Until</span><input type="text" class:pencil={dateUnsure(r.end?.edtf)} value={fmtDate(r.end?.edtf)} onchange={(e) => setRel(f, 'end', val(e))} /></label>
+						<label class="fld" style="flex-basis:100px"><span>Ended by</span>
+							<select value={r.endReason ?? ''} onchange={(e) => { const v = val(e); if (v) (f.relationship ??= {}).endReason = v as EndReason; else delete f.relationship?.endReason; }}>
+								{#each END_REASONS as [v, l] (v)}<option value={v}>{l}</option>{/each}
+							</select>
+						</label>
+					</div>
+					<div class="fld"><span>{r.type === 'marriage' || r.type === 'civil-partnership' ? 'Where they married' : 'Place'}</span><PlaceInput fid={f.id} /></div>
+					{#if r.place}
+						<div class="row"><span class="hint">This place is</span><StatusPicker value={r.place.status} onchange={(v) => setStatus(r.place, v)} /></div>
+					{/if}
+					<div class="who"><span class="hint">Children:</span> {#each kidsOf(f) as id, i (id)}{@render personLink(id)}{i < f.children.length - 1 ? ', ' : ''}{:else}<span class="hint">none yet</span>{/each}</div>
+					<div class="row">
+						<label class="fld" style="flex:2 1 170px"><span>Are all their children recorded?</span>
+							<select value={f.childrenComplete === 'yes' || f.childrenComplete === 'no' ? f.childrenComplete : 'unknown'} onchange={(e) => (f.childrenComplete = val(e) as Family['childrenComplete'])}>
+								<option value="unknown">Not sure</option><option value="yes">Yes, all recorded</option><option value="no">No, some missing</option>
+							</select>
+						</label>
+						{#if f.childrenComplete === 'no'}
+							<label class="fld" style="flex:1 1 80px"><span>Total expected</span><input type="number" min="0" value={f.expectedChildren?.min ?? ''} onchange={(e) => setExpected(f, val(e))} /></label>
+						{/if}
+					</div>
+					<!-- With children, removing keeps both as their parents, so there's only something to remove while the
+					     partnership has details of its own. -->
+					{#if other && (!f.children.length || f.relationship)}
+						<div class="row"><button class="btn small danger" onclick={() => removePartnership(d, f.id)} title={f.children.length ? 'Clears the partnership; both stay parents of their children' : undefined}>Remove this relationship</button></div>
+					{:else if other}
+						<div class="hint">These people share children but have no recorded relationship.</div>
+					{/if}
+				</div>
 			{/each}
-		</span>
-	</div>
-	<ul class="evlist">
-		{#each p.research?.todo ?? [] as t, i (i)}
-			<li><span class="grow">☐ {t}</span><button class="del" aria-label="Remove" onclick={() => p.research!.todo!.splice(i, 1)}>×</button></li>
-		{/each}
-	</ul>
-	<div class="row">
-		<input type="text" bind:value={todoText} placeholder="Add a research task" style="flex:1" onkeydown={(e) => e.key === 'Enter' && addTodo()} />
-		<button class="btn small" onclick={addTodo}>Add</button>
-	</div>
-</div>
 
-<details class="more" bind:open={moreOpen}>
-	<summary>Notes and sources <span>{[p.notes && 'notes', p.citations?.length && `${p.citations.length} source${p.citations.length > 1 ? 's' : ''}`].filter(Boolean).join(' · ')}</span></summary>
-	<div class="blk" style="border:0;margin-top:6px">
-		<label class="fld"><span>Biography and notes</span><textarea rows="4" value={p.notes ?? ''} onchange={(e) => setText('notes', val(e))}></textarea></label>
-	</div>
-	<div class="blk">
-		<div class="lbl">Sources</div>
-		<SourceList {pid} />
-	</div>
-	<div class="blk">
-		<label class="fld"><span>Tags (comma separated)</span>
-			<input type="text" value={(p.tags ?? []).join(', ')}
-				onchange={(e) => { const t = val(e).split(',').map((s) => s.trim()).filter(Boolean); if (t.length) p.tags = t; else delete p.tags; }} />
-		</label>
-	</div>
-	<div class="blk">
-		<label class="check"><input type="checkbox" checked={!!p.placeholder} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) p.placeholder = true; else delete p.placeholder; }} /> Placeholder for an unknown person</label>
-	</div>
-</details>
+			<div class="row">
+				{#each ['parent', 'partner', 'child', 'sibling'] as const as k (k)}
+					<button class="btn small" aria-pressed={app.addKind === k} onclick={() => ((app.addKind = app.addKind === k ? null : k), (info = ''), (added = null))}>+ {k[0].toUpperCase() + k.slice(1)}</button>
+				{/each}
+			</div>
+			{#if app.addKind}
+				{#key `${pid}-${app.addKind}`}
+					<AddRelative {pid} kind={app.addKind} onDone={(m, id) => ((app.addKind = null), (info = m ?? ''), (added = id))} onCancel={() => (app.addKind = null)} />
+				{/key}
+			{/if}
+			{#if info}<div class="hint">{info}</div>{/if}
+			{#if added && person(d, added) && !app.inView(added)}
+				{@const name = displayName(person(d, added))}
+				{#if app.activeFocus}
+					{@render outOfView(
+						added,
+						`${name} was added, but is outside the current focus.` + (expansion ? ` Expanding the view will ${describeExpansion(app.activeFocus, expansion)}.` : ''),
+						expansion ? { label: 'Expand view', run: () => app.adjustFocus(expansion) } : null
+					)}
+				{:else if app.activeView}
+					{@const v = app.activeView}
+					{@render outOfView(
+						added,
+						`${name} was added, but isn't in the view “${v.name}”.`,
+						viewKind(v) === 'people' ? { label: 'Add to this view', run: () => setViewScope(d, v.id, { people: [...(v.scope?.people ?? []), added!] }) } : null
+					)}
+				{/if}
+			{/if}
+		</div>
+	{/if}
+</section>
+
+<section class="acc" class:open={open === 'notes'}>
+	{@render head('notes', 'Notes and sources')}
+	{#if open === 'notes'}
+		<div class="acc-body">
+			<label class="fld"><span>Biography and notes</span><textarea rows="4" value={p.notes ?? ''} onchange={(e) => setText('notes', val(e))}></textarea></label>
+			<div class="fld"><span>Sources</span><SourceList {pid} /></div>
+			<label class="fld"><span>Tags (comma separated)</span>
+				<input type="text" value={(p.tags ?? []).join(', ')}
+					onchange={(e) => { const t = val(e).split(',').map((s) => s.trim()).filter(Boolean); if (t.length) p.tags = t; else delete p.tags; }} />
+			</label>
+		</div>
+	{/if}
+</section>
+
+<section class="acc" class:open={open === 'research'}>
+	{@render head('research', 'Research')}
+	{#if open === 'research'}
+		<div class="acc-body">
+			<div class="row">
+				<span class="hint">Progress</span>
+				<span class="seg" role="group" aria-label="Research progress">
+					{#each STAGES as [v, l] (v)}
+						<button type="button" aria-pressed={p.research?.stage === v} onclick={() => ((p.research ??= {}).stage = v)}>{l}</button>
+					{/each}
+				</span>
+			</div>
+			<label class="check"><input type="checkbox" checked={!!p.placeholder} onchange={(e) => { if ((e.currentTarget as HTMLInputElement).checked) p.placeholder = true; else delete p.placeholder; }} /> This person is a placeholder (identity unknown)</label>
+			<!-- Tasks are cards like the sources, each with its own ×. -->
+			<ul class="tasks">
+				{#each p.research?.todo ?? [] as t, i (i)}
+					<li><span>{t}</span><button class="task-x" aria-label="Remove “{t}”" onclick={() => p.research!.todo!.splice(i, 1)}>×</button></li>
+				{/each}
+			</ul>
+			<div class="row">
+				<input type="text" bind:value={todoText} placeholder="Add a research task" style="flex:1" onkeydown={(e) => e.key === 'Enter' && addTodo()} />
+				<button class="btn small" onclick={addTodo}>Add</button>
+			</div>
+		</div>
+	{/if}
+</section>
 
 <div class="del-row">
 	<button class="btn danger small" onclick={remove}>{confirmDel ? `Tap again to delete ${displayName(p)}` : 'Delete this person'}</button>

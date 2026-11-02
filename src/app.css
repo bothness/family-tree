@@ -290,6 +290,25 @@ svg text{font-family:var(--f-ui)}
    or looser than its neighbours. */
 .blk{border-top:1px solid var(--rule);padding-top:12px;margin-top:12px;display:grid;gap:7px}
 .blk.first{border-top:0;padding-top:0;margin-top:0}
+/* The panel's sections (accordion, one open at a time): a header with a chevron, and when closed a line saying what
+   the section holds. */
+.acc{border-top:1px solid var(--rule)}
+.acc:first-of-type{margin-top:12px}
+.acc-head{display:flex;align-items:flex-start;gap:8px;width:100%;border:0;background:none;padding:10px 0;text-align:left;color:inherit}
+.acc-title{flex:1;min-width:0;display:grid;gap:1px}
+.acc-title b{font-size:12px;letter-spacing:.07em;text-transform:uppercase;font-weight:700}
+.acc-sum{font-size:13px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc-head .src-chev{width:22px;height:22px}
+.acc-head:hover .src-chev{stroke:var(--ink)}
+.acc.open .acc-head .src-chev{transform:rotate(180deg)}
+.acc-body{display:grid;gap:7px;padding:0 0 14px}
+.acc + .del-row{margin-top:0}
+/* Research tasks: cards like the sources, each with its own × on the right. */
+.tasks{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.tasks li{display:flex;align-items:flex-start;gap:8px;border:1px solid var(--rule);border-radius:9px;background:var(--paper);padding:7px 6px 7px 10px;font-size:14px}
+.tasks li span{flex:1;min-width:0;padding-top:2px}
+.task-x{flex:none;border:0;background:none;color:var(--ink-soft);font-size:22px;line-height:1;width:28px;height:28px;border-radius:7px;margin:-2px 0}
+.task-x:hover{color:var(--ink);background:var(--sheet)}
 .lbl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row > *{min-width:0}

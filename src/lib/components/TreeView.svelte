@@ -95,7 +95,7 @@
 	// Names are fitted to the card by their drawn width (counting characters let wide names touch its sides),
 	// measured on a canvas in the card's fonts (`.nm` in app.css) and cached, as big trees draw many cards. Measured
 	// again once the web fonts have loaded: `fitName` is rebuilt then, so the cards redraw.
-	const NAME_PAD = 8;
+	const NAME_PAD = 6; // the same margin as the photo above the name (x = 6)
 	const canvas2d = typeof document === 'undefined' ? null : document.createElement('canvas').getContext('2d');
 	const widths = new Map<string, number>();
 	let fontsLoaded = $state(0);
