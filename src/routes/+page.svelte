@@ -159,67 +159,71 @@
 
 <svelte:window onkeydown={onKey} onhashchange={onHashChange} />
 
-<!-- One row on wide screens; below 900px the two halves become rows of their own (see "Header" in app.css). -->
-<header class="top">
-	<div class="top-a">
-		<div class="brand">Family Tree Builder</div>
-		<div class="actions">
-			{#if app.canEdit}<button class="btn primary new" onclick={addNew} aria-label="New person">+<span class="new-long">&nbsp;New person</span></button>{/if}
-			{#if app.backupDue}
-				<span class="remind">
-					<button class="btn small" onclick={() => (app.showData = true)} title="Some changes aren't in a backup yet">Back up your tree</button>
-					<button class="x" onclick={() => app.snoozeBackup()} aria-label="Remind me later" title="Remind me in a few days">×</button>
-				</span>
-			{/if}
-			<button class="btn" onclick={() => (app.showData = true)}>Data</button>
-			{#if __SYNC__}<SyncStatus />{/if}
-		</div>
-	</div>
-	<div class="top-b">
-		<nav class="tabs">
-			{#each tabs as [k, l] (k)}
-				<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{#if k === 'todo'}<span class="todo-long">{l}</span><span class="todo-short">To-do</span><span class="count">{todoCount}</span>{:else}{l}{/if}</button>
-			{/each}
-		</nav>
-		<SearchBox />
-	</div>
-</header>
-
-<ViewBar />
-
-<div class="work">
-	<main class="main" class:tree={app.tab === 'tree' || app.tab === 'map'}>
-		{#if !app.ready}
-			<div class="empty">Loading…</div>
-		{:else if app.tab === 'tree'}
-			<TreeView {onGhost} />
-		{:else if app.tab === 'map' && !(app.blank && app.data.people.length)}
-			<MapView />
-		{:else}
-			<div class="pad" class:tl-pad={app.tab === 'timeline' && !(app.blank && app.data.people.length)}>
-				{#if app.blank && app.data.people.length}
-					<BlankPrompt />
-				{:else if app.tab === 'timeline'}
-					<TimelineView />
-				{:else}
-					<TodoView onOpen={openPerson} />
-				{/if}
-			</div>
-		{/if}
-	</main>
-	{#if app.selected && app.data.people.some((p) => p.id === app.selected)}
-		<aside class="sheet" bind:this={sheet}>
-			{#key app.selected}
-				<PersonSheet pid={app.selected} />
-			{/key}
-		</aside>
-	{/if}
-</div>
-
-{#if __SYNC__ && app.ready && (app.syncStatus === 'signed-out' || app.syncStatus === 'forbidden')}
+<!-- Family edition: none of the app until we know who's signed in, then either the sign-in screen alone or the app
+     (drawing the app first made it flash up before the sign-in screen covered it). -->
+{#if __SYNC__ && !app.ready}
+	<div class="signin" aria-busy="true"><span class="hint">Loading…</span></div>
+{:else if __SYNC__ && (app.syncStatus === 'signed-out' || app.syncStatus === 'forbidden')}
 	<SignIn />
-{/if}
+{:else}
+	<!-- One row on wide screens; below 900px the two halves become rows of their own (see "Header" in app.css). -->
+	<header class="top">
+		<div class="top-a">
+			<div class="brand">Family Tree Builder</div>
+			<div class="actions">
+				{#if app.canEdit}<button class="btn primary new" onclick={addNew} aria-label="New person">+<span class="new-long">&nbsp;New person</span></button>{/if}
+				{#if app.backupDue}
+					<span class="remind">
+						<button class="btn small" onclick={() => (app.showData = true)} title="Some changes aren't in a backup yet">Back up your tree</button>
+						<button class="x" onclick={() => app.snoozeBackup()} aria-label="Remind me later" title="Remind me in a few days">×</button>
+					</span>
+				{/if}
+				<button class="btn" onclick={() => (app.showData = true)}>Data</button>
+				{#if __SYNC__}<SyncStatus />{/if}
+			</div>
+		</div>
+		<div class="top-b">
+			<nav class="tabs">
+				{#each tabs as [k, l] (k)}
+					<button aria-pressed={app.tab === k} onclick={() => (app.tab = k)}>{#if k === 'todo'}<span class="todo-long">{l}</span><span class="todo-short">To-do</span><span class="count">{todoCount}</span>{:else}{l}{/if}</button>
+				{/each}
+			</nav>
+			<SearchBox />
+		</div>
+	</header>
 
-{#if app.showData}
-	<DataDialog onClose={() => (app.showData = false)} />
+	<ViewBar />
+
+	<div class="work">
+		<main class="main" class:tree={app.tab === 'tree' || app.tab === 'map'}>
+			{#if !app.ready}
+				<div class="empty">Loading…</div>
+			{:else if app.tab === 'tree'}
+				<TreeView {onGhost} />
+			{:else if app.tab === 'map' && !(app.blank && app.data.people.length)}
+				<MapView />
+			{:else}
+				<div class="pad" class:tl-pad={app.tab === 'timeline' && !(app.blank && app.data.people.length)}>
+					{#if app.blank && app.data.people.length}
+						<BlankPrompt />
+					{:else if app.tab === 'timeline'}
+						<TimelineView />
+					{:else}
+						<TodoView onOpen={openPerson} />
+					{/if}
+				</div>
+			{/if}
+		</main>
+		{#if app.selected && app.data.people.some((p) => p.id === app.selected)}
+			<aside class="sheet" bind:this={sheet}>
+				{#key app.selected}
+					<PersonSheet pid={app.selected} />
+				{/key}
+			</aside>
+		{/if}
+	</div>
+
+	{#if app.showData}
+		<DataDialog onClose={() => (app.showData = false)} />
+	{/if}
 {/if}
